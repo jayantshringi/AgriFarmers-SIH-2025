@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrifarmers - Your Farming Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #138808;
+            --primary-saffron: #FF9933;
+            --text-dark: #1f2937;
+            --text-light: #f9fafb;
+            --bg-light: #f9fafb;
+            --card-light: #ffffff;
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+            min-height: calc(100vh - 200px);
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(19, 136, 8, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-green);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 40vh;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #e53e3e !important;
+        }
+
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: white;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background-color: #38a169;
+        }
+
+        .toast.error {
+            background-color: #e53e3e;
+        }
+
+        .toast.info {
+            background-color: #3182ce;
+        }
+
+        .language-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .language-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: var(--shadow-lg);
+            border-radius: 6px;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .language-selector:hover .language-dropdown {
+            display: block;
+        }
+
+        .language-option {
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .language-option:hover {
+            background-color: #f3f4f6;
+        }
+
+        .language-flag {
+            width: 20px;
+            height: 15px;
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        footer {
+            background-color: #1f2937;
+            color: #f9fafb;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <div id="loadingScreen" class="fixed inset-0 bg-white z-[100] flex flex-col justify-center items-center">
+        <div class="loader"></div>
+        <h2 class="text-2xl font-bold text-gray-800 mt-4">Agrifarmers</h2>
+        <p class="text-gray-600">Empowering Indian Farmers</p>
+    </div>
+
+    <div id="app" class="opacity-0 transition-opacity duration-500 flex-grow">
+        <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
+            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-2xl font-bold text-[var(--primary-green)]">Agrifarmers</span>
+                        </div>
+                    </div>
+                    <div class="hidden md:block">
+                        <div id="nav-actions" class="ml-4 flex items-center md:ml-6">
+                            <!-- Language selector will be added here by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="-mr-2 flex md:hidden">
+                        <div class="language-selector mr-4">
+                            <button class="flex items-center text-gray-700 hover:text-gray-900">
+                                <i class="fas fa-globe mr-1"></i>
+                                <span id="current-language">EN</span>
+                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                            </button>
+                            <div class="language-dropdown">
+                                <div class="language-option" onclick="changeLanguage('en')">
+                                    <div class="language-flag bg-blue-600"></div>
+                                    <span>English</span>
+                                </div>
+                                <div class="language-option" onclick="changeLanguage('hi')">
+                                    <div class="language-flag bg-green-600"></div>
+                                    <span>हिन्दी</span>
+                                </div>
+                                <div class="language-option" onclick="changeLanguage('pa')">
+                                    <div class="language-flag bg-yellow-500"></div>
+                                    <span>ਪੰਜਾਬੀ</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="mobile-menu-button" type="button"
+                            class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500"
+                            aria-controls="mobile-menu" aria-expanded="false">
+                            <span class="sr-only">Open main menu</span>
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+            <div class="md:hidden hidden" id="mobile-menu">
+                <div id="mobile-nav-actions" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <!-- Mobile language selector will be added here by JavaScript -->
+                </div>
+            </div>
+        </header>
+
+        <main class="pt-16">
+            <div id="welcomePage" class="page active flex-col justify-center items-center p-4">
+                <div class="container mx-auto">
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden md:flex">
+                        <div class="p-8 md:p-12 lg:p-16 flex-1 flex flex-col justify-center text-center md:text-left">
+                            <h1 class="text-4xl md:text-5xl font-bold text-gray-800" data-translate="welcome_title">
+                                Welcome to <span class="text-[var(--primary-green)]">Agrifarmers</span></h1>
+                            <p class="mt-4 text-lg text-gray-600" data-translate="welcome_subtitle">Your trusted
+                                companion for modern farming. Get personalized advice on seeds, fertilizers, and weather
+                                to boost your yield.</p>
+                            <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                                <button onclick="showPage('signUpPage')"
+                                    class="w-full sm:w-auto bg-[var(--primary-green)] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
+                                    data-translate="get_started_button">Get Started</button>
+                                <button onclick="showPage('loginPage')"
+                                    class="w-full sm:w-auto bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors"
+                                    data-translate="login_button">Login</button>
+                            </div>
+                        </div>
+                        <div class="flex-1 hidden md:block">
+                            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                                alt="Farmer in a field" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loginPage" class="page flex-col justify-center items-center p-4">
+                <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-6" data-translate="login_title">Login
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="loginMobile" class="block text-sm font-medium text-gray-700"
+                                data-translate="mobile_number_label">Mobile Number</label>
+                            <input type="tel" id="loginMobile"
+                                class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                placeholder="Enter 10-digit mobile number" maxlength="10"
+                                data-translate="mobile_placeholder">
+                            <div id="loginMobileError" class="error-message" data-translate="mobile_error">Please enter
+                                a valid 10-digit mobile number</div>
+                        </div>
+                        <button onclick="handleLogin()"
+                            class="w-full bg-[var(--primary-green)] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
+                            data-translate="login_button">Login</button>
+                    </div>
+                    <p class="text-center mt-6 text-sm text-gray-600">
+                        <span data-translate="no_account_text">Don't have an account?</span> <button
+                            onclick="showPage('signUpPage')"
+                            class="font-medium text-[var(--primary-green)] hover:underline"
+                            data-translate="signup_link">Sign up</button>
+                    </p>
+                </div>
+            </div>
+
+            <div id="signUpPage" class="page flex-col justify-center items-center p-4">
+                <div class="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-6" data-translate="signup_title">Create
+                        Account</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="signUpName" class="block text-sm font-medium text-gray-700"
+                                data-translate="full_name_label">Full Name</label>
+                            <input type="text" id="signUpName"
+                                class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                placeholder="Your Name" data-translate="name_placeholder">
+                            <div id="signUpNameError" class="error-message" data-translate="name_error">Please enter
+                                your full name</div>
+                        </div>
+                        <div>
+                            <label for="signUpMobile" class="block text-sm font-medium text-gray-700"
+                                data-translate="mobile_number_label">Mobile Number</label>
+                            <input type="tel" id="signUpMobile"
+                                class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                placeholder="10-digit mobile number" maxlength="10" data-translate="mobile_placeholder">
+                            <div id="signUpMobileError" class="error-message" data-translate="mobile_error">Please enter
+                                a valid 10-digit mobile number</div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="signUpState" class="block text-sm font-medium text-gray-700"
+                                    data-translate="state_label">State</label>
+                                <select id="signUpState"
+                                    class="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
+                                    <option value="" data-translate="select_state">Select State</option>
+                                </select>
+                                <div id="signUpStateError" class="error-message" data-translate="state_error">Please
+                                    select your state</div>
+                            </div>
+                            <div>
+                                <label for="signUpDistrict" class="block text-sm font-medium text-gray-700"
+                                    data-translate="district_label">District</label>
+                                <select id="signUpDistrict"
+                                    class="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
+                                    <option value="" data-translate="select_district">Select District</option>
+                                </select>
+                                <div id="signUpDistrictError" class="error-message" data-translate="district_error">
+                                    Please select your district</div>
+                            </div>
+                        </div>
+                        <button onclick="handleSignUp()"
+                            class="w-full bg-[var(--primary-green)] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
+                            data-translate="signup_button">Sign Up</button>
+                    </div>
+                    <p class="text-center mt-6 text-sm text-gray-600">
+                        <span data-translate="have_account_text">Already have an account?</span> <button
+                            onclick="showPage('loginPage')"
+                            class="font-medium text-[var(--primary-green)] hover:underline"
+                            data-translate="login_link">Login</button>
+                    </p>
+                </div>
+            </div>
+
+            <div id="homePage" class="page flex-col items-center p-4 sm:p-6 lg:p-8">
+                <div class="container mx-auto">
+                    <div id="welcome-banner"
+                        class="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-md mb-8 shadow">
+                        <p class="font-semibold"><span data-translate="welcome_text">Welcome</span>, <span
+                                id="farmerName"></span>!</p>
+                        <p><span data-translate="personalized_dashboard">Here is your personalized farming dashboard
+                                for</span> <span id="farmerLocation"></span>.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                            onclick="openWeatherModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-cloud-sun-rain text-4xl text-[var(--primary-saffron)]"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="weather_info">Weather
+                                        Info</h3>
+                                    <p class="text-gray-600" data-translate="weather_subtitle">Get today's forecast</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                            onclick="openSeedModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-seedling text-4xl text-green-600"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="seed_advice">Seed Advice
+                                    </h3>
+                                    <p class="text-gray-600" data-translate="seed_subtitle">Best seeds for your region
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                            onclick="openFertilizerModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-flask text-4xl text-blue-500"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="fertilizer_guide">
+                                        Fertilizer Guide</h3>
+                                    <p class="text-gray-600" data-translate="fertilizer_subtitle">Nutrients for your
+                                        crops</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                            onclick="openCropCalendarModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt text-4xl text-purple-500"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="crop_calendar">Crop
+                                        Calendar</h3>
+                                    <p class="text-gray-600" data-translate="crop_subtitle">Seasonal planting guide</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                            onclick="openMarketPricesModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-chart-line text-4xl text-yellow-600"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="market_prices">Market
+                                        Prices</h3>
+                                    <p class="text-gray-600" data-translate="market_subtitle">Current crop prices</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                            onclick="openSoilHealthModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-vial text-4xl text-red-500"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="soil_health">Soil Health
+                                    </h3>
+                                    <p class="text-gray-600" data-translate="soil_subtitle">Soil testing guidance</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white mt-auto">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-[var(--primary-green)] mb-4" data-translate="footer_agrifarmers">
+                        Agrifarmers</h3>
+                    <p class="text-gray-300 mb-4" data-translate="footer_description">Empowering Indian farmers with
+                        modern agricultural technology and knowledge for better yields and sustainable farming.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4" data-translate="footer_quick_links">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"
+                                data-translate="footer_home">Home</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"
+                                data-translate="footer_about">About Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"
+                                data-translate="footer_services">Services</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"
+                                data-translate="footer_contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4" data-translate="footer_services">Services</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"
+                                data-translate="weather_info">Weather Forecast</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"
+                                data-translate="seed_advice">Seed Advice</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"
+                                data-translate="fertilizer_guide">Fertilizer Guide</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors"
+                                data-translate="market_prices">Market Prices</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4" data-translate="footer_contact">Contact Us</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-[var(--primary-green)]"></i>
+                            <span class="text-gray-300" data-translate="footer_address">123 Agriculture Street, Farming
+                                District, India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2 text-[var(--primary-green)]"></i>
+                            <span class="text-gray-300">+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-[var(--primary-green)]"></i>
+                            <span class="text-gray-300">info@agrifarmers.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm" data-translate="footer_copyright">© 2023 Agrifarmers. All rights
+                    reserved.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm" data-translate="footer_privacy">Privacy
+                        Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm" data-translate="footer_terms">Terms of
+                        Service</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm"
+                        data-translate="footer_sitemap">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="modal-container"
+        class="fixed inset-0 bg-black bg-opacity-50 z-[60] flex justify-center items-center p-4 hidden">
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        // Application Configuration
+        const CONFIG = {
+            WEATHER_API_KEY: 'YOUR_API_KEY_HERE', // Replace with actual API key
+            WEATHER_API_URL: 'https://api.openweathermap.org/data/2.5',
+            CROP_PRICE_API: 'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070'
+        };
+
+        // Translation Data
+        const translations = {
+            en: {
+                // Welcome Page
+                welcome_title: "Welcome to <span class='text-[var(--primary-green)]'>Agrifarmers</span>",
+                welcome_subtitle: "Your trusted companion for modern farming. Get personalized advice on seeds, fertilizers, and weather to boost your yield.",
+                get_started_button: "Get Started",
+                login_button: "Login",
+
+                // Login Page
+                login_title: "Login",
+                mobile_number_label: "Mobile Number",
+                mobile_placeholder: "Enter 10-digit mobile number",
+                mobile_error: "Please enter a valid 10-digit mobile number",
+                no_account_text: "Don't have an account?",
+                signup_link: "Sign up",
+
+                // Signup Page
+                signup_title: "Create Account",
+                full_name_label: "Full Name",
+                name_placeholder: "Your Name",
+                name_error: "Please enter your full name",
+                state_label: "State",
+                select_state: "Select State",
+                state_error: "Please select your state",
+                district_label: "District",
+                select_district: "Select District",
+                district_error: "Please select your district",
+                signup_button: "Sign Up",
+                have_account_text: "Already have an account?",
+                login_link: "Login",
+
+                // Home Page
+                welcome_text: "Welcome",
+                personalized_dashboard: "Here is your personalized farming dashboard for",
+                weather_info: "Weather Info",
+                weather_subtitle: "Get today's forecast",
+                seed_advice: "Seed Advice",
+                seed_subtitle: "Best seeds for your region",
+                fertilizer_guide: "Fertilizer Guide",
+                fertilizer_subtitle: "Nutrients for your crops",
+                crop_calendar: "Crop Calendar",
+                crop_subtitle: "Seasonal planting guide",
+                market_prices: "Market Prices",
+                market_subtitle: "Current crop prices",
+                soil_health: "Soil Health",
+                soil_subtitle: "Soil testing guidance",
+
+                // Footer
+                footer_agrifarmers: "Agrifarmers",
+                footer_description: "Empowering Indian farmers with modern agricultural technology and knowledge for better yields and sustainable farming.",
+                footer_quick_links: "Quick Links",
+                footer_home: "Home",
+                footer_about: "About Us",
+                footer_services: "Services",
+                footer_contact: "Contact",
+                footer_address: "123 Agriculture Street, Farming District, India",
+                footer_copyright: "© 2023 Agrifarmers. All rights reserved.",
+                footer_privacy: "Privacy Policy",
+                footer_terms: "Terms of Service",
+                footer_sitemap: "Sitemap"
+            },
+            hi: {
+                // Welcome Page
+                welcome_title: "<span class='text-[var(--primary-green)]'>अग्रीफार्मर्स</span> में आपका स्वागत है",
+                welcome_subtitle: "आधुनिक खेती के लिए आपका विश्वसनीय साथी। बेहतर उपज के लिए बीज, उर्वरक और मौसम पर व्यक्तिगत सलाह प्राप्त करें।",
+                get_started_button: "शुरू करें",
+                login_button: "लॉग इन",
+
+                // Login Page
+                login_title: "लॉग इन",
+                mobile_number_label: "मोबाइल नंबर",
+                mobile_placeholder: "10 अंकों का मोबाइल नंबर दर्ज करें",
+                mobile_error: "कृपया एक वैध 10-अंकीय मोबाइल नंबर दर्ज करें",
+                no_account_text: "खाता नहीं है?",
+                signup_link: "साइन अप करें",
+
+                // Signup Page
+                signup_title: "खाता बनाएं",
+                full_name_label: "पूरा नाम",
+                name_placeholder: "आपका नाम",
+                name_error: "कृपया अपना पूरा नाम दर्ज करें",
+                state_label: "राज्य",
+                select_state: "राज्य चुनें",
+                state_error: "कृपया अपना राज्य चुनें",
+                district_label: "जिला",
+                select_district: "जिला चुनें",
+                district_error: "कृपया अपना जिला चुनें",
+                signup_button: "साइन अप करें",
+                have_account_text: "पहले से ही एक खाता है?",
+                login_link: "लॉग इन",
+
+                // Home Page
+                welcome_text: "स्वागत है",
+                personalized_dashboard: "यहाँ आपके लिए है आपका व्यक्तिगत कृषि डैशबोर्ड",
+                weather_info: "मौसम जानकारी",
+                weather_subtitle: "आज का पूर्वानुमान प्राप्त करें",
+                seed_advice: "बीज सलाह",
+                seed_subtitle: "आपके क्षेत्र के लिए सर्वोत्तम बीज",
+                fertilizer_guide: "उर्वरक गाइड",
+                fertilizer_subtitle: "आपकी फसलों के लिए पोषक तत्व",
+                crop_calendar: "फसल कैलेंडर",
+                crop_subtitle: "मौसमी रोपण गाइड",
+                market_prices: "बाजार मूल्य",
+                market_subtitle: "वर्तमान फसल मूल्य",
+                soil_health: "मृदा स्वास्थ्य",
+                soil_subtitle: "मृदा परीक्षण मार्गदर्शन",
+
+                // Footer
+                footer_agrifarmers: "अग्रीफार्मर्स",
+                footer_description: "बेहतर उपज और स्थायी खेती के लिए आधुनिक कृषि प्रौद्योगिकी और ज्ञान के साथ भारतीय किसानों को सशक्त बनाना।",
+                footer_quick_links: "त्वरित लिंक",
+                footer_home: "होम",
+                footer_about: "हमारे बारे में",
+                footer_services: "सेवाएं",
+                footer_contact: "संपर्क करें",
+                footer_address: "123 कृषि स्ट्रीट, कृषि जिला, भारत",
+                footer_copyright: "© 2023 अग्रीफार्मर्स। सभी अधिकार सुरक्षित।",
+                footer_privacy: "गोपनीयता नीति",
+                footer_terms: "सेवा की शर्तें",
+                footer_sitemap: "साइटमैप"
+            },
+            pa: {
+                // Welcome Page
+                welcome_title: "<span class='text-[var(--primary-green)]'>ਅਗਰੀਫਾਰਮਰਜ਼</span> ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ",
+                welcome_subtitle: "ਆਧੁਨਿਕ ਖੇਤੀ ਲਈ ਤੁਹਾਡਾ ਭਰੋਸੇਮੰਦ ਸਾਥੀ। ਬਿਹਤਰ ਪੈਦਾਵਾਰ ਲਈ ਬੀਜ, ਖਾਦ ਅਤੇ ਮੌਸਮ ਬਾਰੇ ਨਿੱਜੀ ਸਲਾਹ ਪ੍ਰਾਪਤ ਕਰੋ।",
+                get_started_button: "ਸ਼ੁਰੂ ਕਰੋ",
+                login_button: "ਲੌਗ ਇਨ",
+
+                // Login Page
+                login_title: "ਲੌਗ ਇਨ",
+                mobile_number_label: "ਮੋਬਾਈਲ ਨੰਬਰ",
+                mobile_placeholder: "10-ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਰਜ ਕਰੋ",
+                mobile_error: "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਵੈਧ 10-ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਰਜ ਕਰੋ",
+                no_account_text: "ਖਾਤਾ ਨਹੀਂ ਹੈ?",
+                signup_link: "ਸਾਈਨ ਅੱਪ ਕਰੋ",
+
+                // Signup Page
+                signup_title: "ਖਾਤਾ ਬਣਾਓ",
+                full_name_label: "ਪੂਰਾ ਨਾਮ",
+                name_placeholder: "ਤੁਹਾਡਾ ਨਾਮ",
+                name_error: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਪੂਰਾ ਨਾਮ ਦਰਜ ਕਰੋ",
+                state_label: "ਰਾਜ",
+                select_state: "ਰਾਜ ਚੁਣੋ",
+                state_error: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਰਾਜ ਚੁਣੋ",
+                district_label: "ਜ਼ਿਲ੍ਹਾ",
+                select_district: "ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ",
+                district_error: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ",
+                signup_button: "ਸਾਈਨ ਅੱਪ ਕਰੋ",
+                have_account_text: "ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਇੱਕ ਖਾਤਾ ਹੈ?",
+                login_link: "ਲੌਗ ਇਨ",
+
+                // Home Page
+                welcome_text: "ਜੀ ਆਇਆਂ ਨੂੰ",
+                personalized_dashboard: "ਇੱਥੇ ਤੁਹਾਡੇ ਲਈ ਹੈ ਤੁਹਾਡਾ ਨਿੱਜੀ ਖੇਤੀ ਡੈਸ਼ਬੋਰਡ",
+                weather_info: "ਮੌਸਮ ਦੀ ਜਾਣਕਾਰੀ",
+                weather_subtitle: "ਅੱਜ ਦਾ ਪੂਰਵਾਨੁਮਾਨ ਪ੍ਰਾਪਤ ਕਰੋ",
+                seed_advice: "ਬੀਜ ਸਲਾਹ",
+                seed_subtitle: "ਤੁਹਾਡੇ ਖੇਤਰ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ ਬੀਜ",
+                fertilizer_guide: "ਖਾਦ ਗਾਈਡ",
+                fertilizer_subtitle: "ਤੁਹਾਡੀਆਂ ਫਸਲਾਂ ਲਈ ਪੋਸ਼ਕ ਤੱਤ",
+                crop_calendar: "ਫਸਲ ਕੈਲੰਡਰ",
+                crop_subtitle: "ਮੌਸਮੀ ਬੀਜਾਈ ਗਾਈਡ",
+                market_prices: "ਬਾਜ਼ਾਰ ਦੀਆਂ ਕੀਮਤਾਂ",
+                market_subtitle: "ਮੌਜੂਦਾ ਫਸਲ ਦੀਆਂ ਕੀਮਤਾਂ",
+                soil_health: "ਮਿੱਟੀ ਦੀ ਸਿਹਤ",
+                soil_subtitle: "ਮਿੱਟੀ ਟੈਸਟਿੰਗ ਮਾਰਗਦਰਸ਼ਨ",
+
+                // Footer
+                footer_agrifarmers: "ਅਗਰੀਫਾਰਮਰਜ਼",
+                footer_description: "ਬਿਹਤਰ ਪੈਦਾਵਾਰ ਅਤੇ ਟਿਕਾਊ ਖੇਤੀ ਲਈ ਆਧੁਨਿਕ ਖੇਤੀ ਤਕਨਾਲੋਜੀ ਅਤੇ ਗਿਆਨ ਨਾਲ ਭਾਰਤੀ ਕਿਸਾਨਾਂ ਨੂੰ ਸਸ਼ਕਤ ਬਣਾਉਣਾ।",
+                footer_quick_links: "ਤੇਜ਼ ਲਿੰਕ",
+                footer_home: "ਹੋਮ",
+                footer_about: "ਸਾਡੇ ਬਾਰੇ",
+                footer_services: "ਸੇਵਾਵਾਂ",
+                footer_contact: "ਸੰਪਰਕ ਕਰੋ",
+                footer_address: "123 ਐਗਰੀਕਲਚਰ ਸਟ੍ਰੀਟ, ਫਾਰਮਿੰਗ ਜ਼ਿਲ੍ਹਾ, ਭਾਰਤ",
+                footer_copyright: "© 2023 ਅਗਰੀਫਾਰਮਰਜ਼। ਸਾਰੇ ਅਧਿਕਾਰ ਸੁਰੱਖਿਅਤ।",
+                footer_privacy: "ਗੋਪਨੀਯਤਾ ਨੀਤੀ",
+                footer_terms: "ਸੇਵਾ ਦੀਆਂ ਸ਼ਰਤਾਂ",
+                footer_sitemap: "ਸਾਈਟਮੈਪ"
+            }
+        };
+
+        // Data Storage
+        const districtData = {
+            "Haryana": ["Ambala", "Bhiwani", "Charkhi Dadri", "Faridabad", "Fatehabad", "Gurugram", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mahendragarh", "Nuh", "Palwal", "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"],
+            "Punjab": ["Amritsar", "Barnala", "Bathinda", "Faridkot", "Fatehgarh Sahib", "Fazilka", "Ferozepur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Mansa", "Moga", "Mohali", "Muktsar", "Pathankot", "Patiala", "Rupnagar", "Sangrur", "Shaheed Bhagat Singh Nagar", "Tarn Taran"],
+            "Rajasthan": ["Ajmer", "Alwar", "Banswara", "Baran", "Barmer", "Bharatpur", "Bhilwara", "Bikaner", "Bundi", "Chittorgarh", "Churu", "Dausa", "Dholpur", "Dungarpur", "Hanumangarh", "Jaipur", "Jaisalmer", "Jalore", "Jhalawar", "Jhunjhunu", "Jodhpur", "Karauli", "Kota", "Nagaur", "Pali", "Pratapgarh", "Rajsamand", "Sawai Madhopur", "Sikar", "Sirohi", "Sri Ganganagar", "Tonk", "Udaipur"],
+            "Uttar Pradesh": ["Agra", "Aligarh", "Allahabad", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Azamgarh", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Faizabad", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kasganj", "Kaushambi", "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Raebareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar", "Shahjahanpur", "Shamli", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi"],
+        };
+
+        // Application State
+        const state = {
+            activeUser: null,
+            weatherChart: null,
+            pages: ['welcomePage', 'loginPage', 'signUpPage', 'homePage'],
+            currentLanguage: 'en'
+        };
+
+        // Modal Management
+        const modalManager = {
+            createModal(titleHtml, bodyHtml, modalId = 'genericModal') {
+                const modalContainer = document.getElementById('modal-container');
+                modalContainer.innerHTML = `
+                    <div id="${modalId}" role="dialog" aria-modal="true" class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+                        <div class="flex items-center justify-between p-4 border-b">
+                            <h3 class="text-xl font-bold text-gray-800">${titleHtml}</h3>
+                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl font-bold" aria-label="Close">&times;</button>
+                        </div>
+                        <div class="overflow-y-auto p-4" style="max-height: calc(90vh - 80px);">
+                            ${bodyHtml}
+                        </div>
+                    </div>
+                `;
+                modalContainer.classList.remove('hidden');
+                
+                // Focus trap for accessibility
+                const closeBtn = modalContainer.querySelector('button');
+                if (closeBtn) closeBtn.focus();
+            },
+
+            closeModal() {
+                const modalContainer = document.getElementById('modal-container');
+                modalContainer.classList.add('hidden');
+                modalContainer.innerHTML = '';
+                
+                // Destroy weather chart if exists
+                if (state.weatherChart) {
+                    state.weatherChart.destroy();
+                    state.weatherChart = null;
+                }
+            }
+        };
+
+        // Utility Functions
+        const utils = {
+            showToast(message, type = 'info', duration = 5000) {
+                const toastContainer = document.getElementById('toast-container');
+                const toastId = 'toast-' + Date.now();
+                const toast = document.createElement('div');
+                toast.id = toastId;
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 100);
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }, duration);
+            },
+
+            validateMobile(mobile) {
+                return /^[6-9]\d{9}$/.test(mobile);
+            },
+
+            validateName(name) {
+                return name && name.trim().length >= 2;
+            },
+
+            showError(inputId, message) {
+                const input = document.getElementById(inputId);
+                const errorElement = document.getElementById(inputId + 'Error');
+
+                if (input && errorElement) {
+                    input.classList.add('input-error');
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'block';
+                }
+            },
+
+            hideError(inputId) {
+                const input = document.getElementById(inputId);
+                const errorElement = document.getElementById(inputId + 'Error');
+
+                if (input && errorElement) {
+                    input.classList.remove('input-error');
+                    errorElement.style.display = 'none';
+                }
+            }
+        };
+
+        // Language Management
+        const languageManager = {
+            init() {
+                // Get saved language from localStorage or default to English
+                const savedLanguage = localStorage.getItem('agrifarmerLanguage');
+                if (savedLanguage && translations[savedLanguage]) {
+                    state.currentLanguage = savedLanguage;
+                }
+
+                // Update language display
+                this.updateLanguageDisplay();
+
+                // Apply translations
+                this.applyTranslations();
+            },
+
+            changeLanguage(langCode) {
+                if (translations[langCode]) {
+                    state.currentLanguage = langCode;
+                    localStorage.setItem('agrifarmerLanguage', langCode);
+                    this.updateLanguageDisplay();
+                    this.applyTranslations();
+                    utils.showToast(`Language changed to ${this.getLanguageName(langCode)}`, 'info');
+                }
+            },
+
+            updateLanguageDisplay() {
+                const currentLangElement = document.getElementById('current-language');
+                if (currentLangElement) {
+                    currentLangElement.textContent = state.currentLanguage.toUpperCase();
+                }
+            },
+
+            applyTranslations() {
+                const elements = document.querySelectorAll('[data-translate]');
+                elements.forEach(element => {
+                    const key = element.getAttribute('data-translate');
+                    if (translations[state.currentLanguage] && translations[state.currentLanguage][key]) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'SELECT') {
+                            element.placeholder = translations[state.currentLanguage][key];
+                        } else {
+                            element.innerHTML = translations[state.currentLanguage][key];
+                        }
+                    }
+                });
+            },
+
+            getLanguageName(code) {
+                const names = {
+                    'en': 'English',
+                    'hi': 'Hindi',
+                    'pa': 'Punjabi'
+                };
+                return names[code] || code;
+            },
+
+            addLanguageSelector() {
+                // Add language selector to desktop nav
+                const navActions = document.getElementById('nav-actions');
+                if (navActions) {
+                    const languageHTML = `
+                        <div class="language-selector mr-4">
+                            <button class="flex items-center text-gray-700 hover:text-gray-900">
+                                <i class="fas fa-globe mr-1"></i>
+                                <span id="current-language-desktop">${state.currentLanguage.toUpperCase()}</span>
+                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                            </button>
+                            <div class="language-dropdown">
+                                <div class="language-option" onclick="changeLanguage('en')">
+                                    <div class="language-flag bg-blue-600"></div>
+                                    <span>English</span>
+                                </div>
+                                <div class="language-option" onclick="changeLanguage('hi')">
+                                    <div class="language-flag bg-green-600"></div>
+                                    <span>हिन्दी</span>
+                                </div>
+                                <div class="language-option" onclick="changeLanguage('pa')">
+                                    <div class="language-flag bg-yellow-500"></div>
+                                    <span>ਪੰਜਾਬੀ</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    navActions.innerHTML = languageHTML + navActions.innerHTML;
+                }
+
+                // Add language selector to mobile nav
+                const mobileNavActions = document.getElementById('mobile-nav-actions');
+                if (mobileNavActions) {
+                    const mobileLanguageHTML = `
+                        <div class="px-2 py-1">
+                            <div class="text-gray-700 font-medium mb-2">Language</div>
+                            <div class="space-y-1">
+                                <button onclick="changeLanguage('en')" class="block w-full text-left p-2 rounded hover:bg-gray-100 ${state.currentLanguage === 'en' ? 'bg-green-50 text-green-700' : ''}">
+                                    English
+                                </button>
+                                <button onclick="changeLanguage('hi')" class="block w-full text-left p-2 rounded hover:bg-gray-100 ${state.currentLanguage === 'hi' ? 'bg-green-50 text-green-700' : ''}">
+                                    हिन्दी
+                                </button>
+                                <button onclick="changeLanguage('pa')" class="block w-full text-left p-2 rounded hover:bg-gray-100 ${state.currentLanguage === 'pa' ? 'bg-green-50 text-green-700' : ''}">
+                                    ਪੰਜਾਬੀ
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    mobileNavActions.innerHTML = mobileLanguageHTML;
+                }
+            }
+        };
+
+        // Page Management
+        const pageManager = {
+            showPage(pageId) {
+                state.pages.forEach(page => {
+                    document.getElementById(page).classList.remove('active');
+                });
+                document.getElementById(pageId).classList.add('active');
+                this.updateNav();
+                document.getElementById('mobile-menu').classList.add('hidden');
+            },
+
+            updateNav() {
+                const navActions = document.getElementById('nav-actions');
+                const mobileNavActions = document.getElementById('mobile-nav-actions');
+                
+                if (!navActions || !mobileNavActions) return;
+
+                if (state.activeUser) {
+                    // User is logged in
+                    navActions.innerHTML = `
+                        <span class="text-gray-700 font-medium mr-4">Hi, ${state.activeUser.name}</span>
+                        <button onclick="handleLogout()" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg text-sm hover:bg-red-600 transition-colors">Logout</button>
+                    `;
+                    
+                    mobileNavActions.innerHTML = `
+                        <div class="px-2 pt-2 pb-3 space-y-1">
+                            <div class="text-gray-700 font-medium px-3 py-2">Hi, ${state.activeUser.name}</div>
+                            <button onclick="handleLogout()" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded">Logout</button>
+                        </div>
+                    `;
+                } else {
+                    // User is not logged in
+                    navActions.innerHTML = `
+                        <button onclick="showPage('loginPage')" class="text-gray-700 font-semibold hover:text-[var(--primary-green)] mr-4">Login</button>
+                    `;
+                    
+                    mobileNavActions.innerHTML = `
+                        <div class="px-2 pt-2 pb-3 space-y-1">
+                            <button onclick="showPage('loginPage')" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded">Login</button>
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        // Authentication Management
+        const authManager = {
+            handleSignUp() {
+                const name = document.getElementById('signUpName').value.trim();
+                const mobile = document.getElementById('signUpMobile').value.trim();
+                const stateVal = document.getElementById('signUpState').value;
+                const district = document.getElementById('signUpDistrict').value;
+
+                // Reset previous errors
+                utils.hideError('signUpName');
+                utils.hideError('signUpMobile');
+                utils.hideError('signUpState');
+                utils.hideError('signUpDistrict');
+
+                let hasErrors = false;
+
+                if (!utils.validateName(name)) {
+                    utils.showError('signUpName', 'Please enter a valid name (at least 2 characters)');
+                    hasErrors = true;
+                }
+
+                if (!utils.validateMobile(mobile)) {
+                    utils.showError('signUpMobile', 'Please enter a valid 10-digit mobile number');
+                    hasErrors = true;
+                }
+
+                if (!stateVal) {
+                    utils.showError('signUpState', 'Please select your state');
+                    hasErrors = true;
+                }
+
+                if (!district) {
+                    utils.showError('signUpDistrict', 'Please select your district');
+                    hasErrors = true;
+                }
+
+                if (hasErrors) return;
+
+                const user = { name, mobile, state: stateVal, district };
+                localStorage.setItem('agrifarmerUser', JSON.stringify(user));
+                state.activeUser = user;
+                pageManager.showPage('homePage');
+                this.displayFarmerInfo();
+                utils.showToast('Account created successfully!', 'success');
+            },
+
+            handleLogin() {
+                const mobile = document.getElementById('loginMobile').value.trim();
+                
+                utils.hideError('loginMobile');
+                
+                if (!utils.validateMobile(mobile)) {
+                    utils.showError('loginMobile', 'Please enter a valid 10-digit mobile number');
+                    return;
+                }
+                
+                const storedUser = localStorage.getItem('agrifarmerUser');
+                if(storedUser) {
+                    const user = JSON.parse(storedUser);
+                    if(user.mobile === mobile) {
+                        state.activeUser = user;
+                        pageManager.showPage('homePage');
+                        this.displayFarmerInfo();
+                        utils.showToast('Login successful!', 'success');
+                    } else {
+                        utils.showToast('No account found with this mobile number. Please sign up.', 'error');
+                    }
+                } else {
+                    utils.showToast('No account found. Please sign up.', 'error');
+                }
+            },
+            
+            handleLogout() {
+                localStorage.removeItem('agrifarmerUser');
+                state.activeUser = null;
+                pageManager.showPage('welcomePage');
+                utils.showToast('Logged out successfully', 'info');
+            },
+            
+            checkLoginStatus() {
+                const user = localStorage.getItem('agrifarmerUser');
+                if (user) {
+                    state.activeUser = JSON.parse(user);
+                    pageManager.showPage('homePage');
+                    this.displayFarmerInfo();
+                } else {
+                    pageManager.showPage('welcomePage');
+                }
+            },
+            
+            displayFarmerInfo() {
+                if(state.activeUser) {
+                    document.getElementById('farmerName').textContent = state.activeUser.name;
+                    document.getElementById('farmerLocation').textContent = `${state.activeUser.district}, ${state.activeUser.state}`;
+                }
+            }
+        };
+
+        // Weather Module
+        const weatherModule = {
+            async openWeatherModal() {
+                // Check for API key
+                if (!CONFIG.WEATHER_API_KEY || CONFIG.WEATHER_API_KEY === 'YOUR_API_KEY_HERE') {
+                    const content = `
+                        <div class="text-center p-6">
+                            <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+                            <h4 class="text-xl font-bold text-gray-800 mb-2">Weather Service</h4>
+                    <p class="text-gray-600 mb-4">Weather API is not configured. This is a demo showing sample data.</p>
+                            <div class="bg-blue-50 rounded-lg p-4 text-center">
+                                <p class="text-lg font-semibold">Partly Cloudy</p>
+                                <p class="text-5xl font-bold my-2">28°C</p>
+                                <div class="flex justify-center gap-4 text-gray-600">
+                                    <span>H: 32°</span>
+                                    <span>L: 24°</span>
+                                    <span><i class="fas fa-wind"></i> 12 km/h</span>
+                                    <span><i class="fas fa-tint"></i> 65%</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-4">To enable real weather data, add your OpenWeatherMap API key.</p>
+                        </div>
+                    `;
+                    modalManager.createModal('<i class="fas fa-cloud-sun-rain text-orange-500 mr-2"></i>Weather Forecast', content, 'weatherModal');
+                    return;
+                }
+
+                const content = `
+                    <div class="text-center">
+                        <div class="loader inline-block mb-4"></div>
+                        <p>Loading weather data...</p>
+                    </div>
+                `;
+                modalManager.createModal('<i class="fas fa-cloud-sun-rain text-orange-500 mr-2"></i>Weather Forecast', content, 'weatherModal');
+
+                try {
+                    // Simulate API call - replace with actual API call when key is available
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Demo data
+                    const weatherHTML = `
+                        <div class="bg-blue-50 rounded-lg p-4 mb-6 text-center">
+                            <p class="text-lg font-semibold">Partly Cloudy</p>
+                            <p class="text-5xl font-bold my-2">28°C</p>
+                            <div class="flex justify-center gap-4 text-gray-600">
+                                <span>H: 32°</span>
+                                <span>L: 24°</span>
+                                <span><i class="fas fa-wind"></i> 12 km/h</span>
+                                <span><i class="fas fa-tint"></i> 65%</span>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="weatherChart"></canvas>
+                        </div>
+                    `;
+                    
+                    document.querySelector('#weatherModal .overflow-y-auto').innerHTML = weatherHTML;
+
+                    // Create demo chart
+                    const ctx = document.getElementById('weatherChart').getContext('2d');
+                    state.weatherChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                            datasets: [{
+                                label: 'Temperature (°C)',
+                                data: [28, 30, 32, 29, 27, 26, 28],
+                                borderColor: '#FF9933',
+                                backgroundColor: 'rgba(255, 153, 51, 0.2)',
+                                tension: 0.3,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: { 
+                                y: { 
+                                    beginAtZero: false,
+                                    grid: { display: false }
+                                },
+                                x: {
+                                    grid: { display: false }
+                                }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    document.querySelector('#weatherModal .overflow-y-auto').innerHTML = `
+                        <div class="text-center">
+                            <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+                            <p class="text-red-500">Failed to load weather data: ${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        // Seed Module
+        const seedModule = {
+            openSeedModal() {
+                const seedAdvice = {
+                    "Kharif": {
+                        "Haryana": "Paddy (Basmati), Cotton, Maize, Bajra",
+                        "Punjab": "Paddy (Basmati), Maize, Cotton, Sugarcane",
+                        "Rajasthan": "Bajra, Jowar, Maize, Moong, Groundnut",
+                        "Uttar Pradesh": "Paddy, Maize, Sugarcane, Urad, Arhar"
+                    },
+                    "Rabi": {
+                        "Haryana": "Wheat, Mustard, Barley, Gram",
+                        "Punjab": "Wheat, Barley, Gram, Mustard, Potatoes",
+                        "Rajasthan": "Wheat, Mustard, Gram, Barley, Cumin",
+                        "Uttar Pradesh": "Wheat, Mustard, Potato, Barley, Peas"
+                    }
+                };
+
+                const currentMonth = new Date().getMonth();
+                const season = (currentMonth >= 5 && currentMonth <= 9) ? "Kharif" : "Rabi";
+                const advice = seedAdvice[season][state.activeUser.state] || "Consult local agriculture department for region-specific advice.";
+
+                const content = `
+                    <div class="mb-6">
+                        <p class="text-lg font-semibold mb-2">For the current <span class="text-green-600">${season}</span> season in <span class="text-blue-600">${state.activeUser.state}</span>, consider planting:</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-4">${advice}.</p>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <p class="text-sm text-yellow-700"><strong>Expert Tip:</strong> Always use certified seeds from reliable sources for better yield.</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500">This is a general recommendation. Always consider your specific soil type, irrigation facilities, and local market demand.</p>
+                `;
+                modalManager.createModal('<i class="fas fa-seedling text-green-600 mr-2"></i>Seed Recommendations', content, 'seedModal');
+            }
+        };
+
+        // Fertilizer Module
+        const fertilizerModule = {
+            openFertilizerModal() {
+                const content = `
+                    <div class="space-y-6">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-gray-700 mb-2">For Wheat:</h4>
+                            <p class="text-gray-600">Basal: NPK (12:32:16) @ 150kg/acre. Top Dressing: Urea @ 50kg/acre after 21-25 days.</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-gray-700 mb-2">For Paddy (Rice):</h4>
+                            <p class="text-gray-600">Use Zinc Sulphate @ 25kg/acre before puddling. Basal: DAP @ 75kg/acre. Top Dressing: Urea in 2-3 split doses.</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-gray-700 mb-2">For Cotton:</h4>
+                            <p class="text-gray-600">Requires balanced N, P, K. Use Potash for better boll development. Recommended: 80-100kg N, 40-50kg P₂O₅, 40-50kg K₂O per acre.</p>
+                        </div>
+                        <div class="bg-red-50 border-l-4 border-red-400 p-4">
+                            <p class="text-sm text-red-700"><strong>Important:</strong> A soil health test is highly recommended for precise fertilizer application. Overuse can damage soil health.</p>
+                        </div>
+                    </div>
+                `;
+                modalManager.createModal('<i class="fas fa-flask text-blue-500 mr-2"></i>General Fertilizer Guide', content, 'fertilizerModal');
+            }
+        };
+
+        // Crop Calendar Module
+        const cropCalendarModule = {
+            openCropCalendarModal() {
+                const content = `
+                    <div class="space-y-4">
+                        <div class="bg-green-100 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-gray-700 mb-2">Kharif Season (June - October)</h4>
+                            <ul class="list-disc list-inside text-gray-600 ml-2">
+                                <li><strong>Sowing:</strong> June - July</li>
+                                <li><strong>Harvesting:</strong> September - October</li>
+                                <li><strong>Major Crops:</strong> Rice, Maize, Cotton, Bajra, Moong, Urad</li>
+                            </ul>
+                        </div>
+                        <div class="bg-yellow-100 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-gray-700 mb-2">Rabi Season (November - April)</h4>
+                            <ul class="list-disc list-inside text-gray-600 ml-2">
+                                <li><strong>Sowing:</strong> October - December</li>
+                                <li><strong>Harvesting:</strong> March - April</li>
+                                <li><strong>Major Crops:</strong> Wheat, Barley, Mustard, Gram, Peas</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-100 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-gray-700 mb-2">Zaid Season (March - June)</h4>
+                            <ul class="list-disc list-inside text-gray-600 ml-2">
+                                <li><strong>Sowing:</strong> March - April</li>
+                                <li><strong>Harvesting:</strong> May - June</li>
+                                <li><strong>Major Crops:</strong> Watermelon, Muskmelon, Cucumber, Bitter gourd</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                modalManager.createModal('<i class="fas fa-calendar-alt text-purple-500 mr-2"></i>Crop Calendar', content, 'cropCalendarModal');
+            }
+        };
+
+        // Market Prices Module
+        const marketPricesModule = {
+            openMarketPricesModal() {
+                const content = `
+                    <div class="space-y-4">
+                        <div class="text-center mb-4">
+                            <div class="loader inline-block"></div>
+                            <p>Fetching latest market prices...</p>
+                        </div>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <p class="text-sm text-yellow-700"><strong>Note:</strong> Market prices change frequently. Check with your local mandi for the most current rates.</p>
+                        </div>
+                    </div>
+                `;
+                modalManager.createModal('<i class="fas fa-chart-line text-yellow-600 mr-2"></i>Market Prices', content, 'marketPricesModal');
+
+                // Simulate API call delay
+                setTimeout(() => {
+                    const prices = {
+                        "Wheat": "₹2,100 - ₹2,400 per quintal",
+                        "Rice (Basmati)": "₹3,500 - ₹4,500 per quintal",
+                        "Cotton": "₹6,000 - ₹7,500 per quintal",
+                        "Sugarcane": "₹315 - ₹340 per quintal",
+                        "Mustard": "₹5,200 - ₹5,800 per quintal"
+                    };
+
+                    let pricesHTML = '<div class="space-y-4">';
+                    for (const [crop, price] of Object.entries(prices)) {
+                        pricesHTML += `
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="font-medium">${crop}</span>
+                                <span class="font-bold text-green-600">${price}</span>
+                            </div>
+                        `;
+                    }
+                    pricesHTML += `
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
+                            <p class="text-sm text-yellow-700"><strong>Note:</strong> These are approximate prices. Actual rates may vary by location and quality.</p>
+                        </div>
+                    </div>`;
+
+                    document.querySelector('#marketPricesModal .overflow-y-auto').innerHTML = pricesHTML;
+                }, 1500);
+            }
+        };
+
+        // Soil Health Module
+        const soilHealthModule = {
+            openSoilHealthModal() {
+                const content = `
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-700 mb-2">Why Soil Testing is Important</h4>
+                            <p class="text-gray-600">Soil testing helps you understand your soil's nutrient levels, pH balance, and organic matter content. This allows for precise fertilizer application.</p>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-gray-700 mb-2">How to Get Your Soil Tested</h4>
+                            <ol class="list-decimal list-inside text-gray-600 ml-2 space-y-2">
+                                <li>Visit your nearest Krishi Vigyan Kendra (KVK) or agriculture office</li>
+                                <li>Collect soil samples from different parts of your field</li>
+                                <li>Submit samples for laboratory analysis</li>
+                                <li>Receive detailed report with fertilizer recommendations</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-gray-700 mb-2">Ideal Soil Parameters</h4>
+                            <ul class="list-disc list-inside text-gray-600 ml-2 space-y-1">
+                                <li><strong>pH Level:</strong> 6.0 - 7.5 (neutral to slightly acidic)</li>
+                                <li><strong>Organic Carbon:</strong> >0.5%</li>
+                                <li><strong>Nitrogen:</strong> >280 kg/ha</li>
+                                <li><strong>Phosphorus:</strong> >25 kg/ha</li>
+                                <li><strong>Potassium:</strong> >125 kg/ha</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-red-50 border-l-4 border-red-400 p-4">
+                            <p class="text-sm text-red-700"><strong>Government Scheme:</strong> Soil Health Card scheme provides free soil testing. Contact your local agriculture department for details.</p>
+                        </div>
+                    </div>
+                `;
+                modalManager.createModal('<i class="fas fa-vial text-red-500 mr-2"></i>Soil Health Guide', content, 'soilHealthModal');
+            }
+        };
+
+        // Form Management
+        const formManager = {
+            populateStateDropdown() {
+                const stateSelect = document.getElementById('signUpState');
+                const states = Object.keys(districtData);
+                states.sort();
+                states.forEach(state => {
+                    const option = document.createElement('option');
+                    option.value = state;
+                    option.textContent = state;
+                    stateSelect.appendChild(option);
+                });
+            },
+
+            populateDistrictDropdown() {
+                const stateSelect = document.getElementById('signUpState');
+                const districtSelect = document.getElementById('signUpDistrict');
+                const selectedState = stateSelect.value;
+
+                districtSelect.innerHTML = '<option value="">Select District</option>';
+
+                if (selectedState && districtData[selectedState]) {
+                    districtData[selectedState].forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district;
+                        option.textContent = district;
+                        districtSelect.appendChild(option);
+                    });
+                }
+            },
+
+            setupEventListeners() {
+                // Mobile menu toggle
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenuButton && mobileMenu) {
+                    mobileMenuButton.addEventListener('click', () => {
+                        mobileMenu.classList.toggle('hidden');
+                    });
+                }
+
+                // State dropdown change
+                document.getElementById('signUpState').addEventListener('change', this.populateDistrictDropdown);
+
+                // Input validation on blur
+                document.getElementById('signUpName').addEventListener('blur', () => {
+                    const name = document.getElementById('signUpName').value.trim();
+                    if (!utils.validateName(name)) {
+                        utils.showError('signUpName', 'Please enter a valid name (at least 2 characters)');
+                    } else {
+                        utils.hideError('signUpName');
+                    }
+                });
+
+                document.getElementById('signUpMobile').addEventListener('blur', () => {
+                    const mobile = document.getElementById('signUpMobile').value.trim();
+                    if (!utils.validateMobile(mobile)) {
+                        utils.showError('signUpMobile', 'Please enter a valid 10-digit mobile number');
+                    } else {
+                        utils.hideError('signUpMobile');
+                    }
+                });
+
+                document.getElementById('loginMobile').addEventListener('blur', () => {
+                    const mobile = document.getElementById('loginMobile').value.trim();
+                    if (!utils.validateMobile(mobile)) {
+                        utils.showError('loginMobile', 'Please enter a valid 10-digit mobile number');
+                    } else {
+                        utils.hideError('loginMobile');
+                    }
+                });
+            }
+        };
+
+        // Global functions for HTML onclick handlers
+        function showPage(pageId) {
+            pageManager.showPage(pageId);
+        }
+
+        function handleSignUp() {
+            authManager.handleSignUp();
+        }
+
+        function handleLogin() {
+            authManager.handleLogin();
+        }
+
+        function handleLogout() {
+            authManager.handleLogout();
+        }
+
+        function openWeatherModal() {
+            weatherModule.openWeatherModal();
+        }
+
+        function openSeedModal() {
+            seedModule.openSeedModal();
+        }
+
+        function openFertilizerModal() {
+            fertilizerModule.openFertilizerModal();
+        }
+
+        function openCropCalendarModal() {
+            cropCalendarModule.openCropCalendarModal();
+        }
+
+        function openMarketPricesModal() {
+            marketPricesModule.openMarketPricesModal();
+        }
+
+        function openSoilHealthModal() {
+            soilHealthModule.openSoilHealthModal();
+        }
+
+        function closeModal() {
+            modalManager.closeModal();
+        }
+
+        function changeLanguage(langCode) {
+            languageManager.changeLanguage(langCode);
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('app').classList.remove('opacity-0');
+            }, 1000);
+
+            // Initialize language manager first
+            languageManager.init();
+
+            formManager.populateStateDropdown();
+            formManager.setupEventListeners();
+            authManager.checkLoginStatus();
+
+            // Add language selector to navigation
+            languageManager.addLanguageSelector();
+        });
+    </script>
+</body>
+
+</html>
