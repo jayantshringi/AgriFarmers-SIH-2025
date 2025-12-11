@@ -10,7 +10,7 @@ Pros and Cons of the Agrifarmers Platform
 
 Pros
 
-1. Multi-Language Support
+**1. Multi-Language Support**
 
 • Supports Hindi, English, and Punjabi
 
@@ -18,7 +18,7 @@ Pros
 
 • Translations stored and managed via structured JSON
 
-3. Mobile Responsive Design
+**2. Mobile Responsive Design**
 
 • Works seamlessly across all screen sizes
 
@@ -26,7 +26,7 @@ Pros
 
 • Adaptive layouts for tablets and desktops
 
-4. User-Friendly Interface
+**3. User-Friendly Interface**
 
 • Clean and intuitive navigation
 
@@ -36,7 +36,7 @@ Pros
 
 • Loading indicators and feedback mechanisms
 
-5. Comprehensive Features
+**4. Comprehensive Features**
 
 • Weather forecasting
 
@@ -50,7 +50,7 @@ Pros
 
 • Soil health advice
 
-6. Localization
+**5. Localization**
 
 • State and district selection
 
@@ -58,7 +58,7 @@ Pros
 
 • Local market price information
 
-7. Technical Implementation
+**6. Technical Implementation**
 
 • Clean separation of HTML, CSS, JS
 
@@ -71,7 +71,7 @@ Pros
 ________________________________________
 Cons
 
-1. No Backend Integration
+**1. No Backend Integration**
 
 • Relies on localStorage
 
@@ -81,7 +81,7 @@ Cons
 
 • Market prices not real-time
 
-2. Limited Crop Database
+**2. Limited Crop Database**
 
 • Hardcoded data for few regions
 
@@ -89,7 +89,7 @@ Cons
 
 • Missing pest/disease advisory
 
-3. Basic Authentication
+**3. Basic Authentication**
 
 • Simple mobile-based login
 
@@ -97,7 +97,7 @@ Cons
 
 • No account recovery
 
-5. Performance Constraints
+**4. Performance Constraints**
 
 • Large consolidated JavaScript file
 
@@ -107,7 +107,7 @@ Cons
 
 • Relies on CDN dependencies
 
-6. Accessibility Gaps
+**5. Accessibility Gaps**
 
 • Limited screen reader support
 
@@ -120,7 +120,7 @@ Cons
 ________________________________________
 Scalability Issues
 
-Current Limitations:
+**Current Limitations:**
 
 • Not optimized for large user base
 
@@ -130,7 +130,7 @@ Current Limitations:
 
 • No load balancing considerations
 
-Future Challenges:
+**Future Challenges:**
 
 • Adding languages requires manual edits
 
