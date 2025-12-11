@@ -1,0 +1,280 @@
+/* CSS Variables - Keeping our brand colors consistent */
+:root {
+    --primary-green: #138808;      /* Indian green */
+    --primary-saffron: #FF9933;    /* Saffron for accents */
+    --text-dark: #1f2937;
+    --text-light: #f9fafb;
+    --bg-light: #f9fafb;
+    --card-light: #ffffff;
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Base styles */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+/* Page transitions - smooth loading */
+.page {
+    display: none;
+    animation: fadeIn 0.5s ease-in-out;
+    min-height: calc(100vh - 200px);
+}
+
+.page.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading spinner */
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(19, 136, 8, 0.2);
+    border-radius: 50%;
+    border-top-color: var(--primary-green);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Chart container - responsive */
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 250px;
+    max-height: 40vh;
+}
+
+@media (min-width: 768px) {
+    .chart-container {
+        height: 350px;
+    }
+}
+
+/* Form validation styles */
+.error-message {
+    color: #e53e3e;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.input-error {
+    border-color: #e53e3e !important;
+}
+
+/* Toast notifications */
+.toast {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 6px;
+    color: white;
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(150%);
+    transition: transform 0.3s ease;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast.success {
+    background-color: #38a169;
+}
+
+.toast.error {
+    background-color: #e53e3e;
+}
+
+.toast.info {
+    background-color: #3182ce;
+}
+
+/* Language selector dropdown */
+.language-selector {
+    position: relative;
+    display: inline-block;
+}
+
+.language-selector button {
+    background: none;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.language-selector button:hover {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.language-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: var(--shadow-lg);
+    border-radius: 6px;
+    z-index: 100;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.language-selector.active .language-dropdown {
+    display: block;
+}
+
+.language-option {
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+    border: none;
+    width: 100%;
+    background: none;
+    text-align: left;
+}
+
+.language-option:hover {
+    background-color: #f3f4f6;
+}
+
+.language-flag {
+    width: 20px;
+    height: 15px;
+    margin-right: 10px;
+    border-radius: 2px;
+}
+
+/* Footer specific */
+footer {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+/* Dashboard cards */
+.dashboard-card {
+    background-color: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-green);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .page {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 2rem !important;
+    }
+    
+    h2 {
+        font-size: 1.75rem !important;
+    }
+    
+    .dashboard-card {
+        padding: 1rem;
+    }
+    
+    .language-selector button {
+        padding: 6px 10px;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid {
+        gap: 1rem;
+    }
+    
+    .welcome-banner {
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Modal responsiveness */
+@media (max-width: 640px) {
+    #modal-container > div {
+        width: 95% !important;
+        max-height: 90vh !important;
+        margin: 1rem;
+    }
+}
+
+/* Form responsiveness */
+@media (max-width: 640px) {
+    .form-container {
+        padding: 1rem;
+    }
+    
+    input, select, button {
+        font-size: 16px !important; /* Prevent zoom on iOS */
+    }
+}
