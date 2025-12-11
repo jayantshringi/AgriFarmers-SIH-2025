@@ -59,12 +59,16 @@ Cons
 • Limited keyboard navigation
 ________________________________________
 Scalability Issues
+
 Current Limitations:
+
 • Not optimized for large user base
 • No database integration
 • No caching layers
 • No load balancing considerations
+
 Future Challenges:
+
 • Adding languages requires manual edits
 • Expanding states/districts requires JS updates
 • Feature additions require manual integration
