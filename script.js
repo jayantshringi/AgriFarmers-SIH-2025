@@ -25,7 +25,7 @@ const CONFIG = {
 const translations = {
     en: {
         // Welcome Page
-        welcome_title: "Welcome to <span class='text-[var(--primary-green)]'>Agrifarmers</span>",
+        welcome_title: "<span class='text-[var(--primary-green)]'> Welcome to  Agrifarmers</span>",
         welcome_subtitle: "Your trusted companion for modern farming. Get personalized advice on seeds, fertilizers, and weather to boost your yield.",
         get_started_button: "Get Started",
         login_button: "Login",
