@@ -1,4 +1,9 @@
-# AgriFarmers-SIH-2025
+**📜 License**
+
+**This project is currently for SIH 2025 prototype use, not for commercial deployment.**
+ 
+ 
+ AgriFarmers-SIH-2025
 AgriFarmers SIH 2025 - Revolutionizing Indian agriculture through technology. A multi-lingual platform providing farmers with 🌱 Multi-language support • Weather analytics • Seed recommendations 💻 HTML5, CSS3, JavaScript, Tailwind CSS Empowering farmers with data-driven decisions for better yields.
 ________________________________________
 Pros and Cons of the Agrifarmers Platform
@@ -63,14 +68,19 @@ Scalability Issues
 Current Limitations:
 
 • Not optimized for large user base
+
 • No database integration
+
 • No caching layers
+
 • No load balancing considerations
 
 Future Challenges:
 
 • Adding languages requires manual edits
+
 • Expanding states/districts requires JS updates
+
 • Feature additions require manual integration
 
 
