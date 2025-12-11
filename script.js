@@ -449,21 +449,14 @@ const LanguageManager = {
             if (translation) {
                 if (el.tagName === 'INPUT' || el.tagName === 'SELECT') {
                     el.placeholder = translation;
-                } else if (el.hasAttribute('data-html')) {
-                    el.innerHTML = translation;
                 } else {
-                    el.textContent = translation;
+                    // Check if translation contains HTML tags
+                    if (translation.includes('<') && translation.includes('>')) {
+                        el.innerHTML = translation;
+                    } else {
+                        el.textContent = translation;
+                    }
                 }
-            }
-        });
-        
-        // Update HTML content with innerHTML
-        const htmlElements = document.querySelectorAll('[data-translate][data-html]');
-        htmlElements.forEach(el => {
-            const key = el.getAttribute('data-translate');
-            const translation = translations[appState.currentLanguage]?.[key];
-            if (translation) {
-                el.innerHTML = translation;
             }
         });
         
