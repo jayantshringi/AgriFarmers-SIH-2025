@@ -2,7 +2,41 @@
  * Agrifarmers Application Script
  * Version: 2.5.0 - Web Edition
  */
-
+// ============================================
+// PWA SERVICE WORKER REGISTRATION (GitHub Pages Compatible)
+// ============================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    // Use relative path for GitHub Pages
+    const swUrl = './service-worker.js';
+    
+    navigator.serviceWorker.register(swUrl)
+      .then(registration => {
+        console.log('✅ Service Worker registered:', registration);
+        
+        // Check for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('🔄 New service worker found:', newWorker.state);
+          
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('📦 New content available!');
+              // You can show an update notification here
+            }
+          });
+        });
+      })
+      .catch(error => {
+        console.log('❌ Service Worker registration failed:', error);
+      });
+    
+    // Listen for messages from service worker
+    navigator.serviceWorker.addEventListener('message', event => {
+      console.log('📨 Message from Service Worker:', event.data);
+    });
+  });
+}
 // ============================================
 // CONFIGURATION
 // ============================================
