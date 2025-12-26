@@ -1,0 +1,7 @@
+
+    :root{--primary-green:#138808;--primary-saffron:#FF9933}
+    body{font-family:'Inter',sans-serif}
+    .page{display:none}.page.active{display:flex}
+    .loader{border:5px solid rgba(19,136,8,0.2);border-radius:50%;border-top-color:#138808;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    

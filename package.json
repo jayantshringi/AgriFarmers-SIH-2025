@@ -1,0 +1,14 @@
+{
+  "name": "agrifarmers-pwa",
+  "version": "3.0.0",
+  "description": "Lightweight farming assistant PWA",
+  "scripts": {
+    "build": "node build.js",
+    "start": "http-server -p 8080 -c-1"
+  },
+  "devDependencies": {
+    "terser": "^5.0.0",
+    "clean-css": "^5.0.0",
+    "http-server": "^14.0.0"
+  }
+}

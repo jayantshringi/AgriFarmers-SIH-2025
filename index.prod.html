@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Farming assistant for Indian farmers">
+    
+    <title data-translate="app_title">Agrifarmers - Your Farming Companion</title>
+    
+    <!-- External dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Local fallback -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
+    
+    <style>
+    :root{--primary-green:#138808;--primary-saffron:#FF9933}
+    body{font-family:'Inter',sans-serif}
+    .page{display:none}.page.active{display:flex}
+    .loader{border:5px solid rgba(19,136,8,0.2);border-radius:50%;border-top-color:#138808;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    </style>
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="style.min.css">
+    
+    <!-- Critical CSS - Inline for faster load -->
+    <style>
+        :root{--primary-green:#138808;--primary-saffron:#FF9933}
+        body{font-family:'Inter',sans-serif;background-color:#f9fafb}
+        .page{display:none}.page.active{display:flex}
+        .loader{border:5px solid rgba(19,136,8,0.2);border-radius:50%;border-top-color:#138808;animation:spin 1s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .toast{position:fixed;top:100px;right:20px;padding:12px 20px;border-radius:6px;color:white;z-index:1000;transform:translateX(150%);transition:transform 0.3s ease}
+        .toast.show{transform:translateX(0)}
+        
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <!-- Network status indicator -->
+    <div id="network-status" class="fixed top-16 left-0 right-0 z-40 text-center p-2 text-sm font-medium hidden"></div>
+    
+    <!-- Loading screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-white z-[100] flex flex-col justify-center items-center">
+        <div class="loader"></div>
+        <h2 class="text-2xl font-bold text-gray-800 mt-4">Agrifarmers</h2>
+        <p class="text-gray-600" data-translate="loading_message">Loading your farming assistant...</p>
+        <div id="loading-progress" class="mt-4 text-sm text-gray-500">Checking connectivity...</div>
+    </div>
+
+    <!-- Main app container -->
+    <div id="app" class="opacity-0 transition-opacity duration-500 flex-grow">
+        <!-- Header with navigation -->
+        <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
+            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <!-- Logo -->
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-2xl font-bold text-[var(--primary-green)]">🌱 <span data-translate="app_name">Agrifarmers</span></span>
+                        </div>
+                        <!-- Offline indicator -->
+                        <div id="offline-indicator" class="ml-2 hidden">
+                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded" data-translate="offline_label">Offline</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Desktop navigation -->
+                    <div class="hidden md:block">
+                        <div class="ml-4 flex items-center md:ml-6">
+                            <!-- Desktop Language Selector -->
+                            <div class="language-selector mr-4">
+                                <button id="desktop-language-btn" class="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                    <i class="fas fa-globe mr-1"></i>
+                                    <span id="current-language-desktop">EN</span>
+                                    <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                                </button>
+                                <div class="language-dropdown">
+                                    <div class="language-option" data-lang="en">
+                                        <div class="language-flag bg-blue-600"></div>
+                                        <span>English</span>
+                                    </div>
+                                    <div class="language-option" data-lang="hi">
+                                        <div class="language-flag bg-green-600"></div>
+                                        <span>हिन्दी</span>
+                                    </div>
+                                    <div class="language-option" data-lang="pa">
+                                        <div class="language-flag bg-yellow-500"></div>
+                                        <span>ਪੰਜਾਬੀ</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- User actions will be populated by JS -->
+                            <div id="nav-actions"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile menu button -->
+                    <div class="flex items-center md:hidden">
+                        <!-- Mobile Language Selector -->
+                        <div class="language-selector mr-4">
+                            <button id="mobile-language-btn" class="flex items-center text-gray-700 hover:text-gray-900">
+                                <i class="fas fa-globe mr-1"></i>
+                                <span id="current-language">EN</span>
+                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                            </button>
+                            <div class="language-dropdown">
+                                <div class="language-option" data-lang="en">
+                                    <div class="language-flag bg-blue-600"></div>
+                                    <span>English</span>
+                                </div>
+                                <div class="language-option" data-lang="hi">
+                                    <div class="language-flag bg-green-600"></div>
+                                    <span>हिन्दी</span>
+                                </div>
+                                <div class="language-option" data-lang="pa">
+                                    <div class="language-flag bg-yellow-500"></div>
+                                    <span>ਪੰਜਾਬੀ</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hamburger menu -->
+                        <button id="mobile-menu-button" type="button"
+                            class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500"
+                            aria-controls="mobile-menu" aria-expanded="false">
+                            <span class="sr-only" data-translate="open_menu">Open main menu</span>
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Mobile menu -->
+            <div class="md:hidden hidden" id="mobile-menu">
+                <div id="mobile-nav-actions" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <!-- Mobile navigation will be populated by JS -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content area -->
+        <main class="pt-16">
+            <!-- Welcome page -->
+            <div id="welcomePage" class="page active flex-col justify-center items-center p-4">
+                <div class="container mx-auto">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden md:flex">
+                        <div class="p-8 md:p-12 lg:p-16 flex-1 flex flex-col justify-center text-center md:text-left">
+                            <h1 class="text-4xl md:text-5xl font-bold text-gray-800" data-translate="welcome_title">
+                                Welcome to Agrifarmers
+                            </h1>
+                            <p class="mt-4 text-lg text-gray-600" data-translate="welcome_subtitle">
+                                Your trusted companion for modern farming. Get personalized advice on seeds, fertilizers, and weather to boost your yield.
+                            </p>
+                            <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                                <button onclick="showPage('signUpPage')"
+                                    class="w-full sm:w-auto bg-[var(--primary-green)] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300"
+                                    data-translate="get_started_button">
+                                    Get Started
+                                </button>
+                                <button onclick="showPage('loginPage')"
+                                    class="w-full sm:w-auto bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors"
+                                    data-translate="login_button">
+                                    Login
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex-1 hidden md:block">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%23f0f9f0'/%3E%3Ctext x='50%25' y='50%25' font-family='Inter' font-size='24' text-anchor='middle' fill='%23138808'%3E🌱 Farming Assistant%3C/text%3E%3C/svg%3E"
+                                data-src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                                alt="Farmer in a field" class="w-full h-full object-cover lazy-image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login page -->
+            <div id="loginPage" class="page flex-col justify-center items-center p-4">
+                <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-6" data-translate="login_title">
+                        Welcome Back
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="loginMobile" class="block text-sm font-medium text-gray-700" data-translate="mobile_number_label">
+                                Mobile Number
+                            </label>
+                            <input type="tel" id="loginMobile"
+                                class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                placeholder="Enter 10-digit mobile number" maxlength="10" data-translate="mobile_placeholder">
+                            <div id="loginMobileError" class="error-message" data-translate="mobile_error">
+                                Please enter a valid 10-digit mobile number
+                            </div>
+                        </div>
+                        <button onclick="handleLogin()"
+                            class="w-full bg-[var(--primary-green)] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
+                            data-translate="login_button">
+                            Login
+                        </button>
+                    </div>
+                    <p class="text-center mt-6 text-sm text-gray-600">
+                        <span data-translate="no_account_text">New here?</span> 
+                        <button onclick="showPage('signUpPage')"
+                            class="font-medium text-[var(--primary-green)] hover:underline ml-1"
+                            data-translate="signup_link">
+                            Create account
+                        </button>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Signup page -->
+            <div id="signUpPage" class="page flex-col justify-center items-center p-4">
+                <div class="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-6" data-translate="signup_title">
+                        Join Agrifarmers
+                    </h2>
+                    <div class="space-y-4">
+                        <!-- Name field -->
+                        <div>
+                            <label for="signUpName" class="block text-sm font-medium text-gray-700" data-translate="full_name_label">
+                                Full Name
+                            </label>
+                            <input type="text" id="signUpName"
+                                class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                placeholder="Your Name" data-translate="name_placeholder">
+                            <div id="signUpNameError" class="error-message" data-translate="name_error">
+                                Please enter your full name
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile field -->
+                        <div>
+                            <label for="signUpMobile" class="block text-sm font-medium text-gray-700" data-translate="mobile_number_label">
+                                Mobile Number
+                            </label>
+                            <input type="tel" id="signUpMobile"
+                                class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                placeholder="10-digit mobile number" maxlength="10" data-translate="mobile_placeholder">
+                            <div id="signUpMobileError" class="error-message" data-translate="mobile_error">
+                                Please enter a valid 10-digit mobile number
+                            </div>
+                        </div>
+                        
+                        <!-- Location fields -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="signUpState" class="block text-sm font-medium text-gray-700" data-translate="state_label">
+                                    State
+                                </label>
+                                <select id="signUpState"
+                                    class="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
+                                    <option value="" data-translate="select_state">Select State</option>
+                                </select>
+                                <div id="signUpStateError" class="error-message" data-translate="state_error">
+                                    Please select your state
+                                </div>
+                            </div>
+                            <div>
+                                <label for="signUpDistrict" class="block text-sm font-medium text-gray-700" data-translate="district_label">
+                                    District
+                                </label>
+                                <select id="signUpDistrict"
+                                    class="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
+                                    <option value="" data-translate="select_district">Select District</option>
+                                </select>
+                                <div id="signUpDistrictError" class="error-message" data-translate="district_error">
+                                    Please select your district
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit button -->
+                        <button onclick="handleSignUp()"
+                            class="w-full bg-[var(--primary-green)] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors mt-4"
+                            data-translate="signup_button">
+                            Create Account
+                        </button>
+                    </div>
+                    <p class="text-center mt-6 text-sm text-gray-600">
+                        <span data-translate="have_account_text">Already have an account?</span> 
+                        <button onclick="showPage('loginPage')"
+                            class="font-medium text-[var(--primary-green)] hover:underline ml-1"
+                            data-translate="login_link">
+                            Sign in
+                        </button>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Home/Dashboard page -->
+            <div id="homePage" class="page flex-col items-center p-4 sm:p-6 lg:p-8">
+                <div class="container mx-auto">
+                    <!-- Welcome banner -->
+                    <div id="welcome-banner"
+                        class="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-md mb-8 shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-semibold">
+                                    <span data-translate="welcome_text">Hello</span>, 
+                                    <span id="farmerName"></span>!
+                                </p>
+                                <p>
+                                    <span data-translate="personalized_dashboard">Your personalized dashboard for</span> 
+                                    <span id="farmerLocation"></span>.
+                                </p>
+                                <div id="offline-mode-banner" class="mt-2 text-sm text-yellow-700 hidden">
+                                    <i class="fas fa-wifi-slash mr-1"></i> <span data-translate="offline_mode">Offline Mode - Some data may be cached</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard cards grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Weather card -->
+                        <div class="dashboard-card" onclick="openWeatherModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-cloud-sun-rain text-4xl text-[var(--primary-saffron)]"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="weather_info">
+                                        Weather Forecast
+                                    </h3>
+                                    <p class="text-gray-600" data-translate="weather_subtitle">
+                                        Today's weather & 7-day forecast
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-xs text-gray-500" id="weather-cache-status"></div>
+                        </div>
+
+                        <!-- Seed advice card -->
+                        <div class="dashboard-card" onclick="openSeedModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-seedling text-4xl text-green-600"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="seed_advice">
+                                        Seed Recommendations
+                                    </h3>
+                                    <p class="text-gray-600" data-translate="seed_subtitle">
+                                        Best seeds for your region
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fertilizer card -->
+                        <div class="dashboard-card" onclick="openFertilizerModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-flask text-4xl text-blue-500"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="fertilizer_guide">
+                                        Fertilizer Guide
+                                    </h3>
+                                    <p class="text-gray-600" data-translate="fertilizer_subtitle">
+                                        Nutrients for your crops
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Crop calendar card -->
+                        <div class="dashboard-card" onclick="openCropCalendarModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt text-4xl text-purple-500"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="crop_calendar">
+                                        Crop Calendar
+                                    </h3>
+                                    <p class="text-gray-600" data-translate="crop_subtitle">
+                                        Seasonal planting guide
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Market prices card -->
+                        <div class="dashboard-card" onclick="openMarketPricesModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-chart-line text-4xl text-yellow-600"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="market_prices">
+                                        Market Prices
+                                    </h3>
+                                    <p class="text-gray-600" data-translate="market_subtitle">
+                                        Current crop prices
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Soil health card -->
+                        <div class="dashboard-card" onclick="openSoilHealthModal()">
+                            <div class="flex items-center">
+                                <i class="fas fa-vial text-4xl text-red-500"></i>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-gray-800" data-translate="soil_health">
+                                        Soil Health
+                                    </h3>
+                                    <p class="text-gray-600" data-translate="soil_subtitle">
+                                        Soil testing guidance
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-auto">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Company info -->
+                <div>
+                    <h3 class="text-xl font-bold text-[var(--primary-green)] mb-4" data-translate="footer_agrifarmers">
+                        Agrifarmers
+                    </h3>
+                    <p class="text-gray-300 mb-4" data-translate="footer_description">
+                        Empowering Indian farmers with technology and knowledge for better yields and sustainable farming.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick links -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4" data-translate="footer_quick_links">
+                        Quick Links
+                    </h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="footer_home">Home</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="footer_about">About Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="footer_services">Services</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="footer_contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4" data-translate="footer_services">
+                        Our Services
+                    </h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="weather_info">Weather Forecast</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="seed_advice">Seed Advice</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="fertilizer_guide">Fertilizer Guide</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="market_prices">Market Prices</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact info -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4" data-translate="footer_contact">
+                        Contact Us
+                    </h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-[var(--primary-green)]"></i>
+                            <span class="text-gray-300" data-translate="footer_address">
+                                123 Agriculture Street, Farming District, India
+                            </span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2 text-[var(--primary-green)]"></i>
+                            <span class="text-gray-300">+91 701xxxxxxx</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-[var(--primary-green)]"></i>
+                            <span class="text-gray-300">help@agrifarmers.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm" data-translate="footer_copyright">
+                    © 2025 Agrifarmers. All rights reserved.
+                </p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm" data-translate="footer_privacy">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm" data-translate="footer_terms">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm" data-translate="footer_sitemap">Sitemap</a>
+                </div>
+            </div>
+            
+             </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal container -->
+    <div id="modal-container"
+        class="fixed inset-0 bg-black bg-opacity-50 z-[60] flex justify-center items-center p-4 hidden">
+        <!-- Modal content goes here -->
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <!-- Local JavaScript -->
+    <script src="script.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+{
+  "name": "Agrifarmers - Farming Assistant",
+  "short_name": "Agrifarmers",
+  "description": "Your trusted companion for modern farming. Works offline!",
+  "start_url": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "background_color": "#f9fafb",
+  "theme_color": "#138808",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["lifestyle", "productivity", "education"],
+  "dir": "ltr",
+  "lang": "en",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Weather Forecast",
+      "short_name": "Weather",
+      "description": "Check today's weather",
+      "url": "/#weather",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Crop Calendar",
+      "short_name": "Calendar",
+      "description": "View planting schedule",
+      "url": "/#calendar",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
+    }
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
