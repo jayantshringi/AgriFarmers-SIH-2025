@@ -127,74 +127,41 @@
             transform: translateY(-2px);
         }
         
-        /* Offline Page */
-        .offline-container {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* Language Dropdown */
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
             right: 0;
-            bottom: 0;
+            min-width: 140px;
             background: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            margin-top: 5px;
         }
         
-        /* Location Modal */
-        .location-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .location-modal {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 400px;
-            width: 100%;
-        }
-        
-        /* Weather Loading */
-        .weather-loading {
+        .language-option {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 8px 12px;
+            width: 100%;
+            text-align: left;
+            background: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
         }
         
-        /* Footer */
-        .footer {
-            background: linear-gradient(to right, #1a5f23, #138808);
-            color: white;
-            padding: 40px 20px;
-            margin-top: 40px;
+        .language-option:hover {
+            background: #f3f4f6;
         }
         
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 30px auto 0;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            text-align: center;
+        .language-option.active {
+            background: #d1fae5;
+            color: #065f46;
         }
         
         /* Responsive */
@@ -219,33 +186,38 @@
     <!-- Loading Screen -->
     <div id="loadingScreen">
         <div class="spinner rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-        <p class="text-gray-600 text-lg" data-translate="loading">Loading your farming assistant...</p>
+        <p class="text-gray-600 text-lg">Loading your farming assistant...</p>
         <p id="connectivity-status" class="text-sm text-gray-500 mt-2">Checking connectivity...</p>
-    </div>
-
-    <!-- Offline Page -->
-    <div id="offlinePage" class="offline-container hidden">
-        <div class="text-center max-w-md mx-auto">
-            <i class="fas fa-wifi-slash text-gray-400 text-6xl mb-6"></i>
-            <h1 class="text-2xl font-bold text-gray-800 mb-4">You're Offline</h1>
-            <p class="text-gray-600 mb-6">Please check your internet connection and try again.</p>
-            <button onclick="window.location.reload()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg">
-                <i class="fas fa-redo mr-2"></i>Retry
-            </button>
-        </div>
     </div>
 
     <!-- App Container -->
     <div id="app" class="min-h-screen hidden">
-        <!-- Navigation -->
+        <!-- Clean Header -->
         <nav class="bg-white shadow-md">
             <div class="container mx-auto px-4 py-3">
                 <div class="flex justify-between items-center">
+                    <!-- Logo -->
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-seedling text-green-600 text-2xl"></i>
                         <span class="text-xl font-bold text-gray-800">AgriFarmers</span>
                     </div>
-                    <div id="nav-actions"></div>
+                    
+                    <!-- User Actions -->
+                    <div class="flex items-center space-x-4" id="headerActions">
+                        <!-- Language Selector -->
+                        <div class="relative" id="languageSelector">
+                            <button id="languageButton" class="flex items-center space-x-2 text-gray-700 hover:text-green-600">
+                                <i class="fas fa-globe"></i>
+                                <span id="currentLanguage">English</span>
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Logout Button -->
+                        <button id="logoutButton" class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg text-sm hidden">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -256,31 +228,171 @@
             <div id="welcomePage" class="page active">
                 <div class="max-w-4xl mx-auto text-center py-12">
                     <i class="fas fa-seedling text-green-600 text-6xl mb-6"></i>
-                    <h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome to AgriFarmers</h1>
-                    <p class="text-xl text-gray-600 mb-8">Your trusted companion for modern farming.</p>
+                    <h1 class="text-4xl font-bold text-gray-800 mb-4" data-i18n="welcome_title">Welcome to AgriFarmers</h1>
+                    <p class="text-xl text-gray-600 mb-8" data-i18n="welcome_subtitle">Your trusted companion for modern farming.</p>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <i class="fas fa-location-dot text-green-500 text-3xl mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2">Smart Location</h3>
-                            <p class="text-gray-600">Get location-based weather and farming advice.</p>
+                            <h3 class="font-bold text-lg mb-2" data-i18n="smart_location">Smart Location</h3>
+                            <p class="text-gray-600" data-i18n="location_desc">Get location-based weather and farming advice.</p>
                         </div>
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <i class="fas fa-cloud-sun text-blue-500 text-3xl mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2">Live Weather</h3>
-                            <p class="text-gray-600">Accurate weather forecasts and farming alerts.</p>
+                            <h3 class="font-bold text-lg mb-2" data-i18n="live_weather">Live Weather</h3>
+                            <p class="text-gray-600" data-i18n="weather_desc">Accurate weather forecasts and farming alerts.</p>
                         </div>
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <i class="fas fa-chart-line text-purple-500 text-3xl mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2">Market Prices</h3>
-                            <p class="text-gray-600">Real-time crop prices and market trends.</p>
+                            <h3 class="font-bold text-lg mb-2" data-i18n="market_prices">Market Prices</h3>
+                            <p class="text-gray-600" data-i18n="market_desc">Real-time crop prices and market trends.</p>
                         </div>
                     </div>
                     
-                    <button onclick="showPage('homePage')" 
-                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg">
-                        <i class="fas fa-arrow-right mr-2"></i>Get Started
-                    </button>
+                    <div class="space-y-4">
+                        <button onclick="showPage('loginPage')" 
+                                class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg">
+                            <i class="fas fa-sign-in-alt mr-2"></i><span data-i18n="get_started">Get Started</span>
+                        </button>
+                        <p class="text-gray-600">
+                            <span data-i18n="no_account">Don't have an account?</span> 
+                            <button onclick="showPage('signUpPage')" class="text-green-600 font-medium hover:underline ml-1" data-i18n="sign_up">Sign Up</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Page -->
+            <div id="loginPage" class="page">
+                <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6" data-i18n="login_title">Login to AgriFarmers</h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 mb-2" data-i18n="mobile_number">Mobile Number</label>
+                            <input type="tel" id="loginMobile" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                   placeholder="Enter 10-digit mobile number"
+                                   maxlength="10"
+                                   data-i18n-placeholder="enter_mobile">
+                            <div id="loginMobileError" class="text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                        
+                        <button onclick="handleLogin()" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
+                            <i class="fas fa-sign-in-alt mr-2"></i><span data-i18n="send_otp">Send OTP</span>
+                        </button>
+                        
+                        <p class="text-center text-gray-600">
+                            <span data-i18n="no_account">Don't have an account?</span> 
+                            <button onclick="showPage('signUpPage')" class="text-green-600 font-medium hover:underline ml-1" data-i18n="sign_up">Sign Up</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sign Up Page -->
+            <div id="signUpPage" class="page">
+                <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6" data-i18n="signup_title">Create Account</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2" data-i18n="full_name">Full Name</label>
+                            <input type="text" id="signUpName"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                   placeholder="Enter your full name"
+                                   data-i18n-placeholder="enter_name">
+                            <div id="signUpNameError" class="text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2" data-i18n="mobile_number">Mobile Number</label>
+                            <input type="tel" id="signUpMobile"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                   placeholder="Enter 10-digit mobile number"
+                                   maxlength="10"
+                                   data-i18n-placeholder="enter_mobile">
+                            <div id="signUpMobileError" class="text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2" data-i18n="state">State</label>
+                            <select id="signUpState" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                <option value="" data-i18n="select_state">Select State</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                            </select>
+                            <div id="signUpStateError" class="text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2" data-i18n="district">District</label>
+                            <select id="signUpDistrict" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                    disabled>
+                                <option value="" data-i18n="select_district">Select District</option>
+                            </select>
+                            <div id="signUpDistrictError" class="text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                        
+                        <button onclick="handleSignUp()" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mt-4">
+                            <i class="fas fa-user-plus mr-2"></i><span data-i18n="sign_up">Sign Up</span>
+                        </button>
+                        
+                        <p class="text-center text-gray-600">
+                            <span data-i18n="have_account">Already have an account?</span> 
+                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline ml-1" data-i18n="login">Login</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTP Page -->
+            <div id="otpPage" class="page">
+                <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2" data-i18n="otp_title">OTP Verification</h2>
+                    <p class="text-gray-600 mb-6" data-i18n="otp_sent">OTP sent to</p>
+                    <p class="text-lg font-medium text-green-600 mb-6" id="otpPhoneNumber">+91 XXXXXXXX</p>
+                    
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="flex justify-center mb-4" id="otpContainer">
+                                <!-- OTP inputs will be generated here -->
+                            </div>
+                            <p class="text-sm text-gray-500 mb-2" data-i18n="demo_otp">Demo OTP: <span id="demoOTP" class="font-bold text-green-600">123456</span></p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-4">
+                                <span data-i18n="otp_timer">OTP valid for</span> 
+                                <span id="otpTimer" class="font-bold text-red-600">02:00</span> 
+                                <span data-i18n="minutes">minutes</span>
+                            </p>
+                            
+                            <button onclick="verifyOTP()" 
+                                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mb-3">
+                                <i class="fas fa-check-circle mr-2"></i><span data-i18n="verify_otp">Verify OTP</span>
+                            </button>
+                            
+                            <button id="resendOTP" onclick="resendOTP()" 
+                                    class="text-green-600 hover:text-green-800 font-medium text-sm">
+                                <i class="fas fa-redo mr-1"></i><span data-i18n="resend_otp">Resend OTP</span>
+                            </button>
+                        </div>
+                        
+                        <div class="text-center pt-4 border-t">
+                            <button onclick="showPage('loginPage')" 
+                                    class="text-gray-600 hover:text-gray-800 text-sm">
+                                <i class="fas fa-arrow-left mr-1"></i><span data-i18n="back_login">Back to Login</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -290,14 +402,15 @@
                 <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white mb-8">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h2 class="text-2xl font-bold mb-2">Hello Farmer</h2>
+                            <h2 class="text-2xl font-bold mb-2" data-i18n="hello">Hello</h2>
+                            <p class="opacity-90" id="farmerName">Farmer</p>
                             <div class="flex items-center mt-1">
                                 <i class="fas fa-location-dot text-xs mr-1"></i>
                                 <p class="text-sm opacity-80" id="farmerLocation">Fetching your location...</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm opacity-90">Today</p>
+                            <p class="text-sm opacity-90" data-i18n="today">Today</p>
                             <p class="text-xl font-bold" id="currentDate"></p>
                         </div>
                     </div>
@@ -305,7 +418,7 @@
                 
                 <!-- Dashboard -->
                 <div class="mb-8">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Your Farming Dashboard</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4" data-i18n="dashboard">Your Farming Dashboard</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- Weather Card -->
@@ -313,14 +426,14 @@
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-cloud-sun text-blue-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-lg">Weather Forecast</h4>
-                                    <p class="text-sm text-gray-600">Today's weather & forecast</p>
+                                    <h4 class="font-bold text-gray-800 mt-2 text-lg" data-i18n="weather_forecast">Weather Forecast</h4>
+                                    <p class="text-sm text-gray-600" data-i18n="weather_desc">Today's weather & forecast</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
                             <div id="weatherCardContent">
-                                <div class="weather-loading">
-                                    <i class="fas fa-spinner fa-spin text-blue-500"></i>
+                                <div class="flex items-center">
+                                    <i class="fas fa-spinner fa-spin text-blue-500 mr-2"></i>
                                     <span class="text-gray-600">Loading weather...</span>
                                 </div>
                             </div>
@@ -331,8 +444,8 @@
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-chart-line text-red-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-lg">Market Prices</h4>
-                                    <p class="text-sm text-gray-600">Current crop prices</p>
+                                    <h4 class="font-bold text-gray-800 mt-2 text-lg" data-i18n="market_prices">Market Prices</h4>
+                                    <p class="text-sm text-gray-600" data-i18n="market_desc">Current crop prices</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -348,8 +461,8 @@
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-seedling text-green-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-lg">Seed Recommendations</h4>
-                                    <p class="text-sm text-gray-600">Best seeds for your region</p>
+                                    <h4 class="font-bold text-gray-800 mt-2 text-lg" data-i18n="seed_recommendations">Seed Recommendations</h4>
+                                    <p class="text-sm text-gray-600" data-i18n="seed_desc">Best seeds for your region</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -362,36 +475,46 @@
                     </div>
                 </div>
                 
-                <!-- Weather Details -->
-                <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-                    <h4 class="font-bold text-gray-800 mb-4">Detailed Weather Information</h4>
-                    <div id="weatherDetails" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <!-- Weather details will be loaded here -->
+                <!-- Farming Advisory -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
+                    <div class="flex items-start">
+                        <i class="fas fa-lightbulb text-yellow-500 text-2xl mr-4 mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-gray-800 mb-2 text-lg" data-i18n="farming_tips">Today's Farming Tips</h4>
+                            <p class="text-gray-700" id="farmingAdvisory" data-i18n="default_tip">Good weather for farming activities. Ideal for irrigation and fertilization.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
        
         <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-container">
-                <div class="footer-section">
-                    <h3 class="text-xl font-bold mb-3">AgriFarmers</h3>
-                    <p class="opacity-90">Empowering farmers with smart agricultural solutions and real-time insights.</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 AgriFarmers. All rights reserved.</p>
+        <footer class="bg-green-800 text-white py-8">
+            <div class="container mx-auto px-4 text-center">
+                <p>&copy; 2024 AgriFarmers. <span data-i18n="rights_reserved">All rights reserved.</span></p>
             </div>
         </footer>
         
         <!-- PWA Install Button -->
         <button id="pwa-install-button" class="hidden">
-            <i class="fas fa-download"></i> Install App
+            <i class="fas fa-download"></i> <span data-i18n="install_app">Install App</span>
         </button>
         
         <!-- Toast Container -->
         <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+        
+        <!-- Language Dropdown -->
+        <div id="languageDropdown" class="language-dropdown hidden">
+            <button class="language-option" onclick="changeLanguage('en')">
+                <span>🇺🇸 English</span>
+            </button>
+            <button class="language-option" onclick="changeLanguage('hi')">
+                <span>🇮🇳 हिंदी</span>
+            </button>
+            <button class="language-option" onclick="changeLanguage('pa')">
+                <span>🇮🇳 ਪੰਜਾਬੀ</span>
+            </button>
+        </div>
     </div>
 
     <!-- Main Script -->
