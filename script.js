@@ -1701,7 +1701,7 @@ const OfflineCache = {
 OfflineCache.clearOldCache();
 
 // ============================================
-// NETWORK MANAGER (Simplified)
+// NETWORK MANAGER (Updated)
 // ============================================
 const NetworkManager = {
     isOnline: navigator.onLine,
@@ -1716,6 +1716,11 @@ const NetworkManager = {
             this.isOnline = true;
             this.updateNetworkStatus();
             showToast(translator.t('toast_online'), 'success');
+            
+            // Refresh weather when back online
+            if (ModalManager.currentModal === 'weatherModal') {
+                showWeatherModal();
+            }
         });
         
         window.addEventListener('offline', () => {
@@ -1735,7 +1740,7 @@ const NetworkManager = {
             if (offlineBanner) offlineBanner.classList.add('hidden');
             
             if (networkStatus) {
-                networkStatus.textContent = translator.t('online') || 'Online ✓';
+                networkStatus.textContent = 'Online ✓';
                 networkStatus.className = 'fixed top-16 left-0 right-0 z-40 text-center p-2 text-sm font-medium bg-green-500 text-white';
                 setTimeout(() => networkStatus.classList.add('hidden'), 2000);
             }
@@ -1744,20 +1749,16 @@ const NetworkManager = {
             if (offlineBanner) offlineBanner.classList.remove('hidden');
             
             if (networkStatus) {
-                networkStatus.textContent = translator.t('offline_limited') || 'Offline - Limited functionality';
+                networkStatus.textContent = 'Offline - Limited functionality';
                 networkStatus.className = 'fixed top-16 left-0 right-0 z-40 text-center p-2 text-sm font-medium bg-yellow-500 text-white';
             }
         }
+        
+        // Update the global app state
+        appState.isOfflineMode = !this.isOnline;
     }
 };
 
-async getWeatherData
-
-// District data (keep as is)
-const districtData = {
-    "Haryana": ["Ambala", "Bhiwani", "Charkhi Dadri", "Faridabad", "Fatehabad", "Gurugram", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mahendragarh", "Nuh", "Palwal", "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"],
-    "Punjab": ["Amritsar", "Barnala", "Bathinda", "Faridkot", "Fatehgarh Sahib", "Fazilka", "Ferozepur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Mansa", "Moga", "Mohali", "Muktsar", "Pathankot", "Patiala", "Rupnagar", "Sangrur", "Shaheed Bhagat Singh Nagar", "Tarn Taran"],
-};
 
 // ============================================
 // AUTHENTICATION FUNCTIONS (Keep existing)
