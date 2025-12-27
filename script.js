@@ -1,6 +1,6 @@
 /*
  * Agritarmers Application Script
- * Version: 5.0.0 - Complete Fix with Enhanced OTP & PWA
+ * Version: 5.1.0 - Fixed PWA Install Button
  */
 
 // ============================================
@@ -8,7 +8,7 @@
 // ============================================
 const CONFIG = {
     APP_NAME: 'Agritarmers',
-    VERSION: '5.0.0',
+    VERSION: '5.1.0',
     DEBUG_MODE: true,
 };
 
@@ -314,6 +314,8 @@ class TranslationSystem {
             important: "Important",
             invalid_input: "Invalid input",
             checking_connectivity: "Checking connectivity...",
+            install_app: "Install App",
+            install_app_desc: "Install Agritarmers as app for better experience",
         },
         hi: {
             app_title: "अग्रीफार्मर्स - आपका कृषि साथी",
@@ -434,6 +436,8 @@ class TranslationSystem {
             important: "महत्वपूर्ण",
             invalid_input: "अमान्य इनपुट",
             checking_connectivity: "कनेक्टिविटी जांच रहा है...",
+            install_app: "ऐप इंस्टॉल करें",
+            install_app_desc: "बेहतर अनुभव के लिए अग्रीफार्मर्स को ऐप के रूप में इंस्टॉल करें",
         },
         pa: {
             app_title: "ਅਗਰੀਟਾਰਮਰਸ - ਤੁਹਾਡਾ ਖੇਤੀ ਸਾਥੀ",
@@ -554,6 +558,8 @@ class TranslationSystem {
             important: "ਮਹੱਤਵਪੂਰਨ",
             invalid_input: "ਅਵੈਧ ਇਨਪੁਟ",
             checking_connectivity: "ਕਨੈਕਟੀਵਿਟੀ ਚੈੱਕ ਕਰ ਰਿਹਾ ਹੈ...",
+            install_app: "ਐਪ ਇੰਸਟਾਲ ਕਰੋ",
+            install_app_desc: "ਬਿਹਤਰ ਅਨੁਭਵ ਲਈ ਅਗਰੀਟਾਰਮਰਸ ਨੂੰ ਐਪ ਦੇ ਰੂਪ ਵਿੱਚ ਇੰਸਟਾਲ ਕਰੋ",
         }
     };
 }
@@ -777,7 +783,7 @@ function populateDistricts() {
 }
 
 // ============================================
-// ENHANCED OTP MANAGEMENT (FIXED)
+// ENHANCED OTP MANAGEMENT
 // ============================================
 const OTPManager = {
     generateOTP() {
@@ -958,7 +964,7 @@ const OTPManager = {
 };
 
 // ============================================
-// AUTHENTICATION FUNCTIONS (FIXED)
+// AUTHENTICATION FUNCTIONS
 // ============================================
 window.handleSignUp = function() {
     const name = document.getElementById('signUpName')?.value.trim() || '';
@@ -1413,7 +1419,7 @@ window.openSoilHealthModal = function() {
 window.closeModal = ModalManager.close;
 
 // ============================================
-// PWA INSTALLATION (FIXED)
+// PWA INSTALLATION (FIXED - Button will show)
 // ============================================
 const PwaManager = {
     deferredPrompt: null,
@@ -1429,13 +1435,17 @@ const PwaManager = {
         
         // Listen for beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
-            log('beforeinstallprompt event fired');
+            log('PWA Installation: beforeinstallprompt event fired');
             e.preventDefault();
             this.deferredPrompt = e;
-            this.showInstallButton();
+            
+            // Show button with delay to ensure DOM is ready
+            setTimeout(() => {
+                this.showInstallButton();
+            }, 1000);
             
             // Log for debugging
-            console.log('PWA can be installed');
+            console.log('✅ PWA can be installed - showing button');
         });
         
         // Listen for appinstalled event
@@ -1446,55 +1456,142 @@ const PwaManager = {
             showToast('App installed successfully!', 'success');
         });
         
-        // Check if already installed (in case event was missed)
-        setTimeout(() => {
-            if (this.isAppInstalled()) {
-                this.hideInstallButton();
-            }
-        }, 1000);
+        // Also try to detect if PWA can be installed
+        this.checkPwaCapability();
     },
     
     isAppInstalled() {
-        return window.matchMedia('(display-mode: standalone)').matches || 
-               window.navigator.standalone === true ||
-               localStorage.getItem('agritarmers_pwa_installed') === 'true';
+        const isInstalled = window.matchMedia('(display-mode: standalone)').matches || 
+                          window.navigator.standalone === true ||
+                          localStorage.getItem('agritarmers_pwa_installed') === 'true';
+        
+        log('PWA Installation check:', { isInstalled });
+        return isInstalled;
+    },
+    
+    checkPwaCapability() {
+        // Check if we're in a browser that supports PWA
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isChrome = /Chrome/.test(navigator.userAgent);
+        const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+        
+        log('Browser info:', { isMobile, isChrome, isSafari });
+        
+        // If we haven't gotten the beforeinstallprompt event but conditions are right,
+        // show the button anyway (user can still try to install)
+        if (isMobile && (isChrome || isSafari)) {
+            setTimeout(() => {
+                if (!this.isAppInstalled() && !this.deferredPrompt) {
+                    log('Showing PWA button based on browser detection');
+                    this.showInstallButton();
+                }
+            }, 2000);
+        }
     },
     
     showInstallButton() {
         const installButton = document.getElementById('pwa-install-button');
         if (installButton) {
             log('Showing PWA install button');
-            installButton.classList.remove('hidden');
-            installButton.classList.add('flex');
             
-            // Clear any existing event listeners
-            const newButton = installButton.cloneNode(true);
-            installButton.parentNode.replaceChild(newButton, installButton);
+            // Remove hidden class and make sure it's visible
+            installButton.classList.remove('hidden');
+            installButton.style.display = 'flex';
+            installButton.style.zIndex = '9999';
+            installButton.style.position = 'fixed';
+            installButton.style.bottom = '20px';
+            installButton.style.right = '20px';
             
             // Add click event listener
-            newButton.addEventListener('click', () => this.installApp());
+            installButton.onclick = (e) => {
+                e.preventDefault();
+                this.installApp();
+            };
             
-            // Show notification
+            // Add tooltip for desktop
+            installButton.title = translator.t('install_app_desc');
+            
+            // Show notification about PWA
             setTimeout(() => {
-                showToast('Install Agritarmers as an app for better experience!', 'info', 5000);
+                showToast(translator.t('install_app_desc'), 'info', 5000);
             }, 2000);
+            
+            log('PWA install button should now be visible');
         } else {
-            log('PWA install button not found in DOM');
+            log('❌ PWA install button not found in DOM');
+            console.error('PWA install button element with ID "pwa-install-button" not found');
+            
+            // Try to create button if it doesn't exist
+            this.createInstallButton();
         }
+    },
+    
+    createInstallButton() {
+        // Create button if it doesn't exist
+        const button = document.createElement('button');
+        button.id = 'pwa-install-button';
+        button.className = 'flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 animate-float hidden';
+        button.innerHTML = `
+            <i class="fas fa-download text-xl"></i>
+            <span class="ml-2 hidden md:inline">${translator.t('install_app')}</span>
+        `;
+        button.title = translator.t('install_app_desc');
+        
+        document.body.appendChild(button);
+        
+        button.onclick = (e) => {
+            e.preventDefault();
+            this.installApp();
+        };
+        
+        log('Created PWA install button');
+        this.showInstallButton();
     },
     
     hideInstallButton() {
         const installButton = document.getElementById('pwa-install-button');
         if (installButton) {
             installButton.classList.add('hidden');
-            installButton.classList.remove('flex');
+            installButton.style.display = 'none';
+            log('Hiding PWA install button');
         }
     },
     
     async installApp() {
         if (!this.deferredPrompt) {
-            log('No install prompt available');
-            showToast('Installation prompt not available. Try refreshing the page.', 'info');
+            log('No install prompt available, showing instructions');
+            
+            // Show instructions for manual installation
+            const content = `
+                <div class="space-y-4">
+                    <h4 class="font-bold text-lg">How to Install Agritarmers:</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">1</div>
+                            <div>
+                                <p class="font-medium">On Chrome/Edge (Desktop):</p>
+                                <p class="text-sm text-gray-600">Click the <span class="font-bold">•••</span> menu → "Install Agritarmers"</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">2</div>
+                            <div>
+                                <p class="font-medium">On Safari (iPhone/iPad):</p>
+                                <p class="text-sm text-gray-600">Tap <span class="font-bold">Share</span> → "Add to Home Screen"</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">3</div>
+                            <div>
+                                <p class="font-medium">On Chrome (Android):</p>
+                                <p class="text-sm text-gray-600">Tap <span class="font-bold">⋮</span> menu → "Install app"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            ModalManager.open('Install Agritarmers', content);
             return;
         }
         
@@ -1511,11 +1608,11 @@ const PwaManager = {
                 this.deferredPrompt = null;
             } else {
                 log('User dismissed the install prompt');
-                showToast('Installation cancelled. You can install later.', 'info');
+                showToast('Installation cancelled. You can install later from browser menu.', 'info');
             }
         } catch (error) {
             console.error('Installation error:', error);
-            showToast('Installation failed. Please try again.', 'error');
+            showToast('Installation failed. Try installing from browser menu.', 'error');
         }
     }
 };
@@ -1528,12 +1625,16 @@ function registerServiceWorker() {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('service-worker.js')
                 .then(registration => {
-                    console.log('Service Worker registered:', registration.scope);
+                    console.log('✅ Service Worker registered:', registration.scope);
+                    log('Service Worker registered successfully');
                 })
                 .catch(error => {
                     console.log('Service Worker registration failed:', error);
+                    log('Service Worker registration failed:', error);
                 });
         });
+    } else {
+        log('Service Worker not supported in this browser');
     }
 }
 
