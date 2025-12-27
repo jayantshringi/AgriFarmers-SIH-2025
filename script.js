@@ -1386,7 +1386,7 @@ const WeatherService = {
 };
 
 // ============================================
-// WEATHER MODULE (Translated)
+// WEATHER MODULE (Translated) - CLEAN VERSION
 // ============================================
 async function showWeatherModal() {
     // Show loading state
@@ -1394,7 +1394,6 @@ async function showWeatherModal() {
         <div class="text-center p-8">
             <div class="loader inline-block mb-4"></div>
             <p class="text-gray-600" data-translate="weather_loading">Loading weather data...</p>
-            <p class="text-sm text-gray-500 mt-2">${translator.t('checking_connectivity') || 'Checking connectivity...'}</p>
         </div>
     `;
     
@@ -1521,8 +1520,8 @@ async function showWeatherModal() {
                         </div>
                     </div>
                 </div>
-                
-               
+            </div>
+        `;
         
         // Update modal content
         const modalContent = document.querySelector('#weatherModal .overflow-y-auto');
@@ -1544,9 +1543,6 @@ async function showWeatherModal() {
                     <button onclick="showWeatherModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
                         ${translator.t('retry') || 'Retry'}
                     </button>
-                    <button onclick="debugWeatherAPI()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors">
-                        🔍 Debug API
-                    </button>
                     <button onclick="ModalManager.close()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
                         ${translator.t('close') || 'Close'}
                     </button>
@@ -1561,7 +1557,6 @@ async function showWeatherModal() {
         }
     }
 }
-
 // ============================================
 // OTHER MODULES (Translated)
 // ============================================
