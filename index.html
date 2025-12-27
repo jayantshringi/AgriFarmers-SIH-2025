@@ -8,8 +8,11 @@
     <!-- PWA Requirements -->
     <meta name="theme-color" content="#138808">
     <meta name="description" content="Your trusted companion for modern farming">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -40,6 +43,10 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
         
         /* OTP Input Styling */
         .otp-digit {
@@ -66,6 +73,132 @@
         .feature-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* PWA Install Button */
+        #pwa-install-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #138808, #0d6006);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(19, 136, 8, 0.3);
+            z-index: 9999;
+            transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        #pwa-install-button:hover {
+            background: linear-gradient(135deg, #0d6006, #084c04);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(19, 136, 8, 0.4);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(to right, #1a5f23, #138808);
+            color: white;
+            padding: 40px 20px;
+            margin-top: 40px;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-section h4 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding-bottom: 5px;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 30px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+        
+        .footer-legal {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .footer-legal a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+        }
+        
+        .footer-legal a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            #pwa-install-button {
+                bottom: 80px;
+                right: 15px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .footer-legal {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -257,7 +390,7 @@
                     
                     <div class="space-y-6">
                         <div class="text-center">
-                            <div class="flex justify-center mb-4">
+                            <div class="flex justify-center mb-4" id="otpContainer">
                                 <!-- OTP Inputs will be generated here -->
                             </div>
                             <p class="text-sm text-gray-500 mb-2">Demo: Your OTP is shown below</p>
@@ -421,62 +554,64 @@
                 </div>
             </div>
         </div>
-       <footer class="footer">
-        <div class="footer-container">
-            <!-- Brand & Description Section -->
-            <div class="footer-section">
-                <h3 class="footer-brand">Agritarmers</h3>
-                <p class="footer-description">
-                    Empowering farmers with smart agricultural solutions and real-time insights.
+       
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-container">
+                <!-- Brand & Description Section -->
+                <div class="footer-section">
+                    <h3 class="text-xl font-bold mb-3">AgriFarmers</h3>
+                    <p class="opacity-90">
+                        Empowering farmers with smart agricultural solutions and real-time insights.
+                    </p>
+                </div>
+
+                <!-- Quick Links Section -->
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="showPage('welcomePage'); return false;">Home</a></li>
+                        <li><a href="#" onclick="showPage('welcomePage'); return false;">About</a></li>
+                        <li><a href="#" onclick="openServicesModal(); return false;">Services</a></li>
+                        <li><a href="#" onclick="openContactModal(); return false;">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services Section -->
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="openWeatherModal(); return false;">Weather Forecast</a></li>
+                        <li><a href="#" onclick="openSeedModal(); return false;">Seed Recommendations</a></li>
+                        <li><a href="#" onclick="openFertilizerModal(); return false;">Fertilizer Guide</a></li>
+                        <li><a href="#" onclick="openMarketPricesModal(); return false;">Market Prices</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Section -->
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul class="footer-contact space-y-2">
+                        <li class="flex items-center gap-2"><i class="fas fa-map-marker-alt"></i> Noida, Uttar Pradesh</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-phone"></i> +91 1800-XXX-XXXX</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-envelope"></i> help@agrifarmers.com</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="footer-bottom">
+                <p class="copyright opacity-80">
+                    &copy; <span id="current-year">2024</span> AgriFarmers. All rights reserved.
                 </p>
+                <div class="footer-legal">
+                    <a href="#" onclick="openPrivacyModal(); return false;">Privacy Policy</a>
+                    <a href="#" onclick="openTermsModal(); return false;">Terms of Use</a>
+                    <a href="#" onclick="openSitemapModal(); return false;">Sitemap</a>
+                </div>
             </div>
-
-            <!-- Quick Links Section -->
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul class="footer-links">
-                    <li><a href="#" onclick="showPage('welcomePage')">Home</a></li>
-                    <li><a href="#" onclick="showPage('welcomePage')">About</a></li>
-                    <li><a href="#" onclick="openModal('services')">Services</a></li>
-                    <li><a href="#" onclick="openModal('contact')">Contact</a></li>
-                </ul>
-            </div>
-
-            <!-- Services Section -->
-            <div class="footer-section">
-                <h4>Services</h4>
-                <ul class="footer-links">
-                    <li><a href="#" onclick="openWeatherModal()">Weather Forecast</a></li>
-                    <li><a href="#" onclick="openSeedModal()">Seed Recommendations</a></li>
-                    <li><a href="#" onclick="openFertilizerModal()">Fertilizer Guide</a></li>
-                    <li><a href="#" onclick="openMarketPricesModal()">Market Prices</a></li>
-                </ul>
-            </div>
-
-            <!-- Contact Section -->
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <ul class="footer-contact">
-                    <li>📍 [Address to be added]</li>
-                    <li>📞 +91 701XXXXXXX</li>
-                    <li>✉️ help@agritarmers.com</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Bottom Bar -->
-        <div class="footer-bottom">
-            <p class="copyright">
-                &copy; <span id="current-year">2024</span> Agritarmers. All rights reserved.
-            </p>
-            <div class="footer-legal">
-                <a href="#" onclick="openModal('privacy')">Privacy Policy</a>
-                <a href="#" onclick="openModal('terms')">Terms of Use</a>
-                <a href="#" onclick="openModal('sitemap')">Sitemap  </a>
-            </div>
-        </div>
-    </footer>
-    
+        </footer>
+        
         <!-- Toast Container -->
         <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
 
@@ -489,14 +624,17 @@
 
     <!-- Scripts -->
     <script>
-        // Initialize global variables
-        window.appState = {
+        // ============================================
+        // GLOBAL STATE MANAGEMENT
+        // ============================================
+        const appState = {
             activeUser: null,
             tempUserData: null,
             lastGeneratedOTP: null,
             otpTimer: null,
             otpTimeLeft: 120,
-            deferredPrompt: null
+            deferredPrompt: null,
+            isAppInstalled: false
         };
 
         // District Data
@@ -506,8 +644,14 @@
             "Uttar Pradesh": ["Agra", "Aligarh", "Allahabad", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Azamgarh", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Faizabad", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kanshiram Nagar", "Kaushambi", "Kushinagar", "Lakhimpur Kheri", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Rae Bareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar", "Shahjahanpur", "Shamli", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi"]
         };
 
+        // ============================================
+        // CORE FUNCTIONS
+        // ============================================
+
         // Function to show page
         function showPage(pageId) {
+            console.log('Showing page:', pageId);
+            
             // Hide all pages
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
@@ -532,11 +676,11 @@
             const navActions = document.getElementById('nav-actions');
             const mobileNavActions = document.getElementById('mobile-nav-actions');
             
-            if (window.appState.activeUser) {
+            if (appState.activeUser) {
                 // User is logged in
                 const userHTML = `
                     <div class="flex items-center space-x-4">
-                        <span class="hidden md:inline text-gray-700">${window.appState.activeUser.name}</span>
+                        <span class="hidden md:inline text-gray-700">${appState.activeUser.name}</span>
                         <button onclick="handleLogout()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors">
                             Logout
                         </button>
@@ -545,7 +689,7 @@
                 
                 const mobileUserHTML = `
                     <div class="space-y-3">
-                        <div class="px-3 py-2 text-gray-700">${window.appState.activeUser.name}</div>
+                        <div class="px-3 py-2 text-gray-700">${appState.activeUser.name}</div>
                         <button onclick="handleLogout()" class="w-full text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">
                             Logout
                         </button>
@@ -584,25 +728,30 @@
         }
 
         // Handle state change for districts
-        document.getElementById('signUpState')?.addEventListener('change', function() {
-            const state = this.value;
-            const districtSelect = document.getElementById('signUpDistrict');
-            
-            if (districtSelect) {
-                districtSelect.innerHTML = '<option value="">Select District</option>';
-                districtSelect.disabled = true;
-                
-                if (state && districtData[state]) {
-                    districtData[state].forEach(district => {
-                        const option = document.createElement('option');
-                        option.value = district;
-                        option.textContent = district;
-                        districtSelect.appendChild(option);
-                    });
-                    districtSelect.disabled = false;
-                }
+        function initializeStateDistrict() {
+            const stateSelect = document.getElementById('signUpState');
+            if (stateSelect) {
+                stateSelect.addEventListener('change', function() {
+                    const state = this.value;
+                    const districtSelect = document.getElementById('signUpDistrict');
+                    
+                    if (districtSelect) {
+                        districtSelect.innerHTML = '<option value="">Select District</option>';
+                        districtSelect.disabled = true;
+                        
+                        if (state && districtData[state]) {
+                            districtData[state].forEach(district => {
+                                const option = document.createElement('option');
+                                option.value = district;
+                                option.textContent = district;
+                                districtSelect.appendChild(option);
+                            });
+                            districtSelect.disabled = false;
+                        }
+                    }
+                });
             }
-        });
+        }
 
         // Handle sign up
         function handleSignUp() {
@@ -644,7 +793,7 @@
             
             // Save to localStorage
             localStorage.setItem('agrifarmers_user', JSON.stringify(user));
-            window.appState.activeUser = user;
+            appState.activeUser = user;
             
             // Update home page
             document.getElementById('farmerName').textContent = user.name;
@@ -675,12 +824,12 @@
                     proceedToOTP(mobile, user);
                 } else {
                     // New user
-                    window.appState.tempUserData = { mobile: mobile };
+                    appState.tempUserData = { mobile: mobile };
                     proceedToOTP(mobile);
                 }
             } else {
                 // New user
-                window.appState.tempUserData = { mobile: mobile };
+                appState.tempUserData = { mobile: mobile };
                 proceedToOTP(mobile);
             }
         }
@@ -689,15 +838,15 @@
         function proceedToOTP(mobile, user = null) {
             // Generate OTP (for demo, use 123456)
             const otp = '123456';
-            window.appState.lastGeneratedOTP = otp;
-            window.appState.tempUserData = user || { mobile: mobile };
+            appState.lastGeneratedOTP = otp;
+            appState.tempUserData = user || { mobile: mobile };
             
             // Update OTP page
             document.getElementById('otpPhoneNumber').textContent = `+91 ${mobile}`;
             document.getElementById('demoOTP').textContent = otp;
             
             // Generate OTP input fields
-            const otpContainer = document.querySelector('#otpPage .flex.justify-center');
+            const otpContainer = document.getElementById('otpContainer');
             otpContainer.innerHTML = '';
             
             for (let i = 0; i < 6; i++) {
@@ -745,11 +894,11 @@
 
         // Start OTP timer
         function startOTPTimer() {
-            if (window.appState.otpTimer) {
-                clearInterval(window.appState.otpTimer);
+            if (appState.otpTimer) {
+                clearInterval(appState.otpTimer);
             }
             
-            window.appState.otpTimeLeft = 120;
+            appState.otpTimeLeft = 120;
             const timerElement = document.getElementById('otpTimer');
             const resendButton = document.getElementById('resendOTP');
             
@@ -759,19 +908,19 @@
                 resendButton.classList.add('opacity-50', 'cursor-not-allowed');
             }
             
-            window.appState.otpTimer = setInterval(() => {
-                window.appState.otpTimeLeft--;
+            appState.otpTimer = setInterval(() => {
+                appState.otpTimeLeft--;
                 
-                const minutes = Math.floor(window.appState.otpTimeLeft / 60);
-                const seconds = window.appState.otpTimeLeft % 60;
+                const minutes = Math.floor(appState.otpTimeLeft / 60);
+                const seconds = appState.otpTimeLeft % 60;
                 
                 if (timerElement) {
                     timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 }
                 
-                if (window.appState.otpTimeLeft <= 0) {
-                    clearInterval(window.appState.otpTimer);
-                    window.appState.otpTimer = null;
+                if (appState.otpTimeLeft <= 0) {
+                    clearInterval(appState.otpTimer);
+                    appState.otpTimer = null;
                     
                     if (timerElement) {
                         timerElement.textContent = '00:00';
@@ -807,29 +956,29 @@
             }
             
             // Validate OTP (for demo, accept 123456)
-            if (enteredOTP === window.appState.lastGeneratedOTP || enteredOTP === '123456') {
+            if (enteredOTP === appState.lastGeneratedOTP || enteredOTP === '123456') {
                 // OTP verified
                 showToast('OTP verified successfully!', 'success');
                 
                 // Stop timer
-                if (window.appState.otpTimer) {
-                    clearInterval(window.appState.otpTimer);
-                    window.appState.otpTimer = null;
+                if (appState.otpTimer) {
+                    clearInterval(appState.otpTimer);
+                    appState.otpTimer = null;
                 }
                 
                 // Check if user exists or needs to sign up
-                if (window.appState.tempUserData && window.appState.tempUserData.name) {
+                if (appState.tempUserData && appState.tempUserData.name) {
                     // Existing user
-                    window.appState.activeUser = window.appState.tempUserData;
-                    window.appState.activeUser.lastLogin = new Date().toISOString();
+                    appState.activeUser = appState.tempUserData;
+                    appState.activeUser.lastLogin = new Date().toISOString();
                     
                     // Save to localStorage
-                    localStorage.setItem('agrifarmers_user', JSON.stringify(window.appState.activeUser));
+                    localStorage.setItem('agrifarmers_user', JSON.stringify(appState.activeUser));
                     
                     // Update home page
-                    document.getElementById('farmerName').textContent = window.appState.activeUser.name;
-                    document.getElementById('farmerLocation').textContent = `${window.appState.activeUser.district}, ${window.appState.activeUser.state}`;
-                    document.getElementById('welcomeText').textContent = `Welcome back, ${window.appState.activeUser.name.split(' ')[0]}`;
+                    document.getElementById('farmerName').textContent = appState.activeUser.name;
+                    document.getElementById('farmerLocation').textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
+                    document.getElementById('welcomeText').textContent = `Welcome back, ${appState.activeUser.name.split(' ')[0]}`;
                     
                     // Go to home page
                     showPage('homePage');
@@ -839,14 +988,14 @@
                     showPage('signUpPage');
                     
                     // Pre-fill mobile number
-                    if (window.appState.tempUserData?.mobile) {
-                        document.getElementById('signUpMobile').value = window.appState.tempUserData.mobile;
+                    if (appState.tempUserData?.mobile) {
+                        document.getElementById('signUpMobile').value = appState.tempUserData.mobile;
                     }
                 }
                 
                 // Clear temp data
-                window.appState.tempUserData = null;
-                window.appState.lastGeneratedOTP = null;
+                appState.tempUserData = null;
+                appState.lastGeneratedOTP = null;
             } else {
                 // Invalid OTP
                 showToast('Invalid OTP. Please try again.', 'error');
@@ -863,7 +1012,7 @@
             if (resendButton && !resendButton.disabled) {
                 // For demo, keep same OTP
                 const otp = '123456';
-                window.appState.lastGeneratedOTP = otp;
+                appState.lastGeneratedOTP = otp;
                 
                 // Update display
                 document.getElementById('demoOTP').textContent = otp;
@@ -887,13 +1036,13 @@
 
         // Handle logout
         function handleLogout() {
-            window.appState.activeUser = null;
-            window.appState.tempUserData = null;
+            appState.activeUser = null;
+            appState.tempUserData = null;
             
             // Clear OTP timer if running
-            if (window.appState.otpTimer) {
-                clearInterval(window.appState.otpTimer);
-                window.appState.otpTimer = null;
+            if (appState.otpTimer) {
+                clearInterval(appState.otpTimer);
+                appState.otpTimer = null;
             }
             
             // Show logout message
@@ -925,7 +1074,10 @@
             }, 3000);
         }
 
-        // Modal functions
+        // ============================================
+        // MODAL FUNCTIONS
+        // ============================================
+
         function openWeatherModal() {
             openModal('Weather Forecast', `
                 <div class="space-y-4">
@@ -1126,6 +1278,86 @@
             `);
         }
 
+        // Footer modals
+        function openServicesModal() {
+            openModal('Our Services', `
+                <div class="space-y-4">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">Weather Forecast</h5>
+                        <p class="text-gray-700">Accurate weather predictions for your farming activities.</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">Seed Recommendations</h5>
+                        <p class="text-gray-700">Best seeds for your specific region and soil type.</p>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">Fertilizer Guide</h5>
+                        <p class="text-gray-700">Optimal fertilizer recommendations for your crops.</p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">Market Prices</h5>
+                        <p class="text-gray-700">Real-time crop prices and market trends.</p>
+                    </div>
+                </div>
+            `);
+        }
+
+        function openContactModal() {
+            openModal('Contact Us', `
+                <div class="space-y-4">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">Email</h5>
+                        <p class="text-gray-700">help@agrifarmers.com</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">Phone</h5>
+                        <p class="text-gray-700">+91 1800-XXX-XXXX (Toll-free)</p>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">Address</h5>
+                        <p class="text-gray-700">Noida, Uttar Pradesh, India</p>
+                    </div>
+                </div>
+            `);
+        }
+
+        function openPrivacyModal() {
+            openModal('Privacy Policy', `
+                <div class="space-y-4">
+                    <p class="text-gray-700">We respect your privacy. Your personal information is securely stored and never shared with third parties without your consent.</p>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">Data Collection</h5>
+                        <p class="text-sm text-gray-700">We collect only necessary information for providing farming recommendations.</p>
+                    </div>
+                </div>
+            `);
+        }
+
+        function openTermsModal() {
+            openModal('Terms of Use', `
+                <div class="space-y-4">
+                    <p class="text-gray-700">By using AgriFarmers, you agree to our terms and conditions.</p>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">User Responsibilities</h5>
+                        <p class="text-sm text-gray-700">Users are responsible for verifying farming advice with local experts.</p>
+                    </div>
+                </div>
+            `);
+        }
+
+        function openSitemapModal() {
+            openModal('Sitemap', `
+                <div class="space-y-3">
+                    <a href="#" onclick="showPage('welcomePage'); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Home</a>
+                    <a href="#" onclick="showPage('loginPage'); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Login</a>
+                    <a href="#" onclick="showPage('signUpPage'); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Sign Up</a>
+                    <a href="#" onclick="openWeatherModal(); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Weather</a>
+                    <a href="#" onclick="openSeedModal(); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Seeds</a>
+                    <a href="#" onclick="openFertilizerModal(); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Fertilizer</a>
+                </div>
+            `);
+        }
+
         function openModal(title, content) {
             const modalContainer = document.getElementById('modal-container');
             if (!modalContainer) return;
@@ -1152,72 +1384,93 @@
             }
         }
 
-        // PWA Installation
+        // ============================================
+        // PWA INSTALLATION SYSTEM (FIXED)
+        // ============================================
+
         function initializePWA() {
+            console.log('Initializing PWA...');
+            
+            // Check if already installed
+            checkIfAppInstalled();
+            
             // Listen for beforeinstallprompt event
             window.addEventListener('beforeinstallprompt', (e) => {
-                console.log('PWA Installation: beforeinstallprompt event fired');
+                console.log('✅ PWA: beforeinstallprompt event fired');
                 e.preventDefault();
-                window.appState.deferredPrompt = e;
-                
-                // Show install button
+                appState.deferredPrompt = e;
                 showInstallButton();
+                
+                // Auto-show install prompt after 5 seconds
+                setTimeout(() => {
+                    if (appState.deferredPrompt && !appState.isAppInstalled) {
+                        showToast('Install AgriFarmers for better experience', 'info');
+                    }
+                }, 5000);
             });
             
             // Listen for appinstalled event
             window.addEventListener('appinstalled', () => {
-                console.log('PWA installed successfully');
+                console.log('🎉 PWA: App installed successfully');
+                appState.isAppInstalled = true;
                 hideInstallButton();
                 localStorage.setItem('agrifarmers_pwa_installed', 'true');
                 showToast('AgriFarmers installed successfully!', 'success');
             });
             
-            // Check if already installed
-            if (window.matchMedia('(display-mode: standalone)').matches || 
-                window.navigator.standalone === true ||
-                localStorage.getItem('agrifarmers_pwa_installed') === 'true') {
-                hideInstallButton();
-            } else {
-                // Try to show install button after a delay
-                setTimeout(() => {
-                    showInstallButton();
-                }, 3000);
-            }
+            // Try to show install button on iOS/Safari
+            setTimeout(() => {
+                if (!appState.isAppInstalled) {
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+                    
+                    if (isIOS && isSafari) {
+                        showInstallButton();
+                    }
+                }
+            }, 3000);
+        }
+
+        function checkIfAppInstalled() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            const isInWebApp = window.navigator.standalone === true;
+            const localStorageInstalled = localStorage.getItem('agrifarmers_pwa_installed') === 'true';
+            
+            appState.isAppInstalled = isStandalone || isInWebApp || localStorageInstalled;
+            
+            console.log('PWA Check:', {
+                isStandalone,
+                isInWebApp,
+                localStorageInstalled,
+                isAppInstalled: appState.isAppInstalled
+            });
+            
+            return appState.isAppInstalled;
         }
 
         function showInstallButton() {
-            // Check if button already exists
+            if (appState.isAppInstalled) {
+                hideInstallButton();
+                return;
+            }
+            
             let installBtn = document.getElementById('pwa-install-button');
             
             if (!installBtn) {
-                // Create install button
                 installBtn = document.createElement('button');
                 installBtn.id = 'pwa-install-button';
-                installBtn.className = 'fixed bottom-6 right-6 z-50 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded-full p-4 shadow-xl transition-all duration-300 animate-float';
                 installBtn.innerHTML = `
                     <i class="fas fa-download text-xl"></i>
-                    <span class="ml-2 hidden md:inline">Install App</span>
+                    <span class="ml-2 hidden md:inline">Install AgriFarmers</span>
                 `;
                 installBtn.title = 'Install AgriFarmers as app for better experience';
                 installBtn.onclick = installApp;
-                
-                // Add CSS for animation
-                const style = document.createElement('style');
-                style.textContent = `
-                    @keyframes float {
-                        0%, 100% { transform: translateY(0px); }
-                        50% { transform: translateY(-5px); }
-                    }
-                    .animate-float {
-                        animation: float 3s ease-in-out infinite;
-                    }
-                `;
-                document.head.appendChild(style);
                 
                 document.body.appendChild(installBtn);
             }
             
             installBtn.style.display = 'flex';
+            console.log('PWA Install button shown');
         }
 
         function hideInstallButton() {
@@ -1228,17 +1481,20 @@
         }
 
         async function installApp() {
-            if (window.appState.deferredPrompt) {
+            console.log('Install button clicked');
+            
+            if (appState.deferredPrompt) {
+                console.log('Using browser install prompt');
                 try {
-                    window.appState.deferredPrompt.prompt();
-                    const { outcome } = await window.appState.deferredPrompt.userChoice;
+                    appState.deferredPrompt.prompt();
+                    const { outcome } = await appState.deferredPrompt.userChoice;
+                    
+                    console.log(`User choice: ${outcome}`);
                     
                     if (outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
                         showToast('Installing AgriFarmers...', 'success');
-                        window.appState.deferredPrompt = null;
+                        appState.deferredPrompt = null;
                     } else {
-                        console.log('User dismissed the install prompt');
                         showToast('Installation cancelled. You can install later from browser menu.', 'info');
                     }
                 } catch (error) {
@@ -1246,6 +1502,7 @@
                     showManualInstallInstructions();
                 }
             } else {
+                console.log('No install prompt available, showing manual instructions');
                 showManualInstallInstructions();
             }
         }
@@ -1265,6 +1522,12 @@
                             <li>Scroll and tap <strong>"Add to Home Screen"</strong></li>
                             <li>Tap <strong>"Add"</strong> to finish</li>
                         </ol>
+                        <div class="bg-yellow-50 p-3 rounded-lg">
+                            <p class="text-sm text-yellow-800">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Note: Safari browser is required for installation on iOS
+                            </p>
+                        </div>
                     </div>
                 `;
             } else if (isAndroid) {
@@ -1272,10 +1535,16 @@
                     <div class="space-y-4">
                         <h4 class="font-bold text-lg">Install AgriFarmers on Android:</h4>
                         <ol class="space-y-3 list-decimal list-inside">
-                            <li>Tap <strong>Menu</strong> (⋮) in Chrome</li>
-                            <li>Tap <strong>"Install app"</strong></li>
+                            <li>Tap <strong>Menu</strong> (⋮) in Chrome browser</li>
+                            <li>Tap <strong>"Install app"</strong> or "Add to Home screen"</li>
                             <li>Tap <strong>"Install"</strong> to confirm</li>
                         </ol>
+                        <div class="bg-yellow-50 p-3 rounded-lg">
+                            <p class="text-sm text-yellow-800">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Note: Chrome browser is required for installation on Android
+                            </p>
+                        </div>
                     </div>
                 `;
             } else {
@@ -1283,9 +1552,15 @@
                     <div class="space-y-4">
                         <h4 class="font-bold text-lg">Install AgriFarmers on Desktop:</h4>
                         <ol class="space-y-3 list-decimal list-inside">
-                            <li>Click <strong>Install</strong> button in address bar</li>
+                            <li>Click <strong>Install</strong> button in Chrome/Edge address bar</li>
                             <li>Or click <strong>•••</strong> menu → "Install AgriFarmers"</li>
                         </ol>
+                        <div class="bg-yellow-50 p-3 rounded-lg">
+                            <p class="text-sm text-yellow-800">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Note: Chrome or Edge browser is required for installation
+                            </p>
+                        </div>
                     </div>
                 `;
             }
@@ -1293,7 +1568,10 @@
             openModal('Install AgriFarmers', instructions);
         }
 
-        // Network status
+        // ============================================
+        // NETWORK STATUS
+        // ============================================
+
         function updateNetworkStatus() {
             const offlineIndicator = document.getElementById('offline-indicator');
             const networkStatus = document.getElementById('network-status');
@@ -1316,9 +1594,26 @@
             }
         }
 
-        // Initialize app
+        // ============================================
+        // APP INITIALIZATION
+        // ============================================
+
         function initializeApp() {
-            console.log('Initializing AgriFarmers...');
+            console.log('Initializing AgriFarmers App...');
+            
+            // Update current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            // Update current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Initialize state/district dropdown
+            initializeStateDistrict();
             
             // Update network status
             updateNetworkStatus();
@@ -1329,12 +1624,12 @@
             const storedUser = localStorage.getItem('agrifarmers_user');
             if (storedUser) {
                 try {
-                    window.appState.activeUser = JSON.parse(storedUser);
+                    appState.activeUser = JSON.parse(storedUser);
                     
                     // Update home page
-                    document.getElementById('farmerName').textContent = window.appState.activeUser.name;
-                    document.getElementById('farmerLocation').textContent = `${window.appState.activeUser.district}, ${window.appState.activeUser.state}`;
-                    document.getElementById('welcomeText').textContent = `Welcome back, ${window.appState.activeUser.name.split(' ')[0]}`;
+                    document.getElementById('farmerName').textContent = appState.activeUser.name;
+                    document.getElementById('farmerLocation').textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
+                    document.getElementById('welcomeText').textContent = `Welcome back, ${appState.activeUser.name.split(' ')[0]}`;
                     
                     // Show home page
                     showPage('homePage');
@@ -1346,14 +1641,6 @@
             } else {
                 showPage('welcomePage');
             }
-            
-            // Update current date
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
             
             // Initialize PWA
             initializePWA();
@@ -1380,15 +1667,13 @@
 
         // Start the app when DOM is loaded
         document.addEventListener('DOMContentLoaded', initializeApp);
-    </script>
 
-    <!-- Service Worker Registration -->
-    <script>
+        // Register service worker for offline capabilities
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('service-worker.js')
                     .then(registration => {
-                        console.log('Service Worker registered:', registration.scope);
+                        console.log('✅ Service Worker registered:', registration.scope);
                     })
                     .catch(error => {
                         console.log('Service Worker registration failed:', error);
