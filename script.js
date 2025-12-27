@@ -1977,6 +1977,432 @@ function registerServiceWorker() {
     }
 }
 
+
+// PWA Installation
+let deferredPrompt;
+
+// API Keys (Replace with your actual keys)
+WEATHER_API_KEY: '44a55de0f2e0674cb9160f50459d51d4';
+WEATHER_API_URL: 'https://api.openweathermap.org/data/2.5';
+const MARKET_API_KEY = '579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b'; // Get from https://data.gov.in
+
+// Initialize PWA features
+function initializePWA() {
+    // Check if app is already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        document.getElementById('pwa-install-button').classList.add('hidden');
+    }
+    
+    // Handle beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('pwa-install-button').classList.remove('hidden');
+    });
+    
+    // Handle install button click
+    document.getElementById('pwa-install-button').addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+            console.log('PWA installed');
+            document.getElementById('pwa-install-button').classList.add('hidden');
+        }
+        
+        deferredPrompt = null;
+    });
+    
+    // Handle app installed event
+    window.addEventListener('appinstalled', () => {
+        document.getElementById('pwa-install-button').classList.add('hidden');
+        deferredPrompt = null;
+        showToast('App installed successfully!', 'success');
+    });
+    
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('ServiceWorker registered:', registration);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+        });
+    }
+}
+
+// Geolocation Functions
+let userLocation = null;
+
+function getUserLocation() {
+    if (!navigator.geolocation) {
+        showToast('Geolocation is not supported by your browser', 'error');
+        return;
+    }
+    
+    showToast('Getting your location...', 'info');
+    
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const { latitude, longitude } = position.coords;
+            userLocation = { latitude, longitude };
+            
+            // Update UI with location
+            await updateLocationInfo(latitude, longitude);
+            
+            // Fetch weather for location
+            fetchWeatherData(latitude, longitude);
+            
+            // Fetch market prices based on location
+            fetchMarketPrices();
+            
+            showToast('Location updated successfully!', 'success');
+        },
+        (error) => {
+            handleLocationError(error);
+            // Fallback to IP-based location
+            fetchIPLocation();
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
+async function updateLocationInfo(lat, lon) {
+    try {
+        // Use reverse geocoding to get location name
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+        );
+        const data = await response.json();
+        
+        if (data.address) {
+            const city = data.address.city || data.address.town || data.address.village || '';
+            const state = data.address.state || '';
+            const country = data.address.country || '';
+            
+            let locationText = '';
+            if (city) locationText += city;
+            if (state) locationText += `, ${state}`;
+            if (country && country !== 'India') locationText += `, ${country}`;
+            
+            document.getElementById('farmerLocation').textContent = locationText || 'Location updated';
+            document.getElementById('geolocationStatus').classList.remove('hidden');
+        }
+    } catch (error) {
+        document.getElementById('farmerLocation').textContent = `Location: ${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
+        document.getElementById('geolocationStatus').classList.remove('hidden');
+    }
+}
+
+function requestGeolocationPermission(fromWelcome = false) {
+    if (!fromWelcome) {
+        hideLocationModal();
+    }
+    
+    getUserLocation();
+}
+
+function hideLocationModal() {
+    document.getElementById('locationModal').classList.add('hidden');
+}
+
+function handleLocationError(error) {
+    let message = '';
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            message = 'Location permission denied. Using IP-based location.';
+            document.getElementById('locationPrompt').classList.remove('hidden');
+            break;
+        case error.POSITION_UNAVAILABLE:
+            message = 'Location information unavailable.';
+            break;
+        case error.TIMEOUT:
+            message = 'Location request timed out.';
+            break;
+        default:
+            message = 'An unknown error occurred.';
+            break;
+    }
+    showToast(message, 'error');
+}
+
+async function fetchIPLocation() {
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        
+        document.getElementById('farmerLocation').textContent = `${data.city}, ${data.region}`;
+        userLocation = { latitude: data.latitude, longitude: data.longitude };
+        
+        // Fetch weather and market prices for IP location
+        fetchWeatherData(data.latitude, data.longitude);
+        fetchMarketPrices();
+    } catch (error) {
+        showToast('Could not determine your location', 'error');
+    }
+}
+
+// Weather API Functions
+async function fetchWeatherData(lat, lon) {
+    try {
+        // Show loading state
+        document.getElementById('weatherCardContent').innerHTML = `
+            <div class="weather-loading">
+                <i class="fas fa-spinner fa-spin text-blue-500"></i>
+                <span class="text-gray-600">Loading weather...</span>
+            </div>
+        `;
+        
+        // Use OpenWeatherMap API
+        const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric`
+        );
+        
+        if (!response.ok) throw new Error('Weather data unavailable');
+        
+        const data = await response.json();
+        displayWeatherData(data);
+    } catch (error) {
+        console.error('Weather error:', error);
+        document.getElementById('weatherError').textContent = 'Could not fetch weather data';
+        document.getElementById('weatherError').classList.remove('hidden');
+        // Fallback to mock data
+        displayMockWeatherData();
+    }
+}
+
+function displayWeatherData(data) {
+    const temp = Math.round(data.main.temp);
+    const feelsLike = Math.round(data.main.feels_like);
+    const humidity = data.main.humidity;
+    const windSpeed = data.wind.speed;
+    const weatherDesc = data.weather[0].description;
+    const icon = getWeatherIcon(data.weather[0].main);
+    
+    document.getElementById('weatherCardContent').innerHTML = `
+        <div class="flex items-center">
+            <span class="text-2xl md:text-3xl font-bold text-gray-800">${temp}°C</span>
+            <span class="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">${weatherDesc}</span>
+        </div>
+        <div class="mt-2 text-sm text-gray-600">
+            <div class="flex items-center">
+                <i class="fas fa-temperature-low mr-1"></i>
+                <span>Feels like ${feelsLike}°C</span>
+            </div>
+            <div class="flex items-center mt-1">
+                <i class="fas fa-tint mr-1"></i>
+                <span>Humidity: ${humidity}%</span>
+            </div>
+        </div>
+    `;
+    
+    // Update weather details section
+    updateWeatherDetails(data);
+    
+    // Update farming advisory based on weather
+    updateFarmingAdvisory(data);
+}
+
+function displayMockWeatherData() {
+    document.getElementById('weatherCardContent').innerHTML = `
+        <div class="flex items-center">
+            <span class="text-2xl md:text-3xl font-bold text-gray-800">28°C</span>
+            <span class="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Partly Cloudy</span>
+        </div>
+        <div class="mt-2 text-sm text-gray-600">
+            <div class="flex items-center">
+                <i class="fas fa-temperature-low mr-1"></i>
+                <span>Feels like 30°C</span>
+            </div>
+            <div class="flex items-center mt-1">
+                <i class="fas fa-tint mr-1"></i>
+                <span>Humidity: 65%</span>
+            </div>
+        </div>
+    `;
+}
+
+function updateWeatherDetails(data) {
+    const detailsHtml = `
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+            <i class="fas fa-wind text-blue-500 text-xl mb-2"></i>
+            <p class="font-bold text-gray-800">${data.wind.speed} m/s</p>
+            <p class="text-xs text-gray-600">Wind Speed</p>
+        </div>
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+            <i class="fas fa-tachometer-alt text-blue-500 text-xl mb-2"></i>
+            <p class="font-bold text-gray-800">${data.main.pressure} hPa</p>
+            <p class="text-xs text-gray-600">Pressure</p>
+        </div>
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+            <i class="fas fa-eye text-blue-500 text-xl mb-2"></i>
+            <p class="font-bold text-gray-800">${data.visibility / 1000} km</p>
+            <p class="text-xs text-gray-600">Visibility</p>
+        </div>
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+            <i class="fas fa-cloud text-blue-500 text-xl mb-2"></i>
+            <p class="font-bold text-gray-800">${data.clouds.all}%</p>
+            <p class="text-xs text-gray-600">Cloud Cover</p>
+        </div>
+    `;
+    
+    document.getElementById('weatherDetails').innerHTML = detailsHtml;
+}
+
+function getWeatherIcon(condition) {
+    const icons = {
+        'Clear': 'fa-sun',
+        'Clouds': 'fa-cloud',
+        'Rain': 'fa-cloud-rain',
+        'Snow': 'fa-snowflake',
+        'Thunderstorm': 'fa-bolt',
+        'Drizzle': 'fa-cloud-rain',
+        'Mist': 'fa-smog',
+        'Smoke': 'fa-smog',
+        'Haze': 'fa-smog',
+        'Dust': 'fa-smog',
+        'Fog': 'fa-smog',
+        'Sand': 'fa-smog',
+        'Ash': 'fa-smog',
+        'Squall': 'fa-wind',
+        'Tornado': 'fa-tornado'
+    };
+    
+    return icons[condition] || 'fa-cloud';
+}
+
+function updateFarmingAdvisory(weatherData) {
+    const advisory = document.getElementById('farmingAdvisory');
+    const temp = weatherData.main.temp;
+    const condition = weatherData.weather[0].main;
+    
+    let advice = '';
+    
+    if (temp > 35) {
+        advice = 'High temperature alert! Avoid midday farming activities. Water crops early morning or late evening.';
+    } else if (temp < 10) {
+        advice = 'Low temperature warning! Protect sensitive crops from frost. Consider covering plants overnight.';
+    } else if (condition === 'Rain') {
+        advice = 'Rain expected! Perfect for natural irrigation. Delay pesticide application until dry weather returns.';
+    } else if (condition === 'Clear') {
+        advice = 'Sunny weather ahead! Ideal for harvesting and drying crops. Ensure proper irrigation.';
+    } else {
+        advice = 'Good weather for farming activities. Ideal for irrigation and fertilization.';
+    }
+    
+    advisory.textContent = advice;
+}
+
+// Market Prices API Functions
+async function fetchMarketPrices() {
+    try {
+        document.getElementById('marketPricesCard').innerHTML = `
+            <div class="text-gray-700">
+                <p class="font-medium text-sm md:text-base">Loading market prices...</p>
+            </div>
+        `;
+        
+        // For demo purposes, using mock data
+        // In production, use actual API like data.gov.in
+        const mockPrices = getMockMarketPrices();
+        displayMarketPrices(mockPrices);
+        
+        /* Real API call would look like:
+        const response = await fetch(
+            `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=${MARKET_API_KEY}&format=json&limit=10`
+        );
+        const data = await response.json();
+        displayMarketPrices(data);
+        */
+        
+    } catch (error) {
+        console.error('Market price error:', error);
+        document.getElementById('marketError').textContent = 'Could not fetch market prices';
+        document.getElementById('marketError').classList.remove('hidden');
+        // Fallback to mock data
+        displayMockMarketPrices();
+    }
+}
+
+function getMockMarketPrices() {
+    return [
+        { commodity: 'Wheat', price: '₹2,300', unit: 'Quintal', market: 'Mandi', change: '+2%' },
+        { commodity: 'Rice', price: '₹3,800', unit: 'Quintal', market: 'Mandi', change: '+1.5%' },
+        { commodity: 'Tomato', price: '₹25', unit: 'kg', market: 'Local Market', change: '+5%' },
+        { commodity: 'Potato', price: '₹18', unit: 'kg', market: 'Local Market', change: '-2%' },
+        { commodity: 'Cotton', price: '₹6,500', unit: 'Quintal', market: 'Mandi', change: '+3%' }
+    ];
+}
+
+function displayMarketPrices(prices) {
+    let html = '';
+    
+    // Display top 2 prices in card
+    html += `
+        <div class="text-gray-700">
+            <p class="font-medium text-sm md:text-base">${prices[0].commodity}: <span class="font-bold">${prices[0].price}/${prices[0].unit}</span></p>
+            <p class="font-medium text-sm md:text-base">${prices[1].commodity}: <span class="font-bold">${prices[1].price}/${prices[1].unit}</span></p>
+        </div>
+    `;
+    
+    document.getElementById('marketPricesCard').innerHTML = html;
+}
+
+function displayMockMarketPrices() {
+    document.getElementById('marketPricesCard').innerHTML = `
+        <div class="text-gray-700">
+            <p class="font-medium text-sm md:text-base">Wheat: <span class="font-bold">₹2,300/Quintal</span></p>
+            <p class="font-medium text-sm md:text-base">Rice: <span class="font-bold">₹3,800/Quintal</span></p>
+        </div>
+    `;
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
+        ${message}
+    `;
+    
+    document.getElementById('toast-container').appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializePWA();
+    
+    // Show location modal on welcome page after 2 seconds
+    setTimeout(() => {
+        if (document.getElementById('welcomePage').classList.contains('active')) {
+            document.getElementById('locationModal').classList.remove('hidden');
+        }
+    }, 2000);
+    
+    // Auto-get location when home page loads
+    if (document.getElementById('homePage').classList.contains('active')) {
+        getUserLocation();
+    }
+});
+
+
 // Start App
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, starting app...');
