@@ -1522,19 +1522,7 @@ async function showWeatherModal() {
                     </div>
                 </div>
                 
-                <!-- Debug section -->
-                <div class="mt-8 pt-4 border-t border-gray-200">
-                    <button onclick="debugWeatherAPI()" 
-                        class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded mr-2">
-                        🔍 Test API Connection
-                    </button>
-                    <button onclick="showWeatherSourceInfo()" 
-                        class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded">
-                        ℹ️ Data Source Info
-                    </button>
-                </div>
-            </div>
-        `;
+               
         
         // Update modal content
         const modalContent = document.querySelector('#weatherModal .overflow-y-auto');
