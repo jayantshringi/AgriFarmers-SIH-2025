@@ -4,67 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgriFarmers - Page Not Found</title>
-    <meta name="theme-color" content="#138808">
-    <base href="/">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            -webkit-tap-highlight-color: transparent;
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <div class="min-h-screen flex flex-col items-center justify-center p-6">
-        <div class="max-w-md text-center">
-            <i class="fas fa-seedling text-green-600 text-6xl mb-6"></i>
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome to AgriFarmers</h1>
-            <p class="text-gray-600 mb-6">The page you're looking for doesn't exist, but our farming assistant is ready to help!</p>
-            
-            <div class="space-y-4">
-                <button onclick="goToApp()" 
-                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg w-full">
-                    <i class="fas fa-arrow-right mr-2"></i>Go to AgriFarmers App
-                </button>
-                
-                <p class="text-sm text-gray-500">
-                    If you're seeing this page after installing the app, please click the button above to launch the application.
-                </p>
-            </div>
-            
-            <div class="mt-10 pt-6 border-t border-gray-200">
-                <h3 class="font-bold text-gray-700 mb-3">Troubleshooting Tips:</h3>
-                <ul class="text-sm text-gray-600 text-left space-y-2">
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
-                        <span>Ensure you have internet connection for first-time loading</span>
-                    </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
-                        <span>Clear browser cache if the app doesn't load properly</span>
-                    </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
-                        <span>Try opening the app directly from your home screen</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
     <script>
-        function goToApp() {
-            // Try to redirect to the main app
-            window.location.href = './index.html';
-            
-            // Fallback after 3 seconds
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 3000);
-        }
-        
-        // Auto-redirect after 5 seconds
-        setTimeout(goToApp, 5000);
+        // Redirect to main app
+        window.location.href = '/AgriFarmers-SIH-2025/';
     </script>
+</head>
+<body>
+    <p>Redirecting to AgriFarmers app...</p>
 </body>
 </html>
