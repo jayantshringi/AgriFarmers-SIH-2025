@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-// GitHub Pages compatible Service Worker
-const CACHE_NAME = 'agrifarmers-github-v1';
-const urlsToCache = [
-  './',
-  './index.html',
-  './style.css',
-  './script.js',
-  './manifest.json',
-  './offline.html',
-  './icons/icon-72x72.png',
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png'
-=======
 // Service Worker for Agritarmers
 const CACHE_NAME = 'agritarmers-v3.0';
 const urlsToCache = [
@@ -26,37 +12,29 @@ const urlsToCache = [
   '/icons/icon-144x144.png',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png'
->>>>>>> 304202c (Fixing PWA)
 ];
 
 // Install Service Worker
 self.addEventListener('install', event => {
   console.log('[Service Worker] Installing...');
-<<<<<<< HEAD
-=======
   
->>>>>>> 304202c (Fixing PWA)
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('[Service Worker] Caching app shell');
         return cache.addAll(urlsToCache);
-<<<<<<< HEAD
-=======
       })
       .then(() => {
         console.log('[Service Worker] Installation complete');
         return self.skipWaiting();
->>>>>>> 304202c (Fixing PWA)
       })
-      .then(() => self.skipWaiting())
   );
 });
 
 // Activate Service Worker
 self.addEventListener('activate', event => {
   console.log('[Service Worker] Activating...');
-  // Remove old caches
+  
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -67,13 +45,6 @@ self.addEventListener('activate', event => {
           }
         })
       );
-<<<<<<< HEAD
-    }).then(() => self.clients.claim())
-  );
-});
-
-// Fetch with network-first strategy
-=======
     }).then(() => {
       console.log('[Service Worker] Activation complete');
       return self.clients.claim();
@@ -82,17 +53,13 @@ self.addEventListener('activate', event => {
 });
 
 // Fetch with Network First, Cache Fallback strategy
->>>>>>> 304202c (Fixing PWA)
 self.addEventListener('fetch', event => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
   
-<<<<<<< HEAD
-=======
   // Skip chrome-extension requests
   if (event.request.url.startsWith('chrome-extension://')) return;
   
->>>>>>> 304202c (Fixing PWA)
   // Handle navigation requests
   if (event.request.mode === 'navigate') {
     event.respondWith(
@@ -106,29 +73,13 @@ self.addEventListener('fetch', event => {
           return response;
         })
         .catch(() => {
-<<<<<<< HEAD
-          return caches.match('./index.html');
-=======
           // Return cached version if available
           return caches.match('/index.html');
->>>>>>> 304202c (Fixing PWA)
         })
     );
     return;
   }
   
-<<<<<<< HEAD
-  // For other resources
-  event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        // Cache the response if valid
-        if (response.ok) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseClone);
-          });
-=======
   // For API requests, try network first
   if (event.request.url.includes('api.') || 
       event.request.url.includes('openweathermap') ||
@@ -155,20 +106,11 @@ self.addEventListener('fetch', event => {
         // Return cached version if available
         if (cachedResponse) {
           return cachedResponse;
->>>>>>> 304202c (Fixing PWA)
         }
-        return response;
-      })
-      .catch(() => {
-        // Return from cache if network fails
-        return caches.match(event.request)
+        
+        // Otherwise fetch from network
+        return fetch(event.request)
           .then(response => {
-<<<<<<< HEAD
-            if (response) {
-              return response;
-            }
-            
-=======
             // Don't cache if not a successful response
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
@@ -184,32 +126,17 @@ self.addEventListener('fetch', event => {
             return response;
           })
           .catch(() => {
->>>>>>> 304202c (Fixing PWA)
             // For images, return a default icon
             if (event.request.destination === 'image') {
               return caches.match('/icons/icon-192x192.png');
             }
             
-<<<<<<< HEAD
-            // For offline page navigation
-            if (event.request.mode === 'navigate') {
-              return caches.match('./offline.html');
-            }
-            
-            return new Response('Network error', {
-              status: 408,
-              headers: { 'Content-Type': 'text/plain' }
-            });
-=======
             // For CSS/JS, return cached version
             return caches.match(event.request);
->>>>>>> 304202c (Fixing PWA)
           });
       })
   );
 });
-<<<<<<< HEAD
-=======
 
 // Handle messages from the main thread
 self.addEventListener('message', event => {
@@ -229,4 +156,3 @@ async function syncData() {
   console.log('[Service Worker] Syncing data...');
   // Implement your data sync logic here
 }
->>>>>>> 304202c (Fixing PWA)

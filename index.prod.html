@@ -2,17 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Farming assistant for Indian farmers">
     
-    <title data-translate="app_title">Agrifarmers - Your Farming Companion</title>
+    <!-- PWA Meta Tags (Single Set - Removed Duplicates) -->
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+    <meta name="theme-color" content="#138808">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Agritarmers">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="icons/icon-512x512.png">
+    
+    <!-- Windows meta tags -->
+    <meta name="msapplication-TileColor" content="#138808">
+    <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
+    
+    <title data-translate="app_title">Agritarmers - Your Farming Companion</title>
     
     <!-- External dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Fonts - Local fallback -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,7 +33,7 @@
     <!-- Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
-    
+
     <style>
     :root{--primary-green:#138808;--primary-saffron:#FF9933}
     body{font-family:'Inter',sans-serif}
@@ -50,6 +63,32 @@
         .animate-fadeIn {
             animation: fadeIn 0.3s ease-out;
         }
+        
+        /* PWA Install Button */
+        #pwa-install-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(19, 136, 8, 0.3);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        #pwa-install-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(19, 136, 8, 0.4);
+        }
     </style>
 </head>
 
@@ -57,10 +96,15 @@
     <!-- Network status indicator -->
     <div id="network-status" class="fixed top-16 left-0 right-0 z-40 text-center p-2 text-sm font-medium hidden"></div>
     
+    <!-- PWA Install Button -->
+    <button id="pwa-install-button" title="Install App" aria-label="Install App">
+        <i class="fas fa-download"></i>
+    </button>
+    
     <!-- Loading screen -->
     <div id="loadingScreen" class="fixed inset-0 bg-white z-[100] flex flex-col justify-center items-center">
         <div class="loader"></div>
-        <h2 class="text-2xl font-bold text-gray-800 mt-4">Agrifarmers</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mt-4">Agritarmers</h2>
         <p class="text-gray-600" data-translate="loading_message">Loading your farming assistant...</p>
         <div id="loading-progress" class="mt-4 text-sm text-gray-500">Checking connectivity...</div>
     </div>
@@ -74,7 +118,7 @@
                     <!-- Logo -->
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <span class="text-2xl font-bold text-[var(--primary-green)]">🌱 <span data-translate="app_name">Agrifarmers</span></span>
+                            <span class="text-2xl font-bold text-[var(--primary-green)]">🌱 <span data-translate="app_name">Agritarmers</span></span>
                         </div>
                         <!-- Offline indicator -->
                         <div id="offline-indicator" class="ml-2 hidden">
@@ -165,7 +209,7 @@
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden md:flex">
                         <div class="p-8 md:p-12 lg:p-16 flex-1 flex flex-col justify-center text-center md:text-left">
                             <h1 class="text-4xl md:text-5xl font-bold text-gray-800" data-translate="welcome_title">
-                                Welcome to Agrifarmers
+                                Welcome to Agritarmers
                             </h1>
                             <p class="mt-4 text-lg text-gray-600" data-translate="welcome_subtitle">
                                 Your trusted companion for modern farming. Get personalized advice on seeds, fertilizers, and weather to boost your yield.
@@ -231,7 +275,7 @@
             <div id="signUpPage" class="page flex-col justify-center items-center p-4">
                 <div class="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg">
                     <h2 class="text-3xl font-bold text-center text-gray-800 mb-6" data-translate="signup_title">
-                        Join Agrifarmers
+                        Join Agritarmers
                     </h2>
                     <div class="space-y-4">
                         <!-- Name field -->
@@ -424,100 +468,122 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- OTP Verification Page (New) -->
+            <div id="otpPage" class="page flex-col justify-center items-center p-4">
+                <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-6" data-translate="otp_verification">
+                        OTP Verification
+                    </h2>
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <p class="text-gray-600 mb-1" data-translate="otp_sent">OTP sent to</p>
+                            <p class="text-lg font-bold" id="otpPhoneNumber">+91 XXXXXXXX</p>
+                            <p class="text-sm text-gray-500 mt-2" data-translate="otp_valid_for">OTP valid for 5 minutes</p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="enter_otp">
+                                    Enter 6-digit OTP
+                                </label>
+                                <div class="otp-inputs flex justify-center gap-3">
+                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="0">
+                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="1">
+                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="2">
+                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="3">
+                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="4">
+                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="5">
+                                </div>
+                            </div>
+                            
+                            <div class="otp-timer text-center">
+                                <p class="text-sm text-gray-600" data-translate="otp_demo_note">
+                                    Demo: Your OTP is <span id="demoOTP" class="font-bold text-green-600">123456</span>
+                                </p>
+                                <div class="mt-2">
+                                    <span id="timer" class="font-bold text-green-600">02:00</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-2">
+                                <button onclick="verifyOTP()" 
+                                    class="flex-1 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                                    data-translate="verify_otp">
+                                    Verify OTP
+                                </button>
+                                <button onclick="resendOTP()" id="resendOTPBtn"
+                                    class="flex-1 bg-gray-200 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-300 transition-colors"
+                                    data-translate="resend_otp" disabled>
+                                    Resend OTP
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button onclick="showPage('loginPage')" class="text-sm text-gray-500 hover:text-gray-700">
+                                ← <span data-translate="back_to_login">Back to Login</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white mt-auto">
-        <div class="container mx-auto px-4 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Company info -->
-                <div>
-                    <h3 class="text-xl font-bold text-[var(--primary-green)] mb-4" data-translate="footer_agrifarmers">
-                        Agrifarmers
-                    </h3>
-                    <p class="text-gray-300 mb-4" data-translate="footer_description">
-                        Empowering Indian farmers with technology and knowledge for better yields and sustainable farming.
-                    </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="Facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="Twitter">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="Instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="YouTube">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Quick links -->
-                <div>
-                    <h4 class="text-lg font-semibold mb-4" data-translate="footer_quick_links">
-                        Quick Links
-                    </h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="footer_home">Home</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="footer_about">About Us</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="footer_services">Services</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="footer_contact">Contact</a></li>
-                    </ul>
-                </div>
-
-                <!-- Services -->
-                <div>
-                    <h4 class="text-lg font-semibold mb-4" data-translate="footer_services">
-                        Our Services
-                    </h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="weather_info">Weather Forecast</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="seed_advice">Seed Advice</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="fertilizer_guide">Fertilizer Guide</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors" data-translate="market_prices">Market Prices</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contact info -->
-                <div>
-                    <h4 class="text-lg font-semibold mb-4" data-translate="footer_contact">
-                        Contact Us
-                    </h4>
-                    <ul class="space-y-2">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-[var(--primary-green)]"></i>
-                            <span class="text-gray-300" data-translate="footer_address">
-                                123 Agriculture Street, Farming District, India
-                            </span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone mr-2 text-[var(--primary-green)]"></i>
-                            <span class="text-gray-300">+91 701xxxxxxx</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope mr-2 text-[var(--primary-green)]"></i>
-                            <span class="text-gray-300">help@agrifarmers.com</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Copyright -->
-            <div class="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-400 text-sm" data-translate="footer_copyright">
-                    © 2025 Agrifarmers. All rights reserved.
+    <footer class="footer">
+        <div class="footer-container">
+            <!-- Brand & Description Section -->
+            <div class="footer-section">
+                <h3 class="footer-brand">Agritarmers</h3>
+                <p class="footer-description">
+                    Empowering farmers with smart agricultural solutions and real-time insights.
                 </p>
-                <div class="flex space-x-4 mt-4 md:mt-0">
-                    <a href="#" class="text-gray-400 hover:text-white text-sm" data-translate="footer_privacy">Privacy Policy</a>
-                    <a href="#" class="text-gray-400 hover:text-white text-sm" data-translate="footer_terms">Terms of Service</a>
-                    <a href="#" class="text-gray-400 hover:text-white text-sm" data-translate="footer_sitemap">Sitemap</a>
-                </div>
             </div>
-            
-             </div>
+
+            <!-- Quick Links Section -->
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="#" onclick="showPage('welcomePage')">Home</a></li>
+                    <li><a href="#" onclick="showPage('welcomePage')">About</a></li>
+                    <li><a href="#" onclick="openModal('services')">Services</a></li>
+                    <li><a href="#" onclick="openModal('contact')">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Services Section -->
+            <div class="footer-section">
+                <h4>Services</h4>
+                <ul class="footer-links">
+                    <li><a href="#" onclick="openWeatherModal()">Weather Forecast</a></li>
+                    <li><a href="#" onclick="openSeedModal()">Seed Recommendations</a></li>
+                    <li><a href="#" onclick="openFertilizerModal()">Fertilizer Guide</a></li>
+                    <li><a href="#" onclick="openMarketPricesModal()">Market Prices</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <ul class="footer-contact">
+                    <li>📍 [Address to be added]</li>
+                    <li>📞 +91 701XXXXXXX</li>
+                    <li>✉️ help@agritarmers.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="footer-bottom">
+            <p class="copyright">
+                &copy; <span id="current-year">2024</span> Agritarmers. All rights reserved.
+            </p>
+            <div class="footer-legal">
+                <a href="#" onclick="openModal('privacy')">Privacy Policy</a>
+                <a href="#" onclick="openModal('terms')">Terms of Use</a>
+                <a href="#" onclick="openModal('sitemap')">Sitemap</a>
             </div>
         </div>
     </footer>
@@ -533,5 +599,66 @@
 
     <!-- Local JavaScript -->
     <script src="script.min.js"></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // PWA Installation
+        let deferredPrompt;
+        const installButton = document.getElementById('pwa-install-button');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button
+            if (installButton) {
+                installButton.style.display = 'flex';
+                
+                installButton.addEventListener('click', async () => {
+                    if (!deferredPrompt) return;
+                    
+                    deferredPrompt.prompt();
+                    
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to the install prompt: ${outcome}`);
+                    
+                    deferredPrompt = null;
+                    installButton.style.display = 'none';
+                });
+            }
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installed successfully');
+            if (installButton) installButton.style.display = 'none';
+            
+            // Show toast
+            if (window.showToast) {
+                showToast('App installed successfully!', 'success');
+            }
+        });
+        
+        // Check if app is already installed
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true) {
+            if (installButton) installButton.style.display = 'none';
+        }
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>

@@ -1,6 +1,11 @@
 /*
+<<<<<<< HEAD
  * Agrifarmers Application Script
  * Version: 2.6.0 - Web Edition
+=======
+ * Agritarmers Application Script
+ * Version: 3.1.0 - Fixed PWA, OTP & Delhi Removal
+>>>>>>> 304202c (Fixing PWA)
  */
 // ============================================
 // PWA SERVICE WORKER REGISTRATION
@@ -19,6 +24,33 @@ if ('serviceWorker' in navigator) {
   });
 }
 // ============================================
+// PWA SERVICE WORKER REGISTRATION
+// ============================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(registration => {
+        console.log('✅ Service Worker registered with scope:', registration.scope);
+        
+        // Listen for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('New service worker found:', newWorker.state);
+          
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('New content available, refresh to update.');
+            }
+          });
+        });
+      })
+      .catch(error => {
+        console.log('❌ Service Worker registration failed:', error);
+      });
+  });
+}
+
+// ============================================
 // CONFIGURATION
 // ============================================
 const CONFIG = {
@@ -27,8 +59,13 @@ const CONFIG = {
     CROP_PRICE_API: 'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070',
     OTP_EXPIRY_MINUTES: 5,
     MAX_LOGIN_ATTEMPTS: 3,
+<<<<<<< HEAD
     APP_NAME: 'Agrifarmers',
     VERSION: '2.6.0',
+=======
+    APP_NAME: 'Agritarmers',
+    VERSION: '3.1.0',
+>>>>>>> 304202c (Fixing PWA)
     DEBUG_MODE: false,
 };
 
@@ -37,12 +74,21 @@ const CONFIG = {
 // ============================================
 const translations = {
     en: {
+<<<<<<< HEAD
         app_title: "Agrifarmers - Your Farming Companion",
         app_name: "Agrifarmers",
         loading_message: "Loading your farming assistant...",
         offline_label: "Offline",
         offline_mode: "Offline Mode - Some data may be cached",
         welcome_title: "Welcome to Agrifarmers",
+=======
+        app_title: "Agritarmers - Your Farming Companion",
+        app_name: "Agritarmers",
+        loading_message: "Loading your farming assistant...",
+        offline_label: "Offline",
+        offline_mode: "Offline Mode - Some data may be cached",
+        welcome_title: "Welcome to Agritarmers",
+>>>>>>> 304202c (Fixing PWA)
         welcome_subtitle: "Your trusted companion for modern farming.",
         get_started_button: "Get Started",
         login_button: "Login",
@@ -52,7 +98,11 @@ const translations = {
         mobile_error: "Please enter a valid 10-digit mobile number",
         no_account_text: "New here?",
         signup_link: "Create account",
+<<<<<<< HEAD
         signup_title: "Join Agrifarmers",
+=======
+        signup_title: "Join Agritarmers",
+>>>>>>> 304202c (Fixing PWA)
         full_name_label: "Full Name",
         name_placeholder: "Your Name",
         name_error: "Please enter your full name",
@@ -133,15 +183,24 @@ const translations = {
         verify_otp: "Verify OTP",
         resend_otp: "Resend OTP",
         otp_valid_for: "OTP valid for {minutes} minutes",
+<<<<<<< HEAD
         otp_demo_note: "In production, this would be sent via SMS",
+=======
+        otp_demo_note: "Demo: Your OTP is shown below",
+        back_to_login: "Back to Login",
+>>>>>>> 304202c (Fixing PWA)
         logout_button: "Logout",
         profile_button: "Profile",
         toast_online: "Back online!",
         toast_offline: "You are offline. Some features may be limited.",
         toast_login_success: "Login successful! Welcome back!",
-        toast_signup_success: "Account created successfully! Welcome to Agrifarmers!",
+        toast_signup_success: "Account created successfully! Welcome to Agritarmers!",
         toast_logout: "Logged out successfully",
         toast_otp_sent: "OTP sent successfully!",
+<<<<<<< HEAD
+=======
+        toast_new_otp: "New OTP sent!",
+>>>>>>> 304202c (Fixing PWA)
         error_no_account: "No account found. Please sign up first.",
         error_invalid_otp: "Invalid OTP. Please try again.",
         error_network: "Network error. Please check your connection.",
@@ -251,7 +310,12 @@ const translations = {
         verify_otp: "ओटीपी सत्यापित करें",
         resend_otp: "ओटीपी पुनः भेजें",
         otp_valid_for: "ओटीपी {minutes} मिनट के लिए वैध",
+<<<<<<< HEAD
         otp_demo_note: "वास्तविक उपयोग में, यह एसएमएस द्वारा भेजा जाएगा",
+=======
+        otp_demo_note: "डेमो: आपका ओटीपी नीचे दिखाया गया है",
+        back_to_login: "लॉगिन पर वापस जाएं",
+>>>>>>> 304202c (Fixing PWA)
         logout_button: "लॉग आउट",
         profile_button: "प्रोफ़ाइल",
         toast_online: "ऑनलाइन वापस!",
@@ -260,6 +324,10 @@ const translations = {
         toast_signup_success: "खाता सफलतापूर्वक बनाया गया! अग्रीफार्मर्स में आपका स्वागत है!",
         toast_logout: "सफलतापूर्वक लॉग आउट किया गया",
         toast_otp_sent: "ओटीपी सफलतापूर्वक भेजा गया!",
+<<<<<<< HEAD
+=======
+        toast_new_otp: "नया ओटीपी भेजा गया!",
+>>>>>>> 304202c (Fixing PWA)
         error_no_account: "कोई खाता नहीं मिला। कृपया पहले साइन अप करें।",
         error_invalid_otp: "अमान्य ओटीपी। कृपया पुनः प्रयास करें।",
         error_network: "नेटवर्क त्रुटि। कृपया अपना कनेक्शन जांचें।",
@@ -280,23 +348,36 @@ const translations = {
 const appState = {
     activeUser: null,
     weatherChart: null,
-    pages: ['welcomePage', 'loginPage', 'signUpPage', 'homePage'],
+    pages: ['welcomePage', 'loginPage', 'signUpPage', 'homePage', 'otpPage'],
     currentLanguage: 'en',
     isInitialized: false,
     tempUserData: null,
     lastGeneratedOTP: null,
     otpExpiry: null,
     isOfflineMode: false,
+<<<<<<< HEAD
     loginAttempts: 0
 };
 
 // ============================================
 // DISTRICT DATA (Load First to Prevent Stuck)
+=======
+    loginAttempts: 0,
+    otpTimer: null,
+    otpTimeLeft: 120
+};
+
+// ============================================
+// DISTRICT DATA (Delhi Completely Removed)
+>>>>>>> 304202c (Fixing PWA)
 // ============================================
 const districtData = {
     "Haryana": ["Ambala", "Bhiwani", "Charkhi Dadri", "Faridabad", "Fatehabad", "Gurugram", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mahendragarh", "Nuh", "Palwal", "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"],
     "Punjab": ["Amritsar", "Barnala", "Bathinda", "Faridkot", "Fatehgarh Sahib", "Fazilka", "Ferozepur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Mansa", "Moga", "Mohali", "Muktsar", "Pathankot", "Patiala", "Rupnagar", "Sangrur", "Shaheed Bhagat Singh Nagar", "Tarn Taran"],
+<<<<<<< HEAD
     "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "North Delhi", "North East Delhi", "North West Delhi", "Shahdara", "South Delhi", "South East Delhi", "South West Delhi", "West Delhi"],
+=======
+>>>>>>> 304202c (Fixing PWA)
     "Uttar Pradesh": ["Agra", "Aligarh", "Allahabad", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Azamgarh", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Faizabad", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kanshiram Nagar", "Kaushambi", "Kushinagar", "Lakhimpur Kheri", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Rae Bareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar", "Shahjahanpur", "Shamli", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi"]
 };
 
@@ -305,7 +386,7 @@ const districtData = {
 // ============================================
 function log(message, data = null) {
     if (CONFIG.DEBUG_MODE) {
-        console.log(`[Agrifarmers] ${message}`, data || '');
+        console.log(`[Agritarmers] ${message}`, data || '');
     }
 }
 
@@ -374,7 +455,11 @@ class TranslationSystem {
     }
     
     init() {
+<<<<<<< HEAD
         const savedLang = localStorage.getItem('agrifarmers_language');
+=======
+        const savedLang = localStorage.getItem('agritarmers_language');
+>>>>>>> 304202c (Fixing PWA)
         if (savedLang && translations[savedLang]) {
             this.currentLang = savedLang;
         }
@@ -388,7 +473,11 @@ class TranslationSystem {
         if (!translations[langCode]) return;
         
         this.currentLang = langCode;
+<<<<<<< HEAD
         localStorage.setItem('agrifarmers_language', langCode);
+=======
+        localStorage.setItem('agritarmers_language', langCode);
+>>>>>>> 304202c (Fixing PWA)
         this.updateLanguageDisplay();
         this.applyTranslations();
     }
@@ -643,7 +732,11 @@ function populateDistricts() {
 }
 
 // ============================================
+<<<<<<< HEAD
 // OTP MANAGEMENT
+=======
+// OTP MANAGEMENT (FIXED)
+>>>>>>> 304202c (Fixing PWA)
 // ============================================
 const OTPManager = {
     generateOTP() {
@@ -654,11 +747,20 @@ const OTPManager = {
     },
     
     isValidOTP(enteredOTP) {
+<<<<<<< HEAD
         if (!appState.lastGeneratedOTP || !appState.otpExpiry) return false;
+=======
+        if (!appState.lastGeneratedOTP || !appState.otpExpiry) {
+            console.log('No OTP or expiry found');
+            return false;
+        }
+        
+>>>>>>> 304202c (Fixing PWA)
         if (Date.now() > appState.otpExpiry) {
             showToast('OTP has expired. Please request a new one.', 'error');
             return false;
         }
+<<<<<<< HEAD
         return enteredOTP === appState.lastGeneratedOTP;
     },
     
@@ -707,16 +809,150 @@ const OTPManager = {
             const otpInput = document.getElementById('otpInput');
             if (otpInput) otpInput.focus();
         }, 300);
+=======
+        
+        return enteredOTP === appState.lastGeneratedOTP;
+    },
+    
+    startOTPTimer() {
+        this.stopOTPTimer();
+        
+        appState.otpTimeLeft = 120; // 2 minutes
+        const timerElement = document.getElementById('timer');
+        const resendButton = document.getElementById('resendOTPBtn');
+        
+        if (timerElement) {
+            timerElement.textContent = '02:00';
+        }
+        
+        if (resendButton) {
+            resendButton.disabled = true;
+            resendButton.classList.remove('bg-green-500', 'text-white');
+            resendButton.classList.add('bg-gray-200', 'text-gray-500');
+        }
+        
+        appState.otpTimer = setInterval(() => {
+            appState.otpTimeLeft--;
+            
+            const minutes = Math.floor(appState.otpTimeLeft / 60);
+            const seconds = appState.otpTimeLeft % 60;
+            
+            if (timerElement) {
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            if (appState.otpTimeLeft <= 0) {
+                this.stopOTPTimer();
+                if (timerElement) {
+                    timerElement.textContent = '00:00';
+                }
+                if (resendButton) {
+                    resendButton.disabled = false;
+                    resendButton.classList.remove('bg-gray-200', 'text-gray-500');
+                    resendButton.classList.add('bg-green-500', 'text-white');
+                }
+            }
+        }, 1000);
+    },
+    
+    stopOTPTimer() {
+        if (appState.otpTimer) {
+            clearInterval(appState.otpTimer);
+            appState.otpTimer = null;
+        }
+    },
+    
+    setupOTPInputs() {
+        const otpInputs = document.querySelectorAll('.otp-digit');
+        
+        otpInputs.forEach((input, index) => {
+            input.value = '';
+            
+            input.addEventListener('input', (e) => {
+                // Only allow numbers
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                
+                // Auto-focus next input
+                if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+                
+                // Auto-verify if all digits filled
+                const allFilled = Array.from(otpInputs).every(input => input.value.length === 1);
+                if (allFilled) {
+                    setTimeout(() => {
+                        window.verifyOTP();
+                    }, 300);
+                }
+            });
+            
+            input.addEventListener('keydown', (e) => {
+                // Handle backspace
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+                
+                // Handle arrow keys
+                if (e.key === 'ArrowLeft' && index > 0) {
+                    otpInputs[index - 1].focus();
+                    e.preventDefault();
+                }
+                if (e.key === 'ArrowRight' && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                    e.preventDefault();
+                }
+            });
+            
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').trim();
+                
+                if (pastedData.length === 6 && /^\d+$/.test(pastedData)) {
+                    const digits = pastedData.split('');
+                    digits.forEach((digit, idx) => {
+                        if (otpInputs[idx]) {
+                            otpInputs[idx].value = digit;
+                        }
+                    });
+                    
+                    // Focus last input
+                    if (otpInputs[5]) {
+                        otpInputs[5].focus();
+                    }
+                    
+                    // Auto-verify
+                    setTimeout(() => {
+                        window.verifyOTP();
+                    }, 300);
+                }
+            });
+        });
+        
+        // Focus first input
+        setTimeout(() => {
+            if (otpInputs[0]) {
+                otpInputs[0].focus();
+            }
+        }, 100);
+>>>>>>> 304202c (Fixing PWA)
     }
 };
 
 // ============================================
+<<<<<<< HEAD
 // WEATHER SERVICE
+=======
+// WEATHER SERVICE (Delhi References Removed)
+>>>>>>> 304202c (Fixing PWA)
 // ============================================
 const WeatherService = {
     async getWeatherData() {
         try {
+<<<<<<< HEAD
             let location = 'Delhi';
+=======
+            let location = 'Noida'; // Default location (Delhi removed)
+>>>>>>> 304202c (Fixing PWA)
             
             if (appState.activeUser && appState.activeUser.district) {
                 location = appState.activeUser.district;
@@ -775,7 +1011,11 @@ const WeatherService = {
     async fetchRealWeather(location) {
         try {
             const apiKey = CONFIG.WEATHER_API_KEY;
+<<<<<<< HEAD
             const url = `${CONFIG.WEATHER_API_URL}/weather?q=${encodeURIComponent(location)}&appid=${apiKey}&units=metric`;
+=======
+            const url = `${CONFIG.WEATHER_API_URL}/weather?q=${encodeURIComponent(location)},IN&appid=${apiKey}&units=metric`;
+>>>>>>> 304202c (Fixing PWA)
             
             const response = await fetch(url);
             
@@ -855,7 +1095,11 @@ const WeatherService = {
                 sunset: '18:45',
                 visibility: '10'
             },
+<<<<<<< HEAD
             location: appState.activeUser?.district || 'Delhi'
+=======
+            location: appState.activeUser?.district || 'Noida, India' // Delhi removed
+>>>>>>> 304202c (Fixing PWA)
         };
     },
     
@@ -887,7 +1131,11 @@ const WeatherService = {
 };
 
 // ============================================
+<<<<<<< HEAD
 // WEATHER MODAL (Clean - No Debug Buttons)
+=======
+// WEATHER MODAL
+>>>>>>> 304202c (Fixing PWA)
 // ============================================
 async function showWeatherModal() {
     const loadingContent = `
@@ -1183,6 +1431,7 @@ window.handleSignUp = function() {
     if (!isValidName(name)) {
         showFieldError('signUpName', translator.t('name_error'));
         hasError = true;
+<<<<<<< HEAD
     }
     
     if (!isValidMobile(mobile)) {
@@ -1277,21 +1526,207 @@ window.verifyOTP = function() {
         appState.tempUserData = null;
         appState.lastGeneratedOTP = null;
         appState.loginAttempts = 0;
+=======
+    }
+    
+    if (!isValidMobile(mobile)) {
+        showFieldError('signUpMobile', translator.t('mobile_error'));
+        hasError = true;
+    }
+    
+    if (!state) {
+        showFieldError('signUpState', translator.t('state_error'));
+        hasError = true;
+    }
+    
+    if (!district) {
+        showFieldError('signUpDistrict', translator.t('district_error'));
+        hasError = true;
+    }
+    
+    if (hasError) return;
+    
+    const user = {
+        name: name,
+        mobile: mobile,
+        state: state,
+        district: district,
+        verified: true,
+        joined: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
+    };
+    
+    localStorage.setItem('agritarmers_user', JSON.stringify(user));
+    appState.activeUser = user;
+    
+    PageManager.show('homePage');
+    
+    const nameEl = document.getElementById('farmerName');
+    const locationEl = document.getElementById('farmerLocation');
+    if (nameEl) nameEl.textContent = user.name;
+    if (locationEl) locationEl.textContent = `${user.district}, ${user.state}`;
+    
+    showToast(translator.t('toast_signup_success'), 'success');
+};
+
+window.handleLogin = function() {
+    const mobile = document.getElementById('loginMobile')?.value.trim() || '';
+    
+    clearFieldError('loginMobile');
+    
+    if (!isValidMobile(mobile)) {
+        showFieldError('loginMobile', translator.t('mobile_error'));
+        return;
+    }
+    
+    // Check if user exists
+    const storedUser = localStorage.getItem('agritarmers_user');
+    if (storedUser) {
+        const user = JSON.parse(storedUser);
+        if (user.mobile === mobile) {
+            // Existing user - proceed to OTP
+            appState.tempUserData = user;
+            proceedToOTP(mobile);
+            return;
+        }
+    }
+    
+    // New user - store mobile and proceed to OTP
+    appState.tempUserData = { mobile: mobile };
+    proceedToOTP(mobile);
+};
+
+function proceedToOTP(mobile) {
+    // Generate OTP
+    const otp = OTPManager.generateOTP();
+    
+    // Show OTP page
+    PageManager.show('otpPage');
+    
+    // Update OTP page
+    document.getElementById('otpPhoneNumber').textContent = `+91 ${mobile}`;
+    document.getElementById('demoOTP').textContent = otp;
+    
+    // Setup OTP inputs
+    OTPManager.setupOTPInputs();
+    
+    // Start OTP timer
+    OTPManager.startOTPTimer();
+    
+    // Show success message
+    showToast(translator.t('toast_otp_sent'), 'success');
+}
+
+window.verifyOTP = function() {
+    // Get OTP from inputs
+    const otpInputs = document.querySelectorAll('.otp-digit');
+    let enteredOTP = '';
+    otpInputs.forEach(input => {
+        enteredOTP += input.value;
+    });
+    
+    if (enteredOTP.length !== 6) {
+        showToast(translator.t('error_invalid_otp'), 'error');
+        return;
+    }
+    
+    // Check OTP
+    if (OTPManager.isValidOTP(enteredOTP)) {
+        // Stop OTP timer
+        OTPManager.stopOTPTimer();
+        
+        // Check if we have temp user data
+        if (appState.tempUserData) {
+            if (appState.tempUserData.name) {
+                // Existing user login
+                appState.activeUser = appState.tempUserData;
+                appState.activeUser.lastLogin = new Date().toISOString();
+                localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
+                
+                // Go to home page
+                PageManager.show('homePage');
+                
+                // Update dashboard
+                const nameEl = document.getElementById('farmerName');
+                const locationEl = document.getElementById('farmerLocation');
+                if (nameEl) nameEl.textContent = appState.activeUser.name;
+                if (locationEl && appState.activeUser.district && appState.activeUser.state) {
+                    locationEl.textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
+                }
+                
+                showToast(translator.t('toast_login_success'), 'success');
+            } else {
+                // New user - go to signup with pre-filled mobile
+                PageManager.show('signUpPage');
+                document.getElementById('signUpMobile').value = appState.tempUserData.mobile;
+                showToast('Please complete your registration', 'info');
+            }
+        }
+        
+        // Clear OTP data
+        appState.lastGeneratedOTP = null;
+        appState.otpExpiry = null;
+        appState.tempUserData = null;
+        appState.loginAttempts = 0;
+        
+>>>>>>> 304202c (Fixing PWA)
     } else {
         appState.loginAttempts++;
         if (appState.loginAttempts >= CONFIG.MAX_LOGIN_ATTEMPTS) {
             showToast('Too many failed attempts. Please try again later.', 'error');
+<<<<<<< HEAD
             ModalManager.close();
         } else {
             showToast(translator.t('error_invalid_otp'), 'error');
+=======
+            PageManager.show('loginPage');
+            appState.loginAttempts = 0;
+        } else {
+            showToast(translator.t('error_invalid_otp'), 'error');
+            
+            // Clear OTP inputs
+            otpInputs.forEach(input => {
+                input.value = '';
+            });
+            
+            // Focus first input
+            setTimeout(() => {
+                if (otpInputs[0]) {
+                    otpInputs[0].focus();
+                }
+            }, 100);
+>>>>>>> 304202c (Fixing PWA)
         }
     }
 };
 
+<<<<<<< HEAD
 window.resendOTP = function(mobile) {
     const otp = OTPManager.generateOTP();
     OTPManager.showOTPModal(mobile, otp);
     showToast('New OTP generated!', 'success');
+=======
+window.resendOTP = function() {
+    // Generate new OTP
+    const otp = OTPManager.generateOTP();
+    
+    // Update demo OTP display
+    document.getElementById('demoOTP').textContent = otp;
+    
+    // Clear OTP inputs
+    document.querySelectorAll('.otp-digit').forEach(input => {
+        input.value = '';
+    });
+    
+    // Setup OTP inputs again
+    OTPManager.setupOTPInputs();
+    
+    // Restart timer
+    OTPManager.startOTPTimer();
+    
+    // Show success message
+    showToast(translator.t('toast_new_otp'), 'success');
+>>>>>>> 304202c (Fixing PWA)
 };
 
 window.handleLogout = function() {
@@ -1332,7 +1767,7 @@ window.openMarketPricesModal = () => {
                 </div>
                 <div class="flex justify-between p-3 bg-gray-50 rounded-lg">
                     <span data-translate="cotton_price">Cotton</span>
-                    <span class="font-bold">₹6,500<span data-translate="per_quintal">/q</span></span>
+                    <span class="font-bold">₹6,500<span data-translate="per_intal">/q</span></span>
                 </div>
             </div>
         `;
@@ -1371,6 +1806,88 @@ window.openSoilHealthModal = () => {
 window.closeModal = ModalManager.close;
 
 // ============================================
+// PWA INSTALLATION MANAGER
+// ============================================
+const PwaManager = {
+    deferredPrompt: null,
+    
+    init() {
+        // Listen for beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+            this.showInstallButton();
+        });
+        
+        // Listen for appinstalled event
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installed successfully');
+            this.hideInstallButton();
+            showToast('Agritarmers installed successfully!', 'success');
+        });
+        
+        // Check if already installed
+        this.checkIfAppIsInstalled();
+    },
+    
+    showInstallButton() {
+        // Don't show if already in standalone mode
+        if (this.isAppInstalled()) {
+            this.hideInstallButton();
+            return;
+        }
+        
+        const installButton = document.getElementById('pwa-install-button');
+        if (installButton) {
+            installButton.style.display = 'flex';
+            
+            // Add click handler
+            installButton.onclick = () => this.installApp();
+        }
+    },
+    
+    hideInstallButton() {
+        const installButton = document.getElementById('pwa-install-button');
+        if (installButton) {
+            installButton.style.display = 'none';
+        }
+    },
+    
+    async installApp() {
+        if (!this.deferredPrompt) {
+            console.log('No install prompt available');
+            return;
+        }
+        
+        // Show the install prompt
+        this.deferredPrompt.prompt();
+        
+        // Wait for the user to respond
+        const { outcome } = await this.deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+            this.deferredPrompt = null;
+            this.hideInstallButton();
+        } else {
+            console.log('User dismissed the install prompt');
+        }
+    },
+    
+    isAppInstalled() {
+        return window.matchMedia('(display-mode: standalone)').matches || 
+               window.navigator.standalone === true;
+    },
+    
+    checkIfAppIsInstalled() {
+        if (this.isAppInstalled()) {
+            this.hideInstallButton();
+            console.log('App is running in standalone mode');
+        }
+    }
+};
+
+// ============================================
 // INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
@@ -1383,11 +1900,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+<<<<<<< HEAD
+=======
+    // State and district dropdowns
+>>>>>>> 304202c (Fixing PWA)
     const stateSelect = document.getElementById('signUpState');
     if (stateSelect) {
         stateSelect.addEventListener('change', populateDistricts);
     }
     
+<<<<<<< HEAD
+=======
+    // Form validation
+>>>>>>> 304202c (Fixing PWA)
     const validateOnBlur = (fieldId, validator) => {
         const field = document.getElementById(fieldId);
         if (field) {
@@ -1410,6 +1935,41 @@ document.addEventListener('DOMContentLoaded', function() {
     validateOnBlur('signUpMobile', isValidMobile);
     validateOnBlur('loginMobile', isValidMobile);
     
+<<<<<<< HEAD
+=======
+    // Language selector
+    document.querySelectorAll('.language-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const lang = this.getAttribute('data-lang');
+            translator.changeLanguage(lang);
+            
+            // Close dropdown
+            document.querySelectorAll('.language-selector').forEach(selector => {
+                selector.classList.remove('active');
+            });
+        });
+    });
+    
+    // Language dropdown toggle
+    document.querySelectorAll('#desktop-language-btn, #mobile-language-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const selector = this.closest('.language-selector');
+            if (selector) {
+                selector.classList.toggle('active');
+            }
+        });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.language-selector').forEach(selector => {
+            selector.classList.remove('active');
+        });
+    });
+    
+    // Lazy loading images
+>>>>>>> 304202c (Fixing PWA)
     const lazyImages = document.querySelectorAll('.lazy-image');
     const imageObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -1426,10 +1986,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     lazyImages.forEach(img => imageObserver.observe(img));
+    
+    // Initialize PWA Manager
+    PwaManager.init();
 });
 
 // ============================================
+<<<<<<< HEAD
 // APP INITIALIZATION (Fast & Non-Stuck)
+=======
+// APP INITIALIZATION
+>>>>>>> 304202c (Fixing PWA)
 // ============================================
 window.addEventListener('load', function() {
     const loadingScreen = document.getElementById('loadingScreen');
@@ -1473,7 +2040,12 @@ window.addEventListener('load', function() {
                 
                 log('App initialized successfully');
                 
+<<<<<<< HEAD
                 const storedUser = localStorage.getItem('agrifarmers_user');
+=======
+                // Check for existing user
+                const storedUser = localStorage.getItem('agritarmers_user');
+>>>>>>> 304202c (Fixing PWA)
                 if (storedUser) {
                     const user = JSON.parse(storedUser);
                     appState.activeUser = user;
@@ -1487,10 +2059,18 @@ window.addEventListener('load', function() {
                     }
                 }
                 
+<<<<<<< HEAD
                 if (!localStorage.getItem('agrifarmers_visited')) {
                     setTimeout(() => {
                         showToast('Welcome to Agrifarmers!', 'info', 3000);
                         localStorage.setItem('agrifarmers_visited', 'true');
+=======
+                // Show welcome toast on first visit
+                if (!localStorage.getItem('agritarmers_visited')) {
+                    setTimeout(() => {
+                        showToast('Welcome to Agritarmers!', 'info', 3000);
+                        localStorage.setItem('agritarmers_visited', 'true');
+>>>>>>> 304202c (Fixing PWA)
                     }, 1000);
                 }
                 
@@ -1510,6 +2090,7 @@ window.addEventListener('load', function() {
                 }
             }, 300);
         }
+<<<<<<< HEAD
     }, 100); // Very short initial delay
 });
 
@@ -1589,3 +2170,143 @@ const PwaManager = {
 document.addEventListener('DOMContentLoaded', function() {
   PwaManager.init();
 });
+=======
+    }, 100);
+});
+
+// Handle session persistence
+window.addEventListener('beforeunload', function() {
+    if (appState.activeUser) {
+        localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
+    }
+});
+
+// Handle visibility change (tab switching)
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible' && appState.isInitialized) {
+        // App came back to foreground
+        NetworkManager.updateNetworkStatus();
+    }
+});
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+function openModal(type) {
+    let title = '';
+    let content = '';
+    
+    switch(type) {
+        case 'privacy':
+            title = 'Privacy Policy';
+            content = `
+                <div class="space-y-4">
+                    <p class="text-gray-700">We value your privacy and are committed to protecting your personal information.</p>
+                    <p class="text-gray-700">We collect only necessary data to provide you with the best farming assistance.</p>
+                </div>
+            `;
+            break;
+        case 'terms':
+            title = 'Terms of Use';
+            content = `
+                <div class="space-y-4">
+                    <p class="text-gray-700">By using Agritarmers, you agree to our terms and conditions.</p>
+                    <p class="text-gray-700">All information provided is for educational and informational purposes only.</p>
+                </div>
+            `;
+            break;
+        case 'sitemap':
+            title = 'Sitemap';
+            content = `
+                <div class="space-y-2">
+                    <p><a href="#" onclick="showPage('welcomePage')" class="text-green-600 hover:underline">Home</a></p>
+                    <p><a href="#" onclick="showPage('loginPage')" class="text-green-600 hover:underline">Login</a></p>
+                    <p><a href="#" onclick="showPage('signUpPage')" class="text-green-600 hover:underline">Sign Up</a></p>
+                </div>
+            `;
+            break;
+        case 'services':
+            title = 'Our Services';
+            content = `
+                <div class="space-y-4">
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Weather Forecasting</li>
+                        <li>Seed Recommendations</li>
+                        <li>Fertilizer Guidance</li>
+                        <li>Market Price Updates</li>
+                        <li>Crop Calendar</li>
+                        <li>Soil Health Testing Guidance</li>
+                    </ul>
+                </div>
+            `;
+            break;
+        case 'contact':
+            title = 'Contact Us';
+            content = `
+                <div class="space-y-4">
+                    <p class="text-gray-700"><strong>Email:</strong> help@agritarmers.com</p>
+                    <p class="text-gray-700"><strong>Phone:</strong> +91 701XXXXXXX</p>
+                    <p class="text-gray-700"><strong>Address:</strong> [Address to be added]</p>
+                </div>
+            `;
+            break;
+    }
+    
+    ModalManager.open(title, content);
+}
+
+window.openModal = openModal;
+
+// ============================================
+// OFFLINE DATA CACHE
+// ============================================
+const OfflineCache = {
+    cacheWeatherData(data) {
+        try {
+            localStorage.setItem('cached_weather', JSON.stringify({
+                data: data,
+                timestamp: Date.now()
+            }));
+        } catch (error) {
+            console.log('Weather cache error:', error);
+        }
+    },
+    
+    getCachedWeatherData() {
+        try {
+            const cached = localStorage.getItem('cached_weather');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                // Cache valid for 1 hour
+                if (Date.now() - parsed.timestamp < 60 * 60 * 1000) {
+                    return parsed.data;
+                }
+            }
+        } catch (error) {
+            console.log('Get cached weather error:', error);
+        }
+        return null;
+    },
+    
+    clearOldCache() {
+        const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        
+        ['cached_weather'].forEach(key => {
+            try {
+                const cached = localStorage.getItem(key);
+                if (cached) {
+                    const parsed = JSON.parse(cached);
+                    if (parsed.timestamp < oneWeekAgo) {
+                        localStorage.removeItem(key);
+                    }
+                }
+            } catch (error) {
+                console.log('Clear cache error:', error);
+            }
+        });
+    }
+};
+
+// Clear old cache on startup
+OfflineCache.clearOldCache();
+>>>>>>> 304202c (Fixing PWA)

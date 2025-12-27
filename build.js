@@ -59,7 +59,7 @@ function generateIcons() {
 
 // Update build function
 async function build() {
-    console.log('Building Agrifarmers PWA...');
+    console.log('Building Agritarmers PWA...');
     
     await minifyJS();
     minifyCSS();
@@ -84,7 +84,7 @@ async function build() {
     <meta name="theme-color" content="#138808">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Agrifarmers">
+    <meta name="apple-mobile-web-app-title" content="Agritarmers">
     <link rel="apple-touch-icon" href="icon-192x192.png">`;
         
         html = html.replace('<meta name="viewport"', `${pwaMeta}\n    <meta name="viewport"`);
@@ -115,4 +115,12 @@ async function build() {
 // New function to generate app icons (optional)
 function generateAppIcons() {
     console.log('✓ App icons generated for PWA');
+}
+
+// Export build function
+module.exports = { build };
+
+// Run build if called directly
+if (require.main === module) {
+    build().catch(console.error);
 }

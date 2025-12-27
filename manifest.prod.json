@@ -1,15 +1,4 @@
 {
-<<<<<<< HEAD
-  "name": "Agrifarmers - Farming Assistant",
-  "short_name": "Agrifarmers",
-  "description": "Your trusted companion for modern farming",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#f9fafb",
-  "theme_color": "#138808",
-  "orientation": "portrait",
-  "scope": "./",
-=======
   "name": "Agritarmers - Farming Assistant",
   "short_name": "Agritarmers",
   "description": "Your trusted companion for modern farming",
@@ -19,43 +8,33 @@
   "theme_color": "#138808",
   "orientation": "portrait",
   "scope": "/",
->>>>>>> 304202c (Fixing PWA)
   "icons": [
     {
-      "src": "./icons/icon-72x72.png",
+      "src": "icons/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png"
     },
     {
-      "src": "./icons/icon-96x96.png",
+      "src": "icons/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "./icons/icon-128x128.png",
+      "src": "icons/icon-128x128.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "./icons/icon-144x144.png",
+      "src": "icons/icon-144x144.png",
       "sizes": "144x144",
       "type": "image/png"
     },
     {
-<<<<<<< HEAD
-      "src": "./icons/icon-192x192.png",
-=======
       "src": "icons/icon-192x192.png",
->>>>>>> 304202c (Fixing PWA)
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-<<<<<<< HEAD
-      "src": "./icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-=======
       "src": "icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png"
@@ -81,7 +60,6 @@
       "description": "Check market prices",
       "url": "/?action=prices",
       "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
->>>>>>> 304202c (Fixing PWA)
     }
   ]
 }
