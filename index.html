@@ -32,7 +32,7 @@
         .page { display: none; }
         .page.active { display: block; }
         
-        /* Loading Screen */
+        /* Loading Screen - SIMPLIFIED */
         #loadingScreen {
             position: fixed;
             top: 0;
@@ -45,6 +45,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-hidden {
+            opacity: 0;
+            pointer-events: none;
         }
         
         .spinner {
@@ -181,17 +187,20 @@
             }
         }
     </style>
+    
+    <!-- PRELOAD CRITICAL RESOURCES -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body class="bg-gray-50">
-    <!-- Loading Screen -->
+    <!-- Loading Screen - MINIMAL -->
     <div id="loadingScreen">
         <div class="spinner rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-        <p class="text-gray-600 text-lg">Loading your farming assistant...</p>
-        <p id="connectivity-status" class="text-sm text-gray-500 mt-2">Checking connectivity...</p>
+        <p class="text-gray-600 text-lg">Loading AgriFarmers...</p>
     </div>
 
     <!-- App Container -->
-    <div id="app" class="min-h-screen hidden">
+    <div id="app" class="min-h-screen" style="display: none;">
         <!-- Clean Header -->
         <nav class="bg-white shadow-md">
             <div class="container mx-auto px-4 py-3">
@@ -199,30 +208,41 @@
                     <!-- Logo -->
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-seedling text-green-600 text-2xl"></i>
-                        <span class="text-xl font-bold text-gray-800">AgriFarmers</span>
+                        <span class="text-xl font-bold text-gray-800" data-i18n="app_name">AgriFarmers</span>
                     </div>
                     
                     <!-- User Actions -->
                     <div class="flex items-center space-x-4" id="headerActions">
                         <!-- Language Selector -->
                         <div class="relative" id="languageSelector">
-                            <button id="languageButton" class="flex items-center space-x-2 text-gray-700 hover:text-green-600">
+                            <button id="languageButton" class="flex items-center space-x-2 text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg hover:bg-gray-100">
                                 <i class="fas fa-globe"></i>
                                 <span id="currentLanguage">English</span>
                                 <i class="fas fa-chevron-down text-xs"></i>
                             </button>
+                            <div id="languageDropdown" class="language-dropdown hidden">
+                                <button class="language-option" onclick="changeLanguage('en')">
+                                    <span>🇺🇸 English</span>
+                                </button>
+                                <button class="language-option" onclick="changeLanguage('hi')">
+                                    <span>🇮🇳 हिंदी</span>
+                                </button>
+                                <button class="language-option" onclick="changeLanguage('pa')">
+                                    <span>🇮🇳 ਪੰਜਾਬੀ</span>
+                                </button>
+                            </div>
                         </div>
                         
                         <!-- Logout Button -->
-                        <button id="logoutButton" class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg text-sm hidden">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        <button id="logoutButton" onclick="handleLogout()" class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg text-sm hidden">
+                            <i class="fas fa-sign-out-alt mr-2"></i><span data-i18n="logout">Logout</span>
                         </button>
                     </div>
                 </div>
             </div>
         </nav>
 
-        <!-- Pages -->
+        <!-- Pages Container -->
         <div class="container mx-auto px-4 py-6">
             <!-- Welcome Page -->
             <div id="welcomePage" class="page active">
@@ -357,14 +377,12 @@
             <div id="otpPage" class="page">
                 <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
                     <h2 class="text-2xl font-bold text-gray-800 mb-2" data-i18n="otp_title">OTP Verification</h2>
-                    <p class="text-gray-600 mb-6" data-i18n="otp_sent">OTP sent to</p>
+                    <p class="text-gray-600 mb-1" data-i18n="otp_sent">OTP sent to</p>
                     <p class="text-lg font-medium text-green-600 mb-6" id="otpPhoneNumber">+91 XXXXXXXX</p>
                     
                     <div class="space-y-6">
                         <div class="text-center">
-                            <div class="flex justify-center mb-4" id="otpContainer">
-                                <!-- OTP inputs will be generated here -->
-                            </div>
+                            <div class="flex justify-center mb-4" id="otpContainer"></div>
                             <p class="text-sm text-gray-500 mb-2" data-i18n="demo_otp">Demo OTP: <span id="demoOTP" class="font-bold text-green-600">123456</span></p>
                         </div>
                         
@@ -489,7 +507,7 @@
         </div>
        
         <!-- Footer -->
-        <footer class="bg-green-800 text-white py-8">
+        <footer class="bg-green-800 text-white py-8 mt-8">
             <div class="container mx-auto px-4 text-center">
                 <p>&copy; 2024 AgriFarmers. <span data-i18n="rights_reserved">All rights reserved.</span></p>
             </div>
@@ -502,22 +520,9 @@
         
         <!-- Toast Container -->
         <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
-        
-        <!-- Language Dropdown -->
-        <div id="languageDropdown" class="language-dropdown hidden">
-            <button class="language-option" onclick="changeLanguage('en')">
-                <span>🇺🇸 English</span>
-            </button>
-            <button class="language-option" onclick="changeLanguage('hi')">
-                <span>🇮🇳 हिंदी</span>
-            </button>
-            <button class="language-option" onclick="changeLanguage('pa')">
-                <span>🇮🇳 ਪੰਜਾਬੀ</span>
-            </button>
-        </div>
     </div>
 
-    <!-- Main Script -->
-    <script src="script.js"></script>
+    <!-- Main Script - LOAD LAST -->
+    <script src="script.js" defer></script>
 </body>
 </html>
