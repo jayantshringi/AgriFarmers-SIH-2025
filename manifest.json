@@ -1,41 +1,30 @@
 {
-    "name": "AgriFarmers-Your trusted companion for modern farming",
-    "short_name": "FarmAssist",
-    "description": "AgriFarmers",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#2e7d32",
-    "theme_color": "#2e7d32",
-    "orientation": "portrait",
-    "icons": [
-        {
-            "src": "/icon-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/icon-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        },
-        {
-            "src": "/icon-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable"
-        }
-    ],
-    "categories": ["business", "productivity", "utilities"],
-    "screenshots": [
-        {
-            "src": "/screenshots/screenshot1.png",
-            "sizes": "1280x720",
-            "type": "image/png"
-        }
-    ],
-    "prefer_related_applications": false,
-    "related_applications": [],
-    "scope": "/",
-    "dir": "ltr",
-    "lang": "en-US"
+  "name": "AgriFarmers",
+  "short_name": "AgriFarmers",
+  "description": "Your trusted companion for modern farming",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#138808",
+  "theme_color": "#138808",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ]
 }
