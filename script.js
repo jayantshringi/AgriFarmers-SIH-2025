@@ -1,6 +1,6 @@
 /*
  * Agritarmers Application Script
- * Version: 3.4.0 - Fixed Login, Language & PWA
+ * Version: 4.0.0 - Complete Fix
  */
 
 // ============================================
@@ -8,7 +8,7 @@
 // ============================================
 const CONFIG = {
     APP_NAME: 'Agritarmers',
-    VERSION: '3.4.0',
+    VERSION: '4.0.0',
     DEBUG_MODE: true,
 };
 
@@ -26,7 +26,7 @@ const appState = {
 };
 
 // ============================================
-// DISTRICT DATA (Delhi Removed)
+// DISTRICT DATA
 // ============================================
 const districtData = {
     "Haryana": ["Ambala", "Bhiwani", "Charkhi Dadri", "Faridabad", "Fatehabad", "Gurugram", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mahendragarh", "Nuh", "Palwal", "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"],
@@ -108,7 +108,7 @@ function showToast(message, type = 'info', duration = 3000) {
 }
 
 // ============================================
-// TRANSLATION SYSTEM (Fixed - Added Punjabi)
+// TRANSLATION SYSTEM
 // ============================================
 class TranslationSystem {
     constructor() {
@@ -654,7 +654,7 @@ const ModalManager = {
 };
 
 // ============================================
-// PAGE MANAGEMENT (FIXED)
+// PAGE MANAGEMENT
 // ============================================
 const PageManager = {
     pages: ['welcomePage', 'loginPage', 'signUpPage', 'homePage', 'otpPage'],
@@ -665,29 +665,25 @@ const PageManager = {
             return;
         }
         
-        // Hide all pages
         this.pages.forEach(page => {
             const el = document.getElementById(page);
             if (el) el.classList.remove('active');
         });
         
-        // Show target page
         const targetPage = document.getElementById(pageId);
         if (targetPage) targetPage.classList.add('active');
         
-        // Update navigation
         this.updateNavigation();
         
-        // Hide mobile menu
         const mobileMenu = document.getElementById('mobile-menu');
         if (mobileMenu) mobileMenu.classList.add('hidden');
         
         log(`Page changed to: ${pageId}`);
         
-        // If going to OTP page, setup OTP input
         if (pageId === 'otpPage') {
             setTimeout(() => {
-                OTPManager.setupOTPInput();
+                const otpInput = document.getElementById('otpInput');
+                if (otpInput) otpInput.focus();
             }, 100);
         }
     },
@@ -716,32 +712,26 @@ const PageManager = {
         } else {
             const guestHTML = `
                 <div class="flex items-center space-x-2">
-                    <button onclick="PageManager.show('loginPage')" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">${translator.t('login_button')}</button>
-                    <button onclick="PageManager.show('signUpPage')" class="bg-[var(--primary-green)] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">${translator.t('get_started_button')}</button>
+                    <button onclick="showPage('loginPage')" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">${translator.t('login_button')}</button>
+                    <button onclick="showPage('signUpPage')" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">${translator.t('get_started_button')}</button>
                 </div>
             `;
             
             const mobileGuestHTML = `
                 <div class="space-y-1">
-                    <button onclick="PageManager.show('loginPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">${translator.t('login_button')}</button>
-                    <button onclick="PageManager.show('signUpPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-[var(--primary-green)] text-white hover:bg-green-700">${translator.t('get_started_button')}</button>
+                    <button onclick="showPage('loginPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">${translator.t('login_button')}</button>
+                    <button onclick="showPage('signUpPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-green-600 text-white hover:bg-green-700">${translator.t('get_started_button')}</button>
                 </div>
             `;
             
             if (navActions) navActions.innerHTML = guestHTML;
             if (mobileNavActions) mobileNavActions.innerHTML = mobileGuestHTML;
         }
-        
-        setTimeout(() => {
-            if (translator && translator.applyTranslations) {
-                translator.applyTranslations();
-            }
-        }, 50);
     }
 };
 
 // ============================================
-// FORM HANDLING (FIXED)
+// FORM HANDLING
 // ============================================
 function populateStates() {
     const stateSelect = document.getElementById('signUpState');
@@ -781,59 +771,22 @@ function populateDistricts() {
 }
 
 // ============================================
-// SIMPLE OTP MANAGEMENT (FIXED)
+// OTP MANAGEMENT
 // ============================================
 const OTPManager = {
     generateOTP() {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         appState.lastGeneratedOTP = otp;
-        log('Generated OTP:', otp);
         return otp;
     },
     
     isValidOTP(enteredOTP) {
-        if (!appState.lastGeneratedOTP) {
-            log('No OTP generated');
-            return false;
-        }
-        
-        const isValid = enteredOTP === appState.lastGeneratedOTP;
-        log('OTP validation:', { entered: enteredOTP, expected: appState.lastGeneratedOTP, isValid });
-        return isValid;
-    },
-    
-    setupOTPInput() {
-        const otpInput = document.getElementById('otpInput');
-        if (!otpInput) {
-            console.error('OTP input not found');
-            return;
-        }
-        
-        otpInput.value = '';
-        setTimeout(() => {
-            otpInput.focus();
-        }, 100);
-        
-        otpInput.addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
-            
-            if (this.value.length === 6) {
-                setTimeout(() => {
-                    window.verifyOTP();
-                }, 300);
-            }
-        });
-        
-        otpInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && this.value.length === 6) {
-                window.verifyOTP();
-            }
-        });
+        return enteredOTP === appState.lastGeneratedOTP;
     }
 };
 
 // ============================================
-// AUTHENTICATION FUNCTIONS (FIXED)
+// AUTHENTICATION FUNCTIONS
 // ============================================
 window.handleSignUp = function() {
     const name = document.getElementById('signUpName')?.value.trim() || '';
@@ -880,7 +833,7 @@ window.handleSignUp = function() {
     localStorage.setItem('agritarmers_user', JSON.stringify(user));
     appState.activeUser = user;
     
-    PageManager.show('homePage');
+    showPage('homePage');
     
     const nameEl = document.getElementById('farmerName');
     const locationEl = document.getElementById('farmerLocation');
@@ -888,8 +841,6 @@ window.handleSignUp = function() {
     if (locationEl) locationEl.textContent = `${user.district}, ${user.state}`;
     
     showToast(translator.t('toast_signup_success'), 'success');
-    
-    log('User signed up:', user);
 };
 
 window.handleLogin = function() {
@@ -912,7 +863,7 @@ window.handleLogin = function() {
         }
     }
     
-    // If no account found, still proceed to OTP for demo
+    // For demo, allow any mobile number
     appState.tempUserData = { mobile: mobile };
     proceedToOTP(mobile);
 };
@@ -920,14 +871,18 @@ window.handleLogin = function() {
 function proceedToOTP(mobile) {
     const otp = OTPManager.generateOTP();
     
-    PageManager.show('otpPage');
+    showPage('otpPage');
     
     document.getElementById('otpPhoneNumber').textContent = `+91 ${mobile}`;
     document.getElementById('demoOTP').textContent = otp;
     
-    showToast(`${translator.t('toast_otp_sent')} ${otp}`, 'info');
+    const otpInput = document.getElementById('otpInput');
+    if (otpInput) {
+        otpInput.value = '';
+        setTimeout(() => otpInput.focus(), 100);
+    }
     
-    log('OTP sent for mobile:', mobile);
+    showToast(`${translator.t('toast_otp_sent')} ${otp}`, 'success');
 }
 
 window.verifyOTP = function() {
@@ -947,7 +902,7 @@ window.verifyOTP = function() {
                 appState.activeUser.lastLogin = new Date().toISOString();
                 localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
                 
-                PageManager.show('homePage');
+                showPage('homePage');
                 
                 const nameEl = document.getElementById('farmerName');
                 const locationEl = document.getElementById('farmerLocation');
@@ -959,7 +914,7 @@ window.verifyOTP = function() {
                 showToast(translator.t('toast_login_success'), 'success');
             } else {
                 // New user, go to signup
-                PageManager.show('signUpPage');
+                showPage('signUpPage');
                 document.getElementById('signUpMobile').value = appState.tempUserData.mobile;
                 showToast(translator.t('error_no_account'), 'info');
             }
@@ -973,7 +928,7 @@ window.verifyOTP = function() {
         appState.loginAttempts++;
         if (appState.loginAttempts >= 3) {
             showToast('Too many failed attempts. Please try again later.', 'error');
-            PageManager.show('loginPage');
+            showPage('loginPage');
             appState.loginAttempts = 0;
         } else {
             showToast(translator.t('error_invalid_otp'), 'error');
@@ -991,15 +946,17 @@ window.handleLogout = function() {
     appState.lastGeneratedOTP = null;
     appState.loginAttempts = 0;
     
-    PageManager.show('welcomePage');
+    showPage('welcomePage');
     showToast(translator.t('toast_logout'), 'info');
-    
-    log('User logged out');
 };
 
 // ============================================
-// MODAL FUNCTIONS
+// GLOBAL FUNCTIONS
 // ============================================
+window.showPage = function(pageId) {
+    PageManager.show(pageId);
+};
+
 window.openWeatherModal = function() {
     ModalManager.open('translate:weather_info', '<div class="text-center p-8"><div class="loader inline-block mb-4"></div><p>Loading weather data...</p></div>', 'weatherModal');
     
@@ -1075,7 +1032,7 @@ window.openSeedModal = function() {
     const content = `
         <div class="space-y-6">
             <div>
-                <h4 class="text-lg font-bold mb-2">${translator.t('seed_recommendation', {season: currentSeason})}</h4>
+                <h4 class="text-lg font-bold mb-2">Recommended for ${currentSeason} Season</h4>
                 <div class="flex flex-wrap gap-2">
                     ${currentSeason === "Kharif" ? 
                         '<span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Rice</span>' +
@@ -1103,14 +1060,14 @@ window.openFertilizerModal = function() {
         <div class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-green-50 p-4 rounded-lg">
-                    <h5 class="font-bold mb-2">${translator.t('npk_ratio')}</h5>
+                    <h5 class="font-bold mb-2">NPK Ratio</h5>
                     <p class="text-3xl font-bold text-gray-800">4:2:1</p>
-                    <p class="text-sm text-gray-600">${translator.t('nitrogen_phosphorus_potassium')}</p>
+                    <p class="text-sm text-gray-600">Nitrogen:Phosphorus:Potassium</p>
                 </div>
                 <div class="bg-blue-50 p-4 rounded-lg">
-                    <h5 class="font-bold mb-2">${translator.t('application_time')}</h5>
-                    <p class="text-lg font-bold text-gray-800">${translator.t('before_sowing')}</p>
-                    <p class="text-sm text-gray-600">${translator.t('basal_dose')}</p>
+                    <h5 class="font-bold mb-2">Application Time</h5>
+                    <p class="text-lg font-bold text-gray-800">Before Sowing</p>
+                    <p class="text-sm text-gray-600">Basal dose recommended</p>
                 </div>
             </div>
         </div>
@@ -1121,11 +1078,11 @@ window.openFertilizerModal = function() {
 
 window.openCropCalendarModal = function() {
     const currentMonth = new Date().getMonth() + 1;
-    let recommendation = translator.t('zaid_time');
+    let recommendation = "Now is good time for Zaid crops like Watermelon and Cucumber.";
     if (currentMonth >= 5 && currentMonth <= 8) {
-        recommendation = translator.t('kharif_time');
+        recommendation = "Now is the perfect time for Kharif crops like Rice and Cotton.";
     } else if (currentMonth >= 9 || currentMonth <= 1) {
-        recommendation = translator.t('rabi_time');
+        recommendation = "Now is the perfect time for Rabi crops like Wheat and Mustard.";
     }
     
     const content = `
@@ -1134,10 +1091,10 @@ window.openCropCalendarModal = function() {
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-gray-100">
-                            <th class="p-3 text-left">${translator.t('season')}</th>
-                            <th class="p-3 text-left">${translator.t('sowing')}</th>
-                            <th class="p-3 text-left">${translator.t('harvesting')}</th>
-                            <th class="p-3 text-left">${translator.t('crops')}</th>
+                            <th class="p-3 text-left">Season</th>
+                            <th class="p-3 text-left">Sowing</th>
+                            <th class="p-3 text-left">Harvesting</th>
+                            <th class="p-3 text-left">Crops</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1164,7 +1121,7 @@ window.openCropCalendarModal = function() {
             </div>
             
             <div class="bg-green-50 p-4 rounded-lg">
-                <h5 class="font-bold mb-2">${translator.t('current_recommendation')}</h5>
+                <h5 class="font-bold mb-2">Current Recommendation</h5>
                 <p class="text-gray-700">${recommendation}</p>
             </div>
         </div>
@@ -1174,22 +1131,22 @@ window.openCropCalendarModal = function() {
 };
 
 window.openMarketPricesModal = function() {
-    ModalManager.open('translate:market_prices', `<div class="text-center p-8"><div class="loader inline-block mb-4"></div><p>${translator.t('fetching_prices')}</p></div>`, 'marketModal');
+    ModalManager.open('translate:market_prices', '<div class="text-center p-8"><div class="loader inline-block mb-4"></div><p>Fetching latest market prices...</p></div>', 'marketModal');
     
     setTimeout(() => {
         const content = `
             <div class="space-y-4">
                 <div class="flex justify-between p-3 bg-gray-50 rounded-lg">
-                    <span>${translator.t('wheat_price')}</span>
-                    <span class="font-bold">₹2,300${translator.t('per_quintal')}</span>
+                    <span>Wheat</span>
+                    <span class="font-bold">₹2,300/q</span>
                 </div>
                 <div class="flex justify-between p-3 bg-gray-50 rounded-lg">
-                    <span>${translator.t('rice_price')}</span>
-                    <span class="font-bold">₹3,800${translator.t('per_quintal')}</span>
+                    <span>Rice</span>
+                    <span class="font-bold">₹3,800/q</span>
                 </div>
                 <div class="flex justify-between p-3 bg-gray-50 rounded-lg">
-                    <span>${translator.t('cotton_price')}</span>
-                    <span class="font-bold">₹6,500${translator.t('per_quintal')}</span>
+                    <span>Cotton</span>
+                    <span class="font-bold">₹6,500/q</span>
                 </div>
             </div>
         `;
@@ -1205,12 +1162,12 @@ window.openSoilHealthModal = function() {
     const content = `
         <div class="space-y-6">
             <div class="bg-green-50 p-4 rounded-lg">
-                <h4 class="font-bold mb-2">${translator.t('soil_testing_steps')}</h4>
+                <h4 class="font-bold mb-2">Soil Testing Steps</h4>
                 <ol class="list-decimal list-inside space-y-2 text-gray-700">
-                    <li>${translator.t('soil_step_1')}</li>
-                    <li>${translator.t('soil_step_2')}</li>
-                    <li>${translator.t('soil_step_3')}</li>
-                    <li>${translator.t('soil_step_4')}</li>
+                    <li>Collect soil samples from different spots</li>
+                    <li>Mix samples thoroughly</li>
+                    <li>Visit nearest Krishi Vigyan Kendra</li>
+                    <li>Get soil health card with recommendations</li>
                 </ol>
             </div>
         </div>
@@ -1222,83 +1179,58 @@ window.openSoilHealthModal = function() {
 window.closeModal = ModalManager.close;
 
 // ============================================
-// PWA INSTALLATION (FIXED)
+// PWA INSTALLATION
 // ============================================
 const PwaManager = {
     deferredPrompt: null,
     
     init() {
-        // Check if app is already installed
-        this.checkIfInstalled();
-        
-        // Listen for beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('beforeinstallprompt event fired');
             e.preventDefault();
             this.deferredPrompt = e;
             this.showInstallButton();
         });
         
-        // Listen for appinstalled event
         window.addEventListener('appinstalled', () => {
-            console.log('PWA installed successfully');
             this.hideInstallButton();
             localStorage.setItem('agritarmers_pwa_installed', 'true');
-            showToast('App installed successfully!', 'success');
         });
+        
+        this.checkIfInstalled();
     },
     
     checkIfInstalled() {
-        const isInstalled = localStorage.getItem('agritarmers_pwa_installed') === 'true' || 
-                          window.matchMedia('(display-mode: standalone)').matches ||
-                          window.navigator.standalone === true;
-        
-        if (isInstalled) {
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true ||
+            localStorage.getItem('agritarmers_pwa_installed') === 'true') {
             this.hideInstallButton();
-        } else {
-            // Check again after a delay
-            setTimeout(() => this.checkIfInstalled(), 1000);
         }
     },
     
     showInstallButton() {
         const installButton = document.getElementById('pwa-install-button');
-        if (installButton && !installButton.classList.contains('hidden')) {
-            installButton.style.display = 'flex';
-            
-            // Add click event listener
-            installButton.onclick = () => this.installApp();
+        if (installButton) {
+            installButton.classList.remove('hidden');
+            installButton.addEventListener('click', () => this.installApp());
         }
     },
     
     hideInstallButton() {
         const installButton = document.getElementById('pwa-install-button');
         if (installButton) {
-            installButton.style.display = 'none';
+            installButton.classList.add('hidden');
         }
     },
     
     async installApp() {
-        if (!this.deferredPrompt) {
-            console.log('No install prompt available');
-            showToast('Installation prompt not available', 'info');
-            return;
-        }
+        if (!this.deferredPrompt) return;
         
-        try {
-            this.deferredPrompt.prompt();
-            const { outcome } = await this.deferredPrompt.userChoice;
-            
-            if (outcome === 'accepted') {
-                console.log('User accepted the install prompt');
-                this.deferredPrompt = null;
-            } else {
-                console.log('User dismissed the install prompt');
-                showToast('Installation cancelled', 'info');
-            }
-        } catch (error) {
-            console.error('Installation error:', error);
-            showToast('Installation failed. Please try again.', 'error');
+        this.deferredPrompt.prompt();
+        const { outcome } = await this.deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+            this.deferredPrompt = null;
+            this.hideInstallButton();
         }
     }
 };
@@ -1308,117 +1240,78 @@ const PwaManager = {
 // ============================================
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(registration => {
-                    console.log('Service Worker registered:', registration.scope);
-                })
-                .catch(error => {
-                    console.log('Service Worker registration failed:', error);
-                });
-        });
+        navigator.serviceWorker.register('service-worker.js')
+            .then(registration => {
+                console.log('Service Worker registered:', registration.scope);
+            })
+            .catch(error => {
+                console.log('Service Worker registration failed:', error);
+            });
     }
 }
 
 // ============================================
-// INITIALIZATION (FIXED)
+// INITIALIZATION
 // ============================================
 function initApp() {
     log('Starting app initialization...');
     
     try {
-        // Initialize translation system first
         translator.init();
-        
-        // Initialize network manager
         NetworkManager.init();
-        
-        // Populate states dropdown
         populateStates();
-        
-        // Initialize PWA
         PwaManager.init();
-        
-        // Register service worker
         registerServiceWorker();
         
-        // Check for existing user
         const storedUser = localStorage.getItem('agritarmers_user');
         if (storedUser) {
             const user = JSON.parse(storedUser);
             appState.activeUser = user;
             
-            // Update dashboard
             const nameEl = document.getElementById('farmerName');
             const locationEl = document.getElementById('farmerLocation');
             if (nameEl) nameEl.textContent = user.name;
-            if (locationEl && user.district && user.state) {
-                locationEl.textContent = `${user.district}, ${user.state}`;
-            }
+            if (locationEl) locationEl.textContent = `${user.district}, ${user.state}`;
             
-            PageManager.show('homePage');
+            showPage('homePage');
         } else {
-            PageManager.show('welcomePage');
+            showPage('welcomePage');
         }
         
-        // Update navigation
         PageManager.updateNavigation();
-        
         appState.isInitialized = true;
         
-        // Hide loading screen
         setTimeout(() => {
             const loadingScreen = document.getElementById('loadingScreen');
             const app = document.getElementById('app');
             
-            if (loadingScreen) {
-                loadingScreen.style.display = 'none';
-            }
-            
-            if (app) {
-                app.classList.remove('opacity-0');
-            }
+            if (loadingScreen) loadingScreen.style.display = 'none';
+            if (app) app.classList.remove('opacity-0');
             
             log('App initialized successfully');
-            
-            // Show welcome toast on first visit
-            if (!localStorage.getItem('agritarmers_visited')) {
-                setTimeout(() => {
-                    showToast('Welcome to Agritarmers!', 'info', 3000);
-                    localStorage.setItem('agritarmers_visited', 'true');
-                }, 1000);
-            }
         }, 500);
         
     } catch (error) {
         console.error('Initialization error:', error);
         
-        // Show app even on error
         setTimeout(() => {
             const loadingScreen = document.getElementById('loadingScreen');
             const app = document.getElementById('app');
             
-            if (loadingScreen) {
-                loadingScreen.style.display = 'none';
-            }
+            if (loadingScreen) loadingScreen.style.display = 'none';
+            if (app) app.classList.remove('opacity-0');
             
-            if (app) {
-                app.classList.remove('opacity-0');
-            }
-            
-            PageManager.show('welcomePage');
-            showToast('App loaded successfully', 'success');
+            showPage('welcomePage');
         }, 300);
     }
 }
 
 // ============================================
-// DOM EVENT LISTENERS (FIXED)
+// EVENT LISTENERS
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
     log('DOM Content Loaded');
     
-    // Mobile menu toggle
     const mobileMenuBtn = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
     
@@ -1428,150 +1321,90 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // State and district dropdowns
     const stateSelect = document.getElementById('signUpState');
     if (stateSelect) {
         stateSelect.addEventListener('change', populateDistricts);
     }
     
-    // Form validation
-    const validateOnBlur = (fieldId, validator) => {
-        const field = document.getElementById(fieldId);
-        if (field) {
-            field.addEventListener('blur', function() {
-                if (validator(this.value)) {
-                    clearFieldError(fieldId);
-                } else {
-                    const messages = {
-                        'signUpName': translator.t('name_error'),
-                        'signUpMobile': translator.t('mobile_error'),
-                        'loginMobile': translator.t('mobile_error')
-                    };
-                    showFieldError(fieldId, messages[fieldId] || translator.t('invalid_input'));
-                }
-            });
-        }
-    };
-    
-    validateOnBlur('signUpName', isValidName);
-    validateOnBlur('signUpMobile', isValidMobile);
-    validateOnBlur('loginMobile', isValidMobile);
-    
-    // Language selector
     document.querySelectorAll('.language-option').forEach(option => {
-        option.addEventListener('click', function(e) {
-            e.stopPropagation();
+        option.addEventListener('click', function() {
             const lang = this.getAttribute('data-lang');
             translator.changeLanguage(lang);
-            
-            // Close dropdown
             document.querySelectorAll('.language-selector').forEach(selector => {
                 selector.classList.remove('active');
             });
         });
     });
     
-    // Language dropdown toggle
     document.querySelectorAll('#desktop-language-btn, #mobile-language-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.stopPropagation();
             const selector = this.closest('.language-selector');
-            if (selector) {
-                selector.classList.toggle('active');
-            }
+            if (selector) selector.classList.toggle('active');
         });
     });
     
-    // Close dropdowns when clicking outside
     document.addEventListener('click', function() {
         document.querySelectorAll('.language-selector').forEach(selector => {
             selector.classList.remove('active');
         });
     });
     
-    // Form submission prevention
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
         });
     });
     
-    // Add event listeners for Get Started buttons
-    document.querySelectorAll('[data-action="get-started"]').forEach(button => {
-        button.addEventListener('click', function() {
-            PageManager.show('signUpPage');
-        });
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('[data-action="get-started"]') || 
+            e.target.closest('[data-action="get-started"]')) {
+            showPage('signUpPage');
+        }
+        
+        if (e.target.matches('[data-action="login"]') || 
+            e.target.closest('[data-action="login"]')) {
+            showPage('loginPage');
+        }
     });
     
-    document.querySelectorAll('[data-action="login"]').forEach(button => {
-        button.addEventListener('click', function() {
-            PageManager.show('loginPage');
+    const otpInput = document.getElementById('otpInput');
+    if (otpInput) {
+        otpInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
+            if (this.value.length === 6) {
+                setTimeout(verifyOTP, 300);
+            }
         });
-    });
+    }
     
-    // Start app initialization
-    setTimeout(initApp, 100);
+    initApp();
 });
 
 // ============================================
-// GLOBAL FUNCTIONS
-// ============================================
-window.showPage = function(pageId) {
-    PageManager.show(pageId);
-};
-
-window.openModal = function(type) {
-    let title = '';
-    let content = '';
-    
-    switch(type) {
-        case 'privacy':
-            title = 'Privacy Policy';
-            content = '<p class="text-gray-700">We value your privacy and are committed to protecting your personal information.</p>';
-            break;
-        case 'terms':
-            title = 'Terms of Use';
-            content = '<p class="text-gray-700">By using Agritarmers, you agree to our terms and conditions.</p>';
-            break;
-        case 'contact':
-            title = 'Contact Us';
-            content = '<p class="text-gray-700">Email: help@agritarmers.com<br>Phone: +91 701XXXXXXX</p>';
-            break;
-    }
-    
-    ModalManager.open(title, content);
-};
-
-// ============================================
-// CLEANUP ON UNLOAD
-// ============================================
-window.addEventListener('beforeunload', function() {
-    if (appState.activeUser) {
-        localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
-    }
-});
-
-// ============================================
-// WINDOW LOAD EVENT (Backup)
+// WINDOW LOAD EVENT
 // ============================================
 window.addEventListener('load', function() {
     log('Window Loaded');
     
-    // Double-check if app is initialized
     if (!appState.isInitialized) {
         setTimeout(() => {
             const loadingScreen = document.getElementById('loadingScreen');
             const app = document.getElementById('app');
             
-            if (loadingScreen && loadingScreen.style.display !== 'none') {
-                loadingScreen.style.display = 'none';
-            }
+            if (loadingScreen) loadingScreen.style.display = 'none';
+            if (app) app.classList.remove('opacity-0');
             
-            if (app && app.classList.contains('opacity-0')) {
-                app.classList.remove('opacity-0');
-            }
-            
-            PageManager.show('welcomePage');
+            showPage('welcomePage');
         }, 1000);
+    }
+});
+
+// ============================================
+// CLEANUP
+// ============================================
+window.addEventListener('beforeunload', function() {
+    if (appState.activeUser) {
+        localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
     }
 });
