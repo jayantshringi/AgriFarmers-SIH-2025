@@ -1761,6 +1761,57 @@ const NetworkManager = {
 
 
 // ============================================
+// DEBUG FUNCTIONS (Add at the VERY END of your script)
+// ============================================
+
+// Global debug function - call from browser console
+window.testWeatherAPI = async function() {
+    const apiKey = CONFIG.WEATHER_API_KEY;
+    const testUrl = `https://api.openweathermap.org/data/2.5/weather?q=Delhi&appid=${apiKey}&units=metric`;
+    
+    console.log("🔍 Testing OpenWeather API...");
+    console.log("API Key (first 8 chars):", apiKey.substring(0, 8) + "...");
+    console.log("URL:", testUrl);
+    
+    try {
+        const response = await fetch(testUrl);
+        console.log("✅ Response status:", response.status);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log("✅ API is WORKING! Data received:");
+            console.log("Location:", data.name);
+            console.log("Temperature:", data.main.temp + "°C");
+            console.log("Weather:", data.weather[0].description);
+            console.log("Full response:", data);
+            return true;
+        } else {
+            console.log("❌ API Failed. Status:", response.status);
+            if (response.status === 401) {
+                console.log("❌ INVALID API KEY! Get a new one from: https://home.openweathermap.org/api_keys");
+            }
+            return false;
+        }
+    } catch (error) {
+        console.error("❌ Test Failed:", error);
+        return false;
+    }
+};
+
+// Auto-test on load (optional)
+window.addEventListener('load', function() {
+    setTimeout(() => {
+        // Uncomment to auto-test on load
+        // window.testWeatherAPI();
+    }, 3000);
+});
+
+// Quick test button for the console
+console.log("⚡ Agrifarmers Debug Tools Available:");
+console.log("👉 Type 'testWeatherAPI()' to test weather API");
+console.log("👉 Type 'CONFIG.WEATHER_API_KEY' to see your API key");
+
+// ============================================
 // AUTHENTICATION FUNCTIONS (Keep existing)
 // ============================================
 window.handleSignUp = function() {
