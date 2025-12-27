@@ -1,13 +1,13 @@
 /*
- * Agritarmers Application Script
- * Version: 5.1.0 - Fixed PWA Install Button
+ * AgriFarmers Application Script
+ * Version: 1.0.0 - Fixed PWA Install Button & Name Change
  */
 
 // ============================================
 // CONFIGURATION
 // ============================================
 const CONFIG = {
-    APP_NAME: 'Agritarmers',
+    APP_NAME: 'AgriFarmers',
     VERSION: '5.1.0',
     DEBUG_MODE: true,
 };
@@ -41,7 +41,7 @@ const districtData = {
 // ============================================
 function log(message, data = null) {
     if (CONFIG.DEBUG_MODE) {
-        console.log(`[Agritarmers] ${message}`, data || '');
+        console.log(`[AgriFarmers] ${message}`, data || '');
     }
 }
 
@@ -119,7 +119,7 @@ class TranslationSystem {
     }
     
     init() {
-        const savedLang = localStorage.getItem('agritarmers_language');
+        const savedLang = localStorage.getItem('agrifarmers_language');
         if (savedLang && this.translations[savedLang]) {
             this.currentLang = savedLang;
         }
@@ -134,7 +134,7 @@ class TranslationSystem {
         if (!this.translations[langCode]) return;
         
         this.currentLang = langCode;
-        localStorage.setItem('agritarmers_language', langCode);
+        localStorage.setItem('agrifarmers_language', langCode);
         this.updateLanguageDisplay();
         this.applyTranslations();
         
@@ -196,12 +196,12 @@ class TranslationSystem {
     
     translations = {
         en: {
-            app_title: "Agritarmers - Your Farming Companion",
-            app_name: "Agritarmers",
+            app_title: "AgriFarmers - Your Farming Companion",
+            app_name: "AgriFarmers",
             loading_message: "Loading your farming assistant...",
             offline_label: "Offline",
             offline_mode: "Offline Mode - Some data may be cached",
-            welcome_title: "Welcome to Agritarmers",
+            welcome_title: "Welcome to AgriFarmers",
             welcome_subtitle: "Your trusted companion for modern farming.",
             get_started_button: "Get Started",
             login_button: "Login",
@@ -211,7 +211,7 @@ class TranslationSystem {
             mobile_error: "Please enter a valid 10-digit mobile number",
             no_account_text: "New here?",
             signup_link: "Create account",
-            signup_title: "Join Agritarmers",
+            signup_title: "Join AgriFarmers",
             full_name_label: "Full Name",
             name_placeholder: "Your Name",
             name_error: "Please enter your full name",
@@ -299,7 +299,7 @@ class TranslationSystem {
             toast_online: "Back online!",
             toast_offline: "You are offline. Some features may be limited.",
             toast_login_success: "Login successful! Welcome back!",
-            toast_signup_success: "Account created successfully! Welcome to Agritarmers!",
+            toast_signup_success: "Account created successfully! Welcome to AgriFarmers!",
             toast_logout: "Logged out successfully",
             toast_otp_sent: "OTP sent successfully!",
             toast_new_otp: "New OTP sent!",
@@ -315,7 +315,7 @@ class TranslationSystem {
             invalid_input: "Invalid input",
             checking_connectivity: "Checking connectivity...",
             install_app: "Install App",
-            install_app_desc: "Install Agritarmers as app for better experience",
+            install_app_desc: "Install AgriFarmers as app for better experience",
         },
         hi: {
             app_title: "अग्रीफार्मर्स - आपका कृषि साथी",
@@ -440,12 +440,12 @@ class TranslationSystem {
             install_app_desc: "बेहतर अनुभव के लिए अग्रीफार्मर्स को ऐप के रूप में इंस्टॉल करें",
         },
         pa: {
-            app_title: "ਅਗਰੀਟਾਰਮਰਸ - ਤੁਹਾਡਾ ਖੇਤੀ ਸਾਥੀ",
-            app_name: "ਅਗਰੀਟਾਰਮਰਸ",
+            app_title: "ਅਗਰੀਫਾਰਮਰਸ - ਤੁਹਾਡਾ ਖੇਤੀ ਸਾਥੀ",
+            app_name: "ਅਗਰੀਫਾਰਮਰਸ",
             loading_message: "ਤੁਹਾਡਾ ਖੇਤੀ ਸਹਾਇਕ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
             offline_label: "ਆਫਲਾਈਨ",
             offline_mode: "ਆਫਲਾਈਨ ਮੋਡ - ਕੁਝ ਡੇਟਾ ਕੈਸ਼ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ",
-            welcome_title: "ਅਗਰੀਟਾਰਮਰਸ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ",
+            welcome_title: "ਅਗਰੀਫਾਰਮਰਸ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ",
             welcome_subtitle: "ਆਧੁਨਿਕ ਖੇਤੀ ਲਈ ਤੁਹਾਡਾ ਭਰੋਸੇਮੰਦ ਸਾਥੀ।",
             get_started_button: "ਸ਼ੁਰੂ ਕਰੋ",
             login_button: "ਲਾਗਇਨ",
@@ -455,7 +455,7 @@ class TranslationSystem {
             mobile_error: "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਵੈਧ 10-ਅੰਕੀ ਮੋਬਾਈਲ ਨੰਬਰ ਦਾਖਲ ਕਰੋ",
             no_account_text: "ਨਵੇਂ ਹੋ?",
             signup_link: "ਖਾਤਾ ਬਣਾਓ",
-            signup_title: "ਅਗਰੀਟਾਰਮਰਸ ਨਾਲ ਜੁੜੋ",
+            signup_title: "ਅਗਰੀਫਾਰਮਰਸ ਨਾਲ ਜੁੜੋ",
             full_name_label: "ਪੂਰਾ ਨਾਮ",
             name_placeholder: "ਤੁਹਾਡਾ ਨਾਮ",
             name_error: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਪੂਰਾ ਨਾਮ ਦਾਖਲ ਕਰੋ",
@@ -543,7 +543,7 @@ class TranslationSystem {
             toast_online: "ਆਨਲਾਈਨ ਵਾਪਸ!",
             toast_offline: "ਤੁਸੀਂ ਆਫਲਾਈਨ ਹੋ। ਕੁਝ ਸੁਵਿਧਾਵਾਂ ਸੀਮਿਤ ਹੋ ਸਕਦੀਆਂ ਹਨ।",
             toast_login_success: "ਲਾਗਇਨ ਸਫਲ! ਵਾਪਸੀ 'ਤੇ ਸਵਾਗਤ ਹੈ!",
-            toast_signup_success: "ਖਾਤਾ ਸਫਲਤਾਪੂਰਵਕ ਬਣਾਇਆ ਗਿਆ! ਅਗਰੀਟਾਰਮਰਸ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ!",
+            toast_signup_success: "ਖਾਤਾ ਸਫਲਤਾਪੂਰਵਕ ਬਣਾਇਆ ਗਿਆ! ਅਗਰੀਫਾਰਮਰਸ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ!",
             toast_logout: "ਸਫਲਤਾਪੂਰਵਕ ਲਾਗ ਆਊਟ ਕੀਤਾ ਗਿਆ",
             toast_otp_sent: "OTP ਸਫਲਤਾਪੂਰਵਕ ਭੇਜਿਆ ਗਿਆ!",
             toast_new_otp: "ਨਵਾਂ OTP ਭੇਜਿਆ ਗਿਆ!",
@@ -559,7 +559,7 @@ class TranslationSystem {
             invalid_input: "ਅਵੈਧ ਇਨਪੁਟ",
             checking_connectivity: "ਕਨੈਕਟੀਵਿਟੀ ਚੈੱਕ ਕਰ ਰਿਹਾ ਹੈ...",
             install_app: "ਐਪ ਇੰਸਟਾਲ ਕਰੋ",
-            install_app_desc: "ਬਿਹਤਰ ਅਨੁਭਵ ਲਈ ਅਗਰੀਟਾਰਮਰਸ ਨੂੰ ਐਪ ਦੇ ਰੂਪ ਵਿੱਚ ਇੰਸਟਾਲ ਕਰੋ",
+            install_app_desc: "ਬਿਹਤਰ ਅਨੁਭਵ ਲਈ ਅਗਰੀਫਾਰਮਰਸ ਨੂੰ ਐਪ ਦੇ ਰੂਪ ਵਿੱਚ ਇੰਸਟਾਲ ਕਰੋ",
         }
     };
 }
@@ -1008,7 +1008,7 @@ window.handleSignUp = function() {
         lastLogin: new Date().toISOString()
     };
     
-    localStorage.setItem('agritarmers_user', JSON.stringify(user));
+    localStorage.setItem('agrifarmers_user', JSON.stringify(user));
     appState.activeUser = user;
     
     PageManager.show('homePage');
@@ -1031,7 +1031,7 @@ window.handleLogin = function() {
         return;
     }
     
-    const storedUser = localStorage.getItem('agritarmers_user');
+    const storedUser = localStorage.getItem('agrifarmers_user');
     if (storedUser) {
         const user = JSON.parse(storedUser);
         if (user.mobile === mobile) {
@@ -1112,7 +1112,7 @@ window.verifyOTP = function() {
             if (appState.tempUserData.name) {
                 appState.activeUser = appState.tempUserData;
                 appState.activeUser.lastLogin = new Date().toISOString();
-                localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
+                localStorage.setItem('agrifarmers_user', JSON.stringify(appState.activeUser));
                 
                 // Show success message
                 showToast('Login successful! Redirecting...', 'success');
@@ -1419,7 +1419,7 @@ window.openSoilHealthModal = function() {
 window.closeModal = ModalManager.close;
 
 // ============================================
-// PWA INSTALLATION (FIXED - Button will show)
+// PWA INSTALLATION (IMPROVED - Direct Installation)
 // ============================================
 const PwaManager = {
     deferredPrompt: null,
@@ -1439,12 +1439,9 @@ const PwaManager = {
             e.preventDefault();
             this.deferredPrompt = e;
             
-            // Show button with delay to ensure DOM is ready
-            setTimeout(() => {
-                this.showInstallButton();
-            }, 1000);
+            // Show button immediately
+            this.showInstallButton();
             
-            // Log for debugging
             console.log('✅ PWA can be installed - showing button');
         });
         
@@ -1452,168 +1449,175 @@ const PwaManager = {
         window.addEventListener('appinstalled', () => {
             log('PWA installed successfully');
             this.hideInstallButton();
-            localStorage.setItem('agritarmers_pwa_installed', 'true');
-            showToast('App installed successfully!', 'success');
+            localStorage.setItem('agrifarmers_pwa_installed', 'true');
+            showToast('AgriFarmers installed successfully!', 'success');
         });
         
-        // Also try to detect if PWA can be installed
-        this.checkPwaCapability();
+        // Also check if we can prompt installation
+        setTimeout(() => {
+            this.checkInstallCapability();
+        }, 2000);
     },
     
     isAppInstalled() {
-        const isInstalled = window.matchMedia('(display-mode: standalone)').matches || 
-                          window.navigator.standalone === true ||
-                          localStorage.getItem('agritarmers_pwa_installed') === 'true';
-        
-        log('PWA Installation check:', { isInstalled });
-        return isInstalled;
+        return window.matchMedia('(display-mode: standalone)').matches || 
+               window.navigator.standalone === true ||
+               localStorage.getItem('agrifarmers_pwa_installed') === 'true';
     },
     
-    checkPwaCapability() {
+    checkInstallCapability() {
         // Check if we're in a browser that supports PWA
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isChrome = /Chrome/.test(navigator.userAgent);
-        const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
         
-        log('Browser info:', { isMobile, isChrome, isSafari });
-        
-        // If we haven't gotten the beforeinstallprompt event but conditions are right,
-        // show the button anyway (user can still try to install)
-        if (isMobile && (isChrome || isSafari)) {
-            setTimeout(() => {
-                if (!this.isAppInstalled() && !this.deferredPrompt) {
-                    log('Showing PWA button based on browser detection');
-                    this.showInstallButton();
-                }
-            }, 2000);
+        if (!isStandalone && (isChrome || isiOS)) {
+            this.showInstallButton();
         }
     },
     
     showInstallButton() {
-        const installButton = document.getElementById('pwa-install-button');
-        if (installButton) {
-            log('Showing PWA install button');
-            
-            // Remove hidden class and make sure it's visible
-            installButton.classList.remove('hidden');
-            installButton.style.display = 'flex';
-            installButton.style.zIndex = '9999';
-            installButton.style.position = 'fixed';
-            installButton.style.bottom = '20px';
-            installButton.style.right = '20px';
-            
-            // Add click event listener
+        let installButton = document.getElementById('pwa-install-button');
+        
+        // Create button if it doesn't exist
+        if (!installButton) {
+            installButton = document.createElement('button');
+            installButton.id = 'pwa-install-button';
+            installButton.className = 'fixed bottom-6 right-6 z-50 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded-full p-4 shadow-xl transition-all duration-300 animate-float';
+            installButton.innerHTML = `
+                <i class="fas fa-download text-xl"></i>
+                <span class="ml-2 hidden md:inline">${translator.t('install_app')}</span>
+            `;
+            installButton.title = translator.t('install_app_desc');
             installButton.onclick = (e) => {
                 e.preventDefault();
                 this.installApp();
             };
-            
-            // Add tooltip for desktop
-            installButton.title = translator.t('install_app_desc');
-            
-            // Show notification about PWA
-            setTimeout(() => {
-                showToast(translator.t('install_app_desc'), 'info', 5000);
-            }, 2000);
-            
-            log('PWA install button should now be visible');
+            document.body.appendChild(installButton);
         } else {
-            log('❌ PWA install button not found in DOM');
-            console.error('PWA install button element with ID "pwa-install-button" not found');
-            
-            // Try to create button if it doesn't exist
-            this.createInstallButton();
+            installButton.classList.remove('hidden');
         }
-    },
-    
-    createInstallButton() {
-        // Create button if it doesn't exist
-        const button = document.createElement('button');
-        button.id = 'pwa-install-button';
-        button.className = 'flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 animate-float hidden';
-        button.innerHTML = `
-            <i class="fas fa-download text-xl"></i>
-            <span class="ml-2 hidden md:inline">${translator.t('install_app')}</span>
-        `;
-        button.title = translator.t('install_app_desc');
         
-        document.body.appendChild(button);
-        
-        button.onclick = (e) => {
-            e.preventDefault();
-            this.installApp();
-        };
-        
-        log('Created PWA install button');
-        this.showInstallButton();
+        log('PWA install button shown');
     },
     
     hideInstallButton() {
         const installButton = document.getElementById('pwa-install-button');
         if (installButton) {
             installButton.classList.add('hidden');
-            installButton.style.display = 'none';
-            log('Hiding PWA install button');
         }
     },
     
     async installApp() {
-        if (!this.deferredPrompt) {
-            log('No install prompt available, showing instructions');
-            
-            // Show instructions for manual installation
-            const content = `
+        log('Attempting to install app...');
+        
+        if (this.deferredPrompt) {
+            try {
+                log('Showing browser install prompt');
+                this.deferredPrompt.prompt();
+                const { outcome } = await this.deferredPrompt.userChoice;
+                
+                log(`User choice: ${outcome}`);
+                
+                if (outcome === 'accepted') {
+                    log('User accepted installation');
+                    showToast('Installing AgriFarmers...', 'success');
+                    this.deferredPrompt = null;
+                } else {
+                    log('User declined installation');
+                    showToast('Installation cancelled. You can install later from browser menu.', 'info');
+                }
+            } catch (error) {
+                console.error('Installation error:', error);
+                this.showManualInstallInstructions();
+            }
+        } else {
+            // No prompt available, show instructions
+            this.showManualInstallInstructions();
+        }
+    },
+    
+    showManualInstallInstructions() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isAndroid = /Android/.test(navigator.userAgent);
+        
+        let instructions = '';
+        
+        if (isIOS) {
+            instructions = `
                 <div class="space-y-4">
-                    <h4 class="font-bold text-lg">How to Install Agritarmers:</h4>
+                    <h4 class="font-bold text-lg">Install AgriFarmers on iPhone/iPad:</h4>
                     <div class="space-y-3">
                         <div class="flex items-start">
                             <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">1</div>
                             <div>
-                                <p class="font-medium">On Chrome/Edge (Desktop):</p>
-                                <p class="text-sm text-gray-600">Click the <span class="font-bold">•••</span> menu → "Install Agritarmers"</p>
+                                <p class="font-medium">Tap the <span class="font-bold">Share</span> button <span class="inline-block"><i class="fas fa-share"></i></span></p>
                             </div>
                         </div>
                         <div class="flex items-start">
                             <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">2</div>
                             <div>
-                                <p class="font-medium">On Safari (iPhone/iPad):</p>
-                                <p class="text-sm text-gray-600">Tap <span class="font-bold">Share</span> → "Add to Home Screen"</p>
+                                <p class="font-medium">Scroll down and tap <span class="font-bold">"Add to Home Screen"</span></p>
                             </div>
                         </div>
                         <div class="flex items-start">
                             <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">3</div>
                             <div>
-                                <p class="font-medium">On Chrome (Android):</p>
-                                <p class="text-sm text-gray-600">Tap <span class="font-bold">⋮</span> menu → "Install app"</p>
+                                <p class="font-medium">Tap <span class="font-bold">"Add"</span> in top right corner</p>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-            
-            ModalManager.open('Install Agritarmers', content);
-            return;
+        } else if (isAndroid) {
+            instructions = `
+                <div class="space-y-4">
+                    <h4 class="font-bold text-lg">Install AgriFarmers on Android:</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">1</div>
+                            <div>
+                                <p class="font-medium">Tap the <span class="font-bold">Menu</span> button (⋮) in Chrome</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">2</div>
+                            <div>
+                                <p class="font-medium">Tap <span class="font-bold">"Install app"</span> or "Add to Home screen"</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">3</div>
+                            <div>
+                                <p class="font-medium">Tap <span class="font-bold">"Install"</span> to confirm</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            instructions = `
+                <div class="space-y-4">
+                    <h4 class="font-bold text-lg">Install AgriFarmers on Desktop:</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">1</div>
+                            <div>
+                                <p class="font-medium">In Chrome/Edge, click the <span class="font-bold">Install</span> button in address bar</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-green-100 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1">2</div>
+                            <div>
+                                <p class="font-medium">Or click <span class="font-bold">•••</span> menu → "Install AgriFarmers"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
         
-        try {
-            log('Showing installation prompt');
-            this.deferredPrompt.prompt();
-            const { outcome } = await this.deferredPrompt.userChoice;
-            
-            log(`User choice: ${outcome}`);
-            
-            if (outcome === 'accepted') {
-                log('User accepted the install prompt');
-                showToast('Installing Agritarmers...', 'success');
-                this.deferredPrompt = null;
-            } else {
-                log('User dismissed the install prompt');
-                showToast('Installation cancelled. You can install later from browser menu.', 'info');
-            }
-        } catch (error) {
-            console.error('Installation error:', error);
-            showToast('Installation failed. Try installing from browser menu.', 'error');
-        }
+        ModalManager.open('Install AgriFarmers', instructions);
     }
 };
 
@@ -1661,7 +1665,7 @@ function initApp() {
         registerServiceWorker();
         
         // Check for existing user
-        const storedUser = localStorage.getItem('agritarmers_user');
+        const storedUser = localStorage.getItem('agrifarmers_user');
         if (storedUser) {
             const user = JSON.parse(storedUser);
             appState.activeUser = user;
@@ -1700,10 +1704,10 @@ function initApp() {
             log('App initialized successfully');
             
             // Show welcome toast on first visit
-            if (!localStorage.getItem('agritarmers_visited')) {
+            if (!localStorage.getItem('agrifarmers_visited')) {
                 setTimeout(() => {
-                    showToast('Welcome to Agritarmers! Install as app for best experience.', 'info', 4000);
-                    localStorage.setItem('agritarmers_visited', 'true');
+                    showToast('Welcome to AgriFarmers! Install as app for best experience.', 'info', 4000);
+                    localStorage.setItem('agrifarmers_visited', 'true');
                 }, 1000);
             }
         }, 500);
@@ -1878,7 +1882,7 @@ window.addEventListener('load', function() {
 // ============================================
 window.addEventListener('beforeunload', function() {
     if (appState.activeUser) {
-        localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
+        localStorage.setItem('agrifarmers_user', JSON.stringify(appState.activeUser));
     }
     
     // Stop OTP timer
