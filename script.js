@@ -1545,6 +1545,56 @@ function handleLogout() {
     showPage('welcomePage');
 }
 
+// Fix for GitHub Pages PWA issues
+function fixPWAForGitHubPages() {
+    // Check if we're on GitHub Pages
+    if (window.location.hostname.includes('github.io')) {
+        // Update base href dynamically
+        const base = document.createElement('base');
+        const repoName = window.location.pathname.split('/')[1] || '';
+        base.href = repoName ? `/${repoName}/` : '/';
+        document.head.appendChild(base);
+        
+        // Update manifest href
+        const manifest = document.querySelector('link[rel="manifest"]');
+        if (manifest) {
+            manifest.href = repoName ? `/${repoName}/manifest.json` : './manifest.json';
+        }
+        
+        // Update service worker registration
+        if ('serviceWorker' in navigator) {
+            const swPath = repoName ? `/${repoName}/service-worker.js` : './service-worker.js';
+            navigator.serviceWorker.register(swPath, { scope: repoName ? `/${repoName}/` : './' })
+                .then(registration => {
+                    console.log('ServiceWorker registered for GitHub Pages:', registration);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+        }
+    }
+}
+
+// Update initialization
+document.addEventListener('DOMContentLoaded', function() {
+    fixPWAForGitHubPages();
+    initializePWA();
+    // ... rest of your initialization code
+});
+
+// Add offline detection
+window.addEventListener('online', () => {
+    document.getElementById('offlinePage').classList.add('hidden');
+    document.getElementById('app').style.display = 'block';
+    showToast('You are back online!', 'success');
+});
+
+window.addEventListener('offline', () => {
+    document.getElementById('offlinePage').classList.remove('hidden');
+    document.getElementById('app').style.display = 'none';
+    showToast('You are offline. Some features may not work.', 'error');
+});
+
 // ============================================
 // MODAL FUNCTIONS
 // ============================================
