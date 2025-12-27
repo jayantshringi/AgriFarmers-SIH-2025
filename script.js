@@ -1,6 +1,6 @@
 /*
  * Agritarmers Application Script
- * Version: 4.1.0 - Fixed OTP Display
+ * Version: 4.2.0 - Fixed OTP & Improved UI/UX
  */
 
 // ============================================
@@ -8,7 +8,7 @@
 // ============================================
 const CONFIG = {
     APP_NAME: 'Agritarmers',
-    VERSION: '4.1.0',
+    VERSION: '4.2.0',
     DEBUG_MODE: true,
 };
 
@@ -22,7 +22,9 @@ const appState = {
     tempUserData: null,
     lastGeneratedOTP: null,
     isOfflineMode: false,
-    loginAttempts: 0
+    loginAttempts: 0,
+    otpTimer: null,
+    otpTimeLeft: 120
 };
 
 // ============================================
@@ -676,11 +678,13 @@ const PageManager = {
         if (targetPage) {
             targetPage.classList.add('active');
             
-            // Focus on first input if available
-            setTimeout(() => {
-                const firstInput = targetPage.querySelector('input');
-                if (firstInput) firstInput.focus();
-            }, 100);
+            // If OTP page, setup OTP inputs
+            if (pageId === 'otpPage') {
+                setTimeout(() => {
+                    OTPManager.setupOTPInputs();
+                    OTPManager.startOTPTimer();
+                }, 100);
+            }
         }
         
         this.updateNavigation();
@@ -775,29 +779,140 @@ function populateDistricts() {
 }
 
 // ============================================
-// OTP MANAGEMENT (FIXED OTP DISPLAY)
+// OTP MANAGEMENT (FIXED & IMPROVED UI/UX)
 // ============================================
 const OTPManager = {
     generateOTP() {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         appState.lastGeneratedOTP = otp;
+        appState.otpTimeLeft = 120;
         log('Generated OTP:', otp);
         return otp;
     },
     
     isValidOTP(enteredOTP) {
         if (!appState.lastGeneratedOTP) {
+            log('No OTP generated');
             return false;
         }
         
         const isValid = enteredOTP === appState.lastGeneratedOTP;
         log('OTP Validation:', { entered: enteredOTP, expected: appState.lastGeneratedOTP, isValid });
         return isValid;
+    },
+    
+    startOTPTimer() {
+        this.stopOTPTimer();
+        
+        const timerElement = document.getElementById('timer');
+        const resendButton = document.getElementById('resendOTPBtn');
+        
+        if (timerElement) {
+            timerElement.textContent = '02:00';
+        }
+        
+        if (resendButton) {
+            resendButton.disabled = true;
+            resendButton.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+        
+        appState.otpTimer = setInterval(() => {
+            appState.otpTimeLeft--;
+            
+            const minutes = Math.floor(appState.otpTimeLeft / 60);
+            const seconds = appState.otpTimeLeft % 60;
+            
+            if (timerElement) {
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            if (appState.otpTimeLeft <= 0) {
+                this.stopOTPTimer();
+                if (timerElement) {
+                    timerElement.textContent = '00:00';
+                }
+                if (resendButton) {
+                    resendButton.disabled = false;
+                    resendButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+        }, 1000);
+    },
+    
+    stopOTPTimer() {
+        if (appState.otpTimer) {
+            clearInterval(appState.otpTimer);
+            appState.otpTimer = null;
+        }
+    },
+    
+    setupOTPInputs() {
+        const otpInputs = document.querySelectorAll('.otp-digit');
+        
+        if (otpInputs.length === 0) {
+            console.error('No OTP digit inputs found');
+            return;
+        }
+        
+        otpInputs.forEach((input, index) => {
+            input.value = '';
+            
+            input.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                
+                // Auto-focus next input
+                if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+                
+                // Check if all inputs are filled
+                const allFilled = Array.from(otpInputs).every(input => input.value.length === 1);
+                if (allFilled) {
+                    // Auto-submit after a short delay
+                    setTimeout(() => {
+                        window.verifyOTP();
+                    }, 300);
+                }
+            });
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+            
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasteData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+                if (pasteData.length === 6) {
+                    for (let i = 0; i < 6; i++) {
+                        if (otpInputs[i]) {
+                            otpInputs[i].value = pasteData[i] || '';
+                        }
+                    }
+                    setTimeout(() => {
+                        window.verifyOTP();
+                    }, 300);
+                }
+            });
+        });
+        
+        setTimeout(() => {
+            if (otpInputs[0]) {
+                otpInputs[0].focus();
+            }
+        }, 100);
+    },
+    
+    clearOTPInputs() {
+        document.querySelectorAll('.otp-digit').forEach(input => {
+            input.value = '';
+        });
     }
 };
 
 // ============================================
-// AUTHENTICATION FUNCTIONS (FIXED OTP DISPLAY)
+// AUTHENTICATION FUNCTIONS (FIXED)
 // ============================================
 window.handleSignUp = function() {
     const name = document.getElementById('signUpName')?.value.trim() || '';
@@ -852,6 +967,8 @@ window.handleSignUp = function() {
     if (locationEl) locationEl.textContent = `${user.district}, ${user.state}`;
     
     showToast(translator.t('toast_signup_success'), 'success');
+    
+    log('User signed up:', user);
 };
 
 window.handleLogin = function() {
@@ -874,7 +991,7 @@ window.handleLogin = function() {
         }
     }
     
-    // For demo, allow any mobile number
+    // New user - still proceed to OTP for demo
     appState.tempUserData = { mobile: mobile };
     proceedToOTP(mobile);
 };
@@ -882,11 +999,9 @@ window.handleLogin = function() {
 function proceedToOTP(mobile) {
     const otp = OTPManager.generateOTP();
     
-    log('OTP Generated for', mobile, ':', otp);
-    
     PageManager.show('otpPage');
     
-    // Update OTP display with 1 second delay to ensure DOM is ready
+    // Update OTP display
     setTimeout(() => {
         const otpPhoneNumber = document.getElementById('otpPhoneNumber');
         const demoOTP = document.getElementById('demoOTP');
@@ -897,84 +1012,132 @@ function proceedToOTP(mobile) {
         
         if (demoOTP) {
             demoOTP.textContent = otp;
-            demoOTP.classList.add('font-bold', 'text-green-600', 'text-xl');
-            log('OTP displayed in DOM:', otp);
         }
         
-        // Also show OTP in console for debugging
-        console.log('DEMO OTP:', otp);
-        
-        // Show toast with OTP
-        showToast(`Your OTP is: ${otp}`, 'success', 5000);
-        
-        // Auto-focus on OTP input
-        const otpInput = document.getElementById('otpInput');
-        if (otpInput) {
-            otpInput.value = '';
-            otpInput.focus();
-        }
+        // Show clear instructions
+        showToast(`Your OTP is: ${otp}. Enter it in the boxes below.`, 'success', 5000);
     }, 100);
 }
 
 window.verifyOTP = function() {
-    const otpInput = document.getElementById('otpInput');
-    const enteredOTP = otpInput?.value.trim() || '';
+    const otpInputs = document.querySelectorAll('.otp-digit');
+    let enteredOTP = '';
+    
+    otpInputs.forEach(input => {
+        enteredOTP += input.value;
+    });
     
     log('OTP Verification Attempt:', enteredOTP);
     
     if (enteredOTP.length !== 6) {
-        showToast('Please enter 6-digit OTP', 'error');
+        showToast('Please enter all 6 digits', 'error');
+        
+        // Shake animation for error
+        otpInputs.forEach(input => {
+            input.classList.add('shake-animation');
+            setTimeout(() => {
+                input.classList.remove('shake-animation');
+            }, 500);
+        });
         return;
     }
     
     if (OTPManager.isValidOTP(enteredOTP)) {
         log('OTP Verified Successfully');
+        OTPManager.stopOTPTimer();
         
-        if (appState.tempUserData) {
-            // If user has name, it's an existing user
-            if (appState.tempUserData.name) {
-                appState.activeUser = appState.tempUserData;
-                appState.activeUser.lastLogin = new Date().toISOString();
-                localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
-                
-                PageManager.show('homePage');
-                
-                const nameEl = document.getElementById('farmerName');
-                const locationEl = document.getElementById('farmerLocation');
-                if (nameEl) nameEl.textContent = appState.activeUser.name;
-                if (locationEl && appState.activeUser.district && appState.activeUser.state) {
-                    locationEl.textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
+        // Add success animation
+        otpInputs.forEach(input => {
+            input.classList.add('success-border');
+        });
+        
+        // Process login/signup
+        setTimeout(() => {
+            if (appState.tempUserData) {
+                // Existing user
+                if (appState.tempUserData.name) {
+                    appState.activeUser = appState.tempUserData;
+                    appState.activeUser.lastLogin = new Date().toISOString();
+                    localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
+                    
+                    PageManager.show('homePage');
+                    
+                    const nameEl = document.getElementById('farmerName');
+                    const locationEl = document.getElementById('farmerLocation');
+                    if (nameEl) nameEl.textContent = appState.activeUser.name;
+                    if (locationEl && appState.activeUser.district && appState.activeUser.state) {
+                        locationEl.textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
+                    }
+                    
+                    showToast(translator.t('toast_login_success'), 'success');
+                } else {
+                    // New user - go to signup
+                    PageManager.show('signUpPage');
+                    document.getElementById('signUpMobile').value = appState.tempUserData.mobile;
+                    showToast('Please complete your registration', 'info');
                 }
-                
-                showToast(translator.t('toast_login_success'), 'success');
-            } else {
-                // New user, go to signup
-                PageManager.show('signUpPage');
-                document.getElementById('signUpMobile').value = appState.tempUserData.mobile;
-                showToast(translator.t('error_no_account'), 'info');
             }
-        }
-        
-        appState.lastGeneratedOTP = null;
-        appState.tempUserData = null;
-        appState.loginAttempts = 0;
+            
+            appState.lastGeneratedOTP = null;
+            appState.tempUserData = null;
+            appState.loginAttempts = 0;
+            
+        }, 500);
         
     } else {
         appState.loginAttempts++;
         log('OTP Verification Failed, Attempt:', appState.loginAttempts);
+        
+        // Shake animation
+        otpInputs.forEach(input => {
+            input.classList.add('shake-animation');
+            setTimeout(() => {
+                input.classList.remove('shake-animation');
+            }, 500);
+        });
         
         if (appState.loginAttempts >= 3) {
             showToast('Too many failed attempts. Please try again later.', 'error');
             PageManager.show('loginPage');
             appState.loginAttempts = 0;
         } else {
-            showToast(translator.t('error_invalid_otp'), 'error');
-            if (otpInput) {
-                otpInput.value = '';
-                otpInput.focus();
-            }
+            showToast('Incorrect OTP. Please try again.', 'error');
+            
+            // Clear inputs and focus first
+            OTPManager.clearOTPInputs();
+            setTimeout(() => {
+                const firstInput = document.querySelector('.otp-digit');
+                if (firstInput) firstInput.focus();
+            }, 100);
         }
     }
+};
+
+window.resendOTP = function() {
+    if (appState.otpTimeLeft > 30) {
+        showToast(`Please wait ${appState.otpTimeLeft} seconds before resending`, 'info');
+        return;
+    }
+    
+    const otp = OTPManager.generateOTP();
+    
+    // Update OTP display
+    const demoOTP = document.getElementById('demoOTP');
+    if (demoOTP) {
+        demoOTP.textContent = otp;
+    }
+    
+    // Clear inputs and reset timer
+    OTPManager.clearOTPInputs();
+    OTPManager.startOTPTimer();
+    
+    // Focus first input
+    setTimeout(() => {
+        const firstInput = document.querySelector('.otp-digit');
+        if (firstInput) firstInput.focus();
+    }, 100);
+    
+    showToast('New OTP sent!', 'success');
 };
 
 window.handleLogout = function() {
@@ -982,6 +1145,7 @@ window.handleLogout = function() {
     appState.tempUserData = null;
     appState.lastGeneratedOTP = null;
     appState.loginAttempts = 0;
+    OTPManager.stopOTPTimer();
     
     PageManager.show('welcomePage');
     showToast(translator.t('toast_logout'), 'info');
@@ -1406,23 +1570,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // OTP Input Event Listener
-    const otpInput = document.getElementById('otpInput');
-    if (otpInput) {
-        otpInput.addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
-            if (this.value.length === 6) {
-                setTimeout(window.verifyOTP, 300);
-            }
-        });
-        
-        otpInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && this.value.length === 6) {
-                window.verifyOTP();
-            }
-        });
-    }
-    
     initApp();
 });
 
@@ -1452,4 +1599,5 @@ window.addEventListener('beforeunload', function() {
     if (appState.activeUser) {
         localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
     }
+    OTPManager.stopOTPTimer();
 });
