@@ -1,6 +1,6 @@
 /*
  * Agritarmers Application Script
- * Version: 4.0.0 - Complete Fix
+ * Version: 4.1.0 - Fixed OTP Display
  */
 
 // ============================================
@@ -8,7 +8,7 @@
 // ============================================
 const CONFIG = {
     APP_NAME: 'Agritarmers',
-    VERSION: '4.0.0',
+    VERSION: '4.1.0',
     DEBUG_MODE: true,
 };
 
@@ -665,27 +665,31 @@ const PageManager = {
             return;
         }
         
+        // Hide all pages
         this.pages.forEach(page => {
             const el = document.getElementById(page);
             if (el) el.classList.remove('active');
         });
         
+        // Show target page
         const targetPage = document.getElementById(pageId);
-        if (targetPage) targetPage.classList.add('active');
+        if (targetPage) {
+            targetPage.classList.add('active');
+            
+            // Focus on first input if available
+            setTimeout(() => {
+                const firstInput = targetPage.querySelector('input');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
         
         this.updateNavigation();
         
+        // Hide mobile menu
         const mobileMenu = document.getElementById('mobile-menu');
         if (mobileMenu) mobileMenu.classList.add('hidden');
         
         log(`Page changed to: ${pageId}`);
-        
-        if (pageId === 'otpPage') {
-            setTimeout(() => {
-                const otpInput = document.getElementById('otpInput');
-                if (otpInput) otpInput.focus();
-            }, 100);
-        }
     },
     
     updateNavigation() {
@@ -712,15 +716,15 @@ const PageManager = {
         } else {
             const guestHTML = `
                 <div class="flex items-center space-x-2">
-                    <button onclick="showPage('loginPage')" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">${translator.t('login_button')}</button>
-                    <button onclick="showPage('signUpPage')" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">${translator.t('get_started_button')}</button>
+                    <button onclick="PageManager.show('loginPage')" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">${translator.t('login_button')}</button>
+                    <button onclick="PageManager.show('signUpPage')" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">${translator.t('get_started_button')}</button>
                 </div>
             `;
             
             const mobileGuestHTML = `
                 <div class="space-y-1">
-                    <button onclick="showPage('loginPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">${translator.t('login_button')}</button>
-                    <button onclick="showPage('signUpPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-green-600 text-white hover:bg-green-700">${translator.t('get_started_button')}</button>
+                    <button onclick="PageManager.show('loginPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">${translator.t('login_button')}</button>
+                    <button onclick="PageManager.show('signUpPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-green-600 text-white hover:bg-green-700">${translator.t('get_started_button')}</button>
                 </div>
             `;
             
@@ -771,22 +775,29 @@ function populateDistricts() {
 }
 
 // ============================================
-// OTP MANAGEMENT
+// OTP MANAGEMENT (FIXED OTP DISPLAY)
 // ============================================
 const OTPManager = {
     generateOTP() {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         appState.lastGeneratedOTP = otp;
+        log('Generated OTP:', otp);
         return otp;
     },
     
     isValidOTP(enteredOTP) {
-        return enteredOTP === appState.lastGeneratedOTP;
+        if (!appState.lastGeneratedOTP) {
+            return false;
+        }
+        
+        const isValid = enteredOTP === appState.lastGeneratedOTP;
+        log('OTP Validation:', { entered: enteredOTP, expected: appState.lastGeneratedOTP, isValid });
+        return isValid;
     }
 };
 
 // ============================================
-// AUTHENTICATION FUNCTIONS
+// AUTHENTICATION FUNCTIONS (FIXED OTP DISPLAY)
 // ============================================
 window.handleSignUp = function() {
     const name = document.getElementById('signUpName')?.value.trim() || '';
@@ -833,7 +844,7 @@ window.handleSignUp = function() {
     localStorage.setItem('agritarmers_user', JSON.stringify(user));
     appState.activeUser = user;
     
-    showPage('homePage');
+    PageManager.show('homePage');
     
     const nameEl = document.getElementById('farmerName');
     const locationEl = document.getElementById('farmerLocation');
@@ -871,30 +882,54 @@ window.handleLogin = function() {
 function proceedToOTP(mobile) {
     const otp = OTPManager.generateOTP();
     
-    showPage('otpPage');
+    log('OTP Generated for', mobile, ':', otp);
     
-    document.getElementById('otpPhoneNumber').textContent = `+91 ${mobile}`;
-    document.getElementById('demoOTP').textContent = otp;
+    PageManager.show('otpPage');
     
-    const otpInput = document.getElementById('otpInput');
-    if (otpInput) {
-        otpInput.value = '';
-        setTimeout(() => otpInput.focus(), 100);
-    }
-    
-    showToast(`${translator.t('toast_otp_sent')} ${otp}`, 'success');
+    // Update OTP display with 1 second delay to ensure DOM is ready
+    setTimeout(() => {
+        const otpPhoneNumber = document.getElementById('otpPhoneNumber');
+        const demoOTP = document.getElementById('demoOTP');
+        
+        if (otpPhoneNumber) {
+            otpPhoneNumber.textContent = `+91 ${mobile}`;
+        }
+        
+        if (demoOTP) {
+            demoOTP.textContent = otp;
+            demoOTP.classList.add('font-bold', 'text-green-600', 'text-xl');
+            log('OTP displayed in DOM:', otp);
+        }
+        
+        // Also show OTP in console for debugging
+        console.log('DEMO OTP:', otp);
+        
+        // Show toast with OTP
+        showToast(`Your OTP is: ${otp}`, 'success', 5000);
+        
+        // Auto-focus on OTP input
+        const otpInput = document.getElementById('otpInput');
+        if (otpInput) {
+            otpInput.value = '';
+            otpInput.focus();
+        }
+    }, 100);
 }
 
 window.verifyOTP = function() {
     const otpInput = document.getElementById('otpInput');
     const enteredOTP = otpInput?.value.trim() || '';
     
+    log('OTP Verification Attempt:', enteredOTP);
+    
     if (enteredOTP.length !== 6) {
-        showToast(translator.t('error_invalid_otp'), 'error');
+        showToast('Please enter 6-digit OTP', 'error');
         return;
     }
     
     if (OTPManager.isValidOTP(enteredOTP)) {
+        log('OTP Verified Successfully');
+        
         if (appState.tempUserData) {
             // If user has name, it's an existing user
             if (appState.tempUserData.name) {
@@ -902,7 +937,7 @@ window.verifyOTP = function() {
                 appState.activeUser.lastLogin = new Date().toISOString();
                 localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
                 
-                showPage('homePage');
+                PageManager.show('homePage');
                 
                 const nameEl = document.getElementById('farmerName');
                 const locationEl = document.getElementById('farmerLocation');
@@ -914,7 +949,7 @@ window.verifyOTP = function() {
                 showToast(translator.t('toast_login_success'), 'success');
             } else {
                 // New user, go to signup
-                showPage('signUpPage');
+                PageManager.show('signUpPage');
                 document.getElementById('signUpMobile').value = appState.tempUserData.mobile;
                 showToast(translator.t('error_no_account'), 'info');
             }
@@ -926,9 +961,11 @@ window.verifyOTP = function() {
         
     } else {
         appState.loginAttempts++;
+        log('OTP Verification Failed, Attempt:', appState.loginAttempts);
+        
         if (appState.loginAttempts >= 3) {
             showToast('Too many failed attempts. Please try again later.', 'error');
-            showPage('loginPage');
+            PageManager.show('loginPage');
             appState.loginAttempts = 0;
         } else {
             showToast(translator.t('error_invalid_otp'), 'error');
@@ -946,7 +983,7 @@ window.handleLogout = function() {
     appState.lastGeneratedOTP = null;
     appState.loginAttempts = 0;
     
-    showPage('welcomePage');
+    PageManager.show('welcomePage');
     showToast(translator.t('toast_logout'), 'info');
 };
 
@@ -1273,9 +1310,9 @@ function initApp() {
             if (nameEl) nameEl.textContent = user.name;
             if (locationEl) locationEl.textContent = `${user.district}, ${user.state}`;
             
-            showPage('homePage');
+            PageManager.show('homePage');
         } else {
-            showPage('welcomePage');
+            PageManager.show('welcomePage');
         }
         
         PageManager.updateNavigation();
@@ -1301,7 +1338,7 @@ function initApp() {
             if (loadingScreen) loadingScreen.style.display = 'none';
             if (app) app.classList.remove('opacity-0');
             
-            showPage('welcomePage');
+            PageManager.show('welcomePage');
         }, 300);
     }
 }
@@ -1356,24 +1393,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    document.addEventListener('click', function(e) {
-        if (e.target.matches('[data-action="get-started"]') || 
-            e.target.closest('[data-action="get-started"]')) {
-            showPage('signUpPage');
-        }
-        
-        if (e.target.matches('[data-action="login"]') || 
-            e.target.closest('[data-action="login"]')) {
-            showPage('loginPage');
-        }
+    // Add event listeners for Get Started buttons
+    document.querySelectorAll('[data-action="get-started"]').forEach(button => {
+        button.addEventListener('click', function() {
+            PageManager.show('signUpPage');
+        });
     });
     
+    document.querySelectorAll('[data-action="login"]').forEach(button => {
+        button.addEventListener('click', function() {
+            PageManager.show('loginPage');
+        });
+    });
+    
+    // OTP Input Event Listener
     const otpInput = document.getElementById('otpInput');
     if (otpInput) {
         otpInput.addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
             if (this.value.length === 6) {
-                setTimeout(verifyOTP, 300);
+                setTimeout(window.verifyOTP, 300);
+            }
+        });
+        
+        otpInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && this.value.length === 6) {
+                window.verifyOTP();
             }
         });
     }
@@ -1395,7 +1440,7 @@ window.addEventListener('load', function() {
             if (loadingScreen) loadingScreen.style.display = 'none';
             if (app) app.classList.remove('opacity-0');
             
-            showPage('welcomePage');
+            PageManager.show('welcomePage');
         }, 1000);
     }
 });
