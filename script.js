@@ -1,6 +1,6 @@
 /*
  * Agrifarmers Application Script
- * Version: 2.5.0 - Web Edition
+ * Version: 2.5.1 - Web Edition (Fixed Weather API)
  */
 // ============================================
 // PWA SERVICE WORKER REGISTRATION (GitHub Pages Compatible)
@@ -52,7 +52,7 @@ const CONFIG = {
     
     // App settings
     APP_NAME: 'Agrifarmers',
-    VERSION: '2.5.0',
+    VERSION: '2.5.1',
     DEBUG_MODE: true,
 };
 
@@ -136,7 +136,7 @@ const translations = {
         connect_internet: "Connect to internet for real-time updates",
         
         // Seed Modal
-        seed_recommendation: "Recommended for {season} Season",
+        seed_recommendation: "{season} Season",
         seed_tip: "Tip: Always use certified seeds from authorized dealers for better yield.",
         seed_consult: "Consult with local agriculture officer for region-specific recommendations.",
         
@@ -217,6 +217,14 @@ const translations = {
         error_no_account: "No account found. Please sign up first.",
         error_invalid_otp: "Invalid OTP. Please try again.",
         error_network: "Network error. Please check your connection.",
+        retry: "Retry",
+        close: "Close",
+        online: "Online",
+        offline_limited: "Offline - Limited functionality",
+        tip: "Tip",
+        important: "Important",
+        invalid_input: "Invalid input",
+        checking_connectivity: "Checking connectivity...",
     },
     hi: {
         // App metadata
@@ -375,6 +383,14 @@ const translations = {
         error_no_account: "कोई खाता नहीं मिला। कृपया पहले साइन अप करें।",
         error_invalid_otp: "अमान्य ओटीपी। कृपया पुनः प्रयास करें।",
         error_network: "नेटवर्क त्रुटि। कृपया अपना कनेक्शन जांचें।",
+        retry: "पुनः प्रयास करें",
+        close: "बंद करें",
+        online: "ऑनलाइन",
+        offline_limited: "ऑफलाइन - सीमित कार्यक्षमता",
+        tip: "टिप",
+        important: "महत्वपूर्ण",
+        invalid_input: "अमान्य इनपुट",
+        checking_connectivity: "कनेक्टिविटी जांच रहा है...",
     },
     pa: {
         // App metadata
@@ -533,6 +549,14 @@ const translations = {
         error_no_account: "ਕੋਈ ਖਾਤਾ ਨਹੀਂ ਮਿਲਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਸਾਈਨ ਅੱਪ ਕਰੋ।",
         error_invalid_otp: "ਅਵੈਧ ਓਟੀਪੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
         error_network: "ਨੈੱਟਵਰਕ ਗਲਤੀ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ।",
+        retry: "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+        close: "ਬੰਦ ਕਰੋ",
+        online: "ਔਨਲਾਈਨ",
+        offline_limited: "ਔਫਲਾਈਨ - ਸੀਮਿਤ ਕਾਰਜਸ਼ੀਲਤਾ",
+        tip: "ਟਿਪ",
+        important: "ਮਹੱਤਵਪੂਰਨ",
+        invalid_input: "ਅਵੈਧ ਇਨਪੁੱਟ",
+        checking_connectivity: "ਕਨੈਕਟੀਵਿਟੀ ਦੀ ਜਾਂਚ ਕਰ ਰਿਹਾ ਹੈ...",
     }
 };
 
@@ -605,9 +629,6 @@ class TranslationSystem {
         this.updateLanguageDisplay();
         this.applyTranslations();
         
-        // Show success message
-        this.showLanguageChangeMessage(langCode);
-        
         console.log(`🌐 Language changed to: ${langCode}`);
     }
     
@@ -634,9 +655,6 @@ class TranslationSystem {
         if (titleTranslation) {
             document.title = titleTranslation;
         }
-        
-        // 3. Update any dynamic content that was generated before translation
-        this.updateDynamicContent();
         
         console.log('🌐 Translations applied');
     }
@@ -675,48 +693,6 @@ class TranslationSystem {
             // For regular elements, set text content
             element.textContent = translation;
         }
-    }
-    
-    updateDynamicContent() {
-        // Update user welcome message if user is logged in
-        if (appState.activeUser) {
-            const nameEl = document.getElementById('farmerName');
-            const locationEl = document.getElementById('farmerLocation');
-            
-            if (nameEl) {
-                nameEl.textContent = appState.activeUser.name;
-            }
-            
-            if (locationEl && appState.activeUser.district && appState.activeUser.state) {
-                locationEl.textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
-            }
-        }
-        
-        // Update any modal content that might be open
-        this.updateOpenModals();
-    }
-    
-    updateOpenModals() {
-        // This will be called to update modal content when language changes
-        const modalContainer = document.getElementById('modal-container');
-        if (!modalContainer.classList.contains('hidden')) {
-            // If a modal is open, we might need to refresh its content
-            console.log('Modal is open, may need to refresh content');
-        }
-    }
-    
-    showLanguageChangeMessage(langCode) {
-        const langNames = {
-            'en': 'English',
-            'hi': 'Hindi',
-            'pa': 'Punjabi'
-        };
-        
-        const message = this.getTranslation('toast_language_changed', { 
-            language: langNames[langCode] || langCode 
-        });
-        
-        showToast(`${langNames[langCode]} - ਭਾਸ਼ਾ ਬਦਲੀ ਗਈ है - भाषा बदली गई है`, 'success', 2000);
     }
     
     // Helper method for dynamic content generation
@@ -975,6 +951,441 @@ const PageManager = {
 };
 
 // ============================================
+// DISTRICT DATA (Moved to top to prevent loading issues)
+// ============================================
+const districtData = {
+    "Haryana": ["Ambala", "Bhiwani", "Charkhi Dadri", "Faridabad", "Fatehabad", "Gurugram", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mahendragarh", "Nuh", "Palwal", "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"],
+    "Punjab": ["Amritsar", "Barnala", "Bathinda", "Faridkot", "Fatehgarh Sahib", "Fazilka", "Ferozepur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Mansa", "Moga", "Mohali", "Muktsar", "Pathankot", "Patiala", "Rupnagar", "Sangrur", "Shaheed Bhagat Singh Nagar", "Tarn Taran"],
+    "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "North Delhi", "North East Delhi", "North West Delhi", "Shahdara", "South Delhi", "South East Delhi", "South West Delhi", "West Delhi"]
+};
+
+// ============================================
+// FORM HANDLING
+// ============================================
+function populateStates() {
+    try {
+        const stateSelect = document.getElementById('signUpState');
+        if (!stateSelect) {
+            console.log('State select element not found');
+            return;
+        }
+        
+        // Clear existing options except the first one
+        stateSelect.innerHTML = '<option value="" data-translate="select_state">Select State</option>';
+        
+        // Add states alphabetically
+        const states = Object.keys(districtData).sort();
+        states.forEach(state => {
+            const option = document.createElement('option');
+            option.value = state;
+            option.textContent = state;
+            stateSelect.appendChild(option);
+        });
+        
+        log('States populated successfully');
+    } catch (error) {
+        console.error('Error populating states:', error);
+    }
+}
+
+function populateDistricts() {
+    const stateSelect = document.getElementById('signUpState');
+    const districtSelect = document.getElementById('signUpDistrict');
+    
+    if (!stateSelect || !districtSelect) return;
+    
+    const selectedState = stateSelect.value;
+    
+    // Clear districts
+    districtSelect.innerHTML = '<option value="" data-translate="select_district">Select District</option>';
+    
+    if (selectedState && districtData[selectedState]) {
+        // Add districts for selected state
+        districtData[selectedState].forEach(district => {
+            const option = document.createElement('option');
+            option.value = district;
+            option.textContent = district;
+            districtSelect.appendChild(option);
+        });
+        
+        districtSelect.disabled = false;
+    } else {
+        districtSelect.disabled = true;
+    }
+}
+
+// ============================================
+// NETWORK MANAGER
+// ============================================
+const NetworkManager = {
+    isOnline: navigator.onLine,
+    
+    init() {
+        this.updateNetworkStatus();
+        this.setupEventListeners();
+    },
+    
+    setupEventListeners() {
+        window.addEventListener('online', () => {
+            this.isOnline = true;
+            this.updateNetworkStatus();
+            showToast(translator.t('toast_online'), 'success');
+        });
+        
+        window.addEventListener('offline', () => {
+            this.isOnline = false;
+            this.updateNetworkStatus();
+            showToast(translator.t('toast_offline'), 'info', 3000);
+        });
+    },
+    
+    updateNetworkStatus() {
+        const offlineIndicator = document.getElementById('offline-indicator');
+        const networkStatus = document.getElementById('network-status');
+        const offlineBanner = document.getElementById('offline-mode-banner');
+        
+        if (this.isOnline) {
+            if (offlineIndicator) offlineIndicator.classList.add('hidden');
+            if (offlineBanner) offlineBanner.classList.add('hidden');
+            
+            if (networkStatus) {
+                networkStatus.textContent = translator.t('online');
+                networkStatus.className = 'fixed top-16 left-0 right-0 z-40 text-center p-2 text-sm font-medium bg-green-500 text-white';
+                setTimeout(() => {
+                    if (networkStatus) networkStatus.classList.add('hidden');
+                }, 2000);
+            }
+        } else {
+            if (offlineIndicator) offlineIndicator.classList.remove('hidden');
+            if (offlineBanner) offlineBanner.classList.remove('hidden');
+            
+            if (networkStatus) {
+                networkStatus.textContent = translator.t('offline_limited');
+                networkStatus.className = 'fixed top-16 left-0 right-0 z-40 text-center p-2 text-sm font-medium bg-yellow-500 text-white';
+            }
+        }
+        
+        // Update the global app state
+        appState.isOfflineMode = !this.isOnline;
+    }
+};
+
+// ============================================
+// OFFLINE DATA CACHE
+// ============================================
+const OfflineCache = {
+  async cacheWeatherData(data) {
+    try {
+      localStorage.setItem('cached_weather', JSON.stringify({
+        data: data,
+        timestamp: Date.now()
+      }));
+    } catch (error) {
+      console.log('Weather cache error:', error);
+    }
+  },
+  
+  async getCachedWeatherData() {
+    try {
+      const cached = localStorage.getItem('cached_weather');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        // Return data if less than 1 hour old
+        if (Date.now() - parsed.timestamp < 60 * 60 * 1000) {
+          return parsed.data;
+        }
+      }
+    } catch (error) {
+      console.log('Get cached weather error:', error);
+    }
+    return null;
+  },
+  
+  async cacheMarketPrices(prices) {
+    try {
+      localStorage.setItem('cached_prices', JSON.stringify({
+        data: prices,
+        timestamp: Date.now()
+      }));
+    } catch (error) {
+      console.log('Prices cache error:', error);
+    }
+  },
+  
+  async getCachedMarketPrices() {
+    try {
+      const cached = localStorage.getItem('cached_prices');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        // Return data if less than 24 hours old
+        if (Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
+          return parsed.data;
+        }
+      }
+    } catch (error) {
+      console.log('Get cached prices error:', error);
+    }
+    return null;
+  },
+  
+  clearOldCache() {
+    // Clear cache older than 7 days
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    
+    ['cached_weather', 'cached_prices'].forEach(key => {
+      try {
+        const cached = localStorage.getItem(key);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.timestamp < weekAgo) {
+            localStorage.removeItem(key);
+          }
+        }
+      } catch (error) {
+        // Silently fail
+      }
+    });
+  }
+};
+
+// Initialize offline cache
+OfflineCache.clearOldCache();
+
+// ============================================
+// WEATHER SERVICE (FIXED VERSION - REAL API INTEGRATION)
+// ============================================
+const WeatherService = {
+    async getWeatherData(city = null) {
+        try {
+            let location = city || 'Delhi';
+            
+            if (appState.activeUser && appState.activeUser.district) {
+                location = appState.activeUser.district;
+            }
+            
+            // FIRST: Check if we're online
+            if (NetworkManager.isOnline) {
+                // Try to fetch REAL weather data
+                const realWeather = await this.fetchRealWeather(location);
+                if (realWeather && !realWeather.error) {
+                    // Cache the real data
+                    await OfflineCache.cacheWeatherData(realWeather);
+                    console.log('✅ Using real weather API data');
+                    return {
+                        ...realWeather,
+                        isMockData: false,
+                        source: 'api'
+                    };
+                }
+            }
+            
+            // SECOND: If online fetch failed or we're offline, try cache
+            const cachedData = await OfflineCache.getCachedWeatherData();
+            if (cachedData) {
+                console.log('🔄 Using cached weather data');
+                return {
+                    ...cachedData,
+                    isMockData: false,
+                    source: 'cache',
+                    cached: true
+                };
+            }
+            
+            // THIRD: Only as last resort, use mock data
+            console.log("⚠️ Using offline weather data - no real API data available");
+            return {
+                ...this.getMockWeatherData(),
+                isMockData: true,
+                source: 'mock'
+            };
+            
+        } catch (error) {
+            log('Weather API error:', error);
+            // Try cache first on error
+            const cachedData = await OfflineCache.getCachedWeatherData();
+            if (cachedData) {
+                return {
+                    ...cachedData,
+                    isMockData: false,
+                    source: 'cache',
+                    cached: true
+                };
+            }
+            // Last resort: mock data
+            return {
+                ...this.getMockWeatherData(),
+                isMockData: true,
+                source: 'mock'
+            };
+        }
+    },
+    
+    async fetchRealWeather(location) {
+        try {
+            const apiKey = CONFIG.WEATHER_API_KEY;
+            
+            // Check if API key is valid
+            if (!apiKey || apiKey === '44a55de0f2e0674cb9160f50459d51d4') {
+                console.warn('⚠️ Using default/possibly invalid API key');
+            }
+            
+            // IMPORTANT: Add &units=metric for Celsius
+            const url = `${CONFIG.WEATHER_API_URL}/weather?q=${encodeURIComponent(location)}&appid=${apiKey}&units=metric`;
+            
+            console.log("🌤️ Fetching weather from:", url);
+            
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                console.error(`❌ Weather API error: ${response.status}`);
+                if (response.status === 401) {
+                    return { error: 'Invalid API key', status: 401 };
+                }
+                if (response.status === 404) {
+                    // Try with default location
+                    const defaultUrl = `${CONFIG.WEATHER_API_URL}/weather?q=Delhi&appid=${apiKey}&units=metric`;
+                    const defaultResponse = await fetch(defaultUrl);
+                    if (defaultResponse.ok) {
+                        const data = await defaultResponse.json();
+                        return this.transformWeatherData(data);
+                    }
+                }
+                throw new Error(`Weather API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return this.transformWeatherData(data);
+            
+        } catch (error) {
+            console.error("❌ Failed to fetch real weather:", error);
+            return null;
+        }
+    },
+    
+    transformWeatherData(data) {
+        return {
+            current: {
+                temp: Math.round(data.main.temp),
+                feelsLike: Math.round(data.main.feels_like),
+                humidity: data.main.humidity,
+                windSpeed: Math.round(data.wind.speed * 3.6), // Convert m/s to km/h
+                windDirection: this.getWindDirection(data.wind.deg),
+                description: data.weather[0].description,
+                icon: data.weather[0].icon,
+                pressure: data.main.pressure,
+                sunrise: new Date(data.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                sunset: new Date(data.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                visibility: (data.visibility / 1000).toFixed(1) // Convert meters to km
+            },
+            location: `${data.name}, ${data.sys.country}`,
+            coordinates: {
+                lat: data.coord.lat,
+                lon: data.coord.lon
+            }
+        };
+    },
+    
+    getWindDirection(degrees) {
+        if (degrees === undefined) return 'N/A';
+        const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        const index = Math.round(degrees / 45) % 8;
+        return directions[index] || 'N';
+    },
+    
+    getWeatherIcon(iconCode) {
+        const iconMap = {
+            '01d': 'fas fa-sun text-yellow-500',
+            '01n': 'fas fa-moon text-gray-400',
+            '02d': 'fas fa-cloud-sun text-orange-400',
+            '02n': 'fas fa-cloud-moon text-gray-500',
+            '03d': 'fas fa-cloud text-gray-500',
+            '03n': 'fas fa-cloud text-gray-600',
+            '04d': 'fas fa-cloud text-gray-600',
+            '04n': 'fas fa-cloud text-gray-700',
+            '09d': 'fas fa-cloud-rain text-blue-500',
+            '09n': 'fas fa-cloud-rain text-blue-600',
+            '10d': 'fas fa-cloud-sun-rain text-blue-400',
+            '10n': 'fas fa-cloud-moon-rain text-blue-500',
+            '11d': 'fas fa-bolt text-yellow-600',
+            '11n': 'fas fa-bolt text-yellow-700',
+            '13d': 'fas fa-snowflake text-blue-300',
+            '13n': 'fas fa-snowflake text-blue-400',
+            '50d': 'fas fa-smog text-gray-400',
+            '50n': 'fas fa-smog text-gray-500'
+        };
+        
+        return iconMap[iconCode] || 'fas fa-cloud text-gray-500';
+    },
+    
+    getMockWeatherData() {
+        return {
+            current: {
+                temp: 28,
+                feelsLike: 30,
+                humidity: 65,
+                windSpeed: '12',
+                windDirection: 'NE',
+                description: 'Partly Cloudy',
+                icon: '02d',
+                pressure: 1013,
+                sunrise: '06:15',
+                sunset: '18:45',
+                visibility: '10'
+            },
+            location: appState.activeUser?.district || 'Delhi',
+            coordinates: { lat: 28.7041, lon: 77.1025 }
+        };
+    },
+    
+    // DEBUG FUNCTION: Test API connection
+    async testAPI() {
+        console.clear();
+        console.log("=== 🌤️ Weather API Debug Test ===");
+        
+        const apiKey = CONFIG.WEATHER_API_KEY;
+        const testUrl = `https://api.openweathermap.org/data/2.5/weather?q=Delhi&appid=${apiKey}&units=metric`;
+        
+        console.log("🔍 Testing OpenWeather API...");
+        console.log("API Key (first 8 chars):", apiKey.substring(0, 8) + "...");
+        console.log("Full API Key:", apiKey);
+        console.log("URL:", testUrl);
+        console.log("Network Status:", NetworkManager.isOnline ? 'Online ✅' : 'Offline ❌');
+        
+        try {
+            const response = await fetch(testUrl);
+            console.log("✅ Response status:", response.status);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log("✅ API is WORKING! Data received:");
+                console.log("Location:", data.name);
+                console.log("Temperature:", data.main.temp + "°C");
+                console.log("Weather:", data.weather[0].description);
+                console.log("Full response:", data);
+                
+                showToast("✅ Weather API is working! Temperature: " + data.main.temp + "°C", 'success', 5000);
+                return { success: true, data: data };
+            } else {
+                console.log("❌ API Failed. Status:", response.status);
+                if (response.status === 401) {
+                    console.log("❌ INVALID API KEY! Get a new one from: https://home.openweathermap.org/api_keys");
+                    console.log("💡 TIP: Your current key might be:", apiKey);
+                    showToast("❌ Invalid API Key. Get a new one from OpenWeather", 'error', 5000);
+                } else if (response.status === 429) {
+                    console.log("❌ Rate limit exceeded. Try again later.");
+                    showToast("⚠️ Rate limit exceeded. Try again later.", 'warning', 5000);
+                }
+                return { success: false, status: response.status };
+            }
+        } catch (error) {
+            console.error("❌ Test Failed:", error);
+            showToast("❌ API Test Failed: " + error.message, 'error', 5000);
+            return { success: false, error: error.message };
+        }
+    }
+};
+
+// ============================================
 // WEATHER MODULE (Translated)
 // ============================================
 async function showWeatherModal() {
@@ -997,6 +1408,7 @@ async function showWeatherModal() {
         // Fetch weather data
         const weatherData = await WeatherService.getWeatherData();
         const isOfflineData = weatherData.isMockData || !NetworkManager.isOnline;
+        const isCachedData = weatherData.source === 'cache';
         
         // Get current season for advisory
         let advisoryMessage = translator.t('good_weather_alert');
@@ -1018,11 +1430,16 @@ async function showWeatherModal() {
                         day: 'numeric' 
                     })}</p>
                     ${isOfflineData ? `
-                        <div class="inline-block mt-2 px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
-                            <i class="fas fa-wifi-slash mr-1"></i>
-                            <span data-translate="offline_weather">Offline Data</span>
+                        <div class="inline-block mt-2 px-3 py-1 ${isCachedData ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'} text-xs rounded-full">
+                            <i class="fas ${isCachedData ? 'fa-database' : 'fa-wifi-slash'} mr-1"></i>
+                            <span>${isCachedData ? 'Cached Data' : translator.t('offline_weather')}</span>
                         </div>
-                    ` : ''}
+                    ` : `
+                        <div class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                            <i class="fas fa-wifi mr-1"></i>
+                            <span>Live Data</span>
+                        </div>
+                    `}
                 </div>
                 
                 <!-- Current Weather -->
@@ -1104,6 +1521,18 @@ async function showWeatherModal() {
                         </div>
                     </div>
                 </div>
+                
+                <!-- Debug section -->
+                <div class="mt-8 pt-4 border-t border-gray-200">
+                    <button onclick="debugWeatherAPI()" 
+                        class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded mr-2">
+                        🔍 Test API Connection
+                    </button>
+                    <button onclick="showWeatherSourceInfo()" 
+                        class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                        ℹ️ Data Source Info
+                    </button>
+                </div>
             </div>
         `;
         
@@ -1126,6 +1555,9 @@ async function showWeatherModal() {
                 <div class="flex flex-col gap-2">
                     <button onclick="showWeatherModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
                         ${translator.t('retry') || 'Retry'}
+                    </button>
+                    <button onclick="debugWeatherAPI()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors">
+                        🔍 Debug API
                     </button>
                     <button onclick="ModalManager.close()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
                         ${translator.t('close') || 'Close'}
@@ -1267,54 +1699,6 @@ function showCropCalendarModal() {
 }
 
 // ============================================
-// FORM HANDLING
-// ============================================
-function populateStates() {
-    const stateSelect = document.getElementById('signUpState');
-    if (!stateSelect) return;
-    
-    // Clear existing options except the first one
-    stateSelect.innerHTML = '<option value="" data-translate="select_state">Select State</option>';
-    
-    // Add states alphabetically
-    const states = Object.keys(districtData).sort();
-    states.forEach(state => {
-        const option = document.createElement('option');
-        option.value = state;
-        option.textContent = state;
-        stateSelect.appendChild(option);
-    });
-    
-    log('States populated');
-}
-
-function populateDistricts() {
-    const stateSelect = document.getElementById('signUpState');
-    const districtSelect = document.getElementById('signUpDistrict');
-    
-    if (!stateSelect || !districtSelect) return;
-    
-    const selectedState = stateSelect.value;
-    
-    // Clear districts
-    districtSelect.innerHTML = '<option value="" data-translate="select_district">Select District</option>';
-    
-    if (selectedState && districtData[selectedState]) {
-        // Add districts for selected state
-        districtData[selectedState].forEach(district => {
-            const option = document.createElement('option');
-            option.value = district;
-            option.textContent = district;
-            districtSelect.appendChild(option);
-        });
-        
-        districtSelect.disabled = false;
-    } else {
-        districtSelect.disabled = true;
-    }
-}
-
-// ============================================
 // GLOBAL FUNCTIONS
 // ============================================
 window.showPage = PageManager.show;
@@ -1381,438 +1765,69 @@ window.openSoilHealthModal = () => {
 window.closeModal = ModalManager.close;
 
 // ============================================
-// INITIALIZATION
+// DEBUG FUNCTIONS
 // ============================================
-document.addEventListener('DOMContentLoaded', function() {
-    // Mobile menu toggle
-    const mobileMenuBtn = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
+window.debugWeatherAPI = async function() {
+    console.clear();
+    console.log("=== 🌤️ Weather API Debug ===");
+    const result = await WeatherService.testAPI();
     
-    if (mobileMenuBtn && mobileMenu) {
-        mobileMenuBtn.addEventListener('click', function() {
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
-    
-    // State change listener
-    const stateSelect = document.getElementById('signUpState');
-    if (stateSelect) {
-        stateSelect.addEventListener('change', populateDistricts);
-    }
-    
-    // Form validation on blur
-    const validateOnBlur = (fieldId, validator) => {
-        const field = document.getElementById(fieldId);
-        if (field) {
-            field.addEventListener('blur', function() {
-                if (validator(this.value)) {
-                    clearFieldError(fieldId);
-                } else {
-                    const messages = {
-                        'signUpName': translator.t('name_error'),
-                        'signUpMobile': translator.t('mobile_error'),
-                        'loginMobile': translator.t('mobile_error')
-                    };
-                    showFieldError(fieldId, messages[fieldId] || translator.t('invalid_input') || 'Invalid input');
-                }
-            });
-        }
-    };
-    
-    validateOnBlur('signUpName', isValidName);
-    validateOnBlur('signUpMobile', isValidMobile);
-    validateOnBlur('loginMobile', isValidMobile);
-    
-    // Lazy load images
-    const lazyImages = document.querySelectorAll('.lazy-image');
-    const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                const src = img.getAttribute('data-src');
-                if (src) {
-                    img.src = src;
-                    img.classList.add('loaded');
-                }
-                imageObserver.unobserve(img);
-            }
-        });
-    });
-    
-    lazyImages.forEach(img => imageObserver.observe(img));
-});
-
-window.addEventListener('load', function() {
-    log('App starting initialization...');
-    
-    const loadingScreen = document.getElementById('loadingScreen');
-    const loadingProgress = document.getElementById('loading-progress');
-    const app = document.getElementById('app');
-    
-    const updateLoading = (message) => {
-        if (loadingProgress) {
-            loadingProgress.textContent = message;
-        }
-    };
-    
-    updateLoading('Initializing app...');
-    
-    setTimeout(function() {
-        updateLoading('Loading network manager...');
-        NetworkManager.init();
-        
-        updateLoading('Loading translation system...');
-        translator.init();
-        
-        updateLoading('Loading states data...');
-        populateStates();
-        
-        updateLoading('Setting up navigation...');
-        PageManager.updateNavigation();
-        
-        appState.isInitialized = true;
-        
-        setTimeout(() => {
-            if (loadingScreen) {
-                loadingScreen.style.display = 'none';
-            }
-            
-            if (app) {
-                app.classList.remove('opacity-0');
-            }
-            
-            log('App initialized successfully');
-            
-            if (!localStorage.getItem('agrifarmers_visited')) {
-                setTimeout(() => {
-                    showToast('Welcome to Agrifarmers!', 'info', 3000);
-                    localStorage.setItem('agrifarmers_visited', 'true');
-                }, 1000);
-            }
-            
-            // Show app version
-            const versionEl = document.getElementById('app-version');
-            if (versionEl) {
-                versionEl.textContent = CONFIG.VERSION;
-            }
-            
-        }, 500);
-        
-    }, 800);
-});
-
-// ============================================
-// PWA INSTALLATION PROMPT
-// ============================================
-const PwaManager = {
-  deferredPrompt: null,
-  
-  init() {
-    // Listen for beforeinstallprompt event
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent the mini-infobar from appearing on mobile
-      e.preventDefault();
-      // Stash the event so it can be triggered later
-      this.deferredPrompt = e;
-      // Show custom install button if not already installed
-      this.showInstallButton();
-      
-      console.log('PWA install prompt available');
-    });
-    
-    // Listen for app installed event
-    window.addEventListener('appinstalled', (evt) => {
-      console.log('PWA installed successfully');
-      this.hideInstallButton();
-      showToast('Agrifarmers installed successfully!', 'success');
-    });
-    
-    // Check if app is already installed
-    this.checkIfAppIsInstalled();
-  },
-  
-  showInstallButton() {
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches || 
-        window.navigator.standalone === true) {
-      return;
-    }
-    
-    // Create or show install button
-    let installBtn = document.getElementById('pwa-install-button');
-    
-    if (!installBtn) {
-      installBtn = document.createElement('button');
-      installBtn.id = 'pwa-install-button';
-      installBtn.className = 'fixed bottom-4 right-4 z-50 bg-[var(--primary-green)] text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition-colors';
-      installBtn.innerHTML = '<i class="fas fa-download text-xl"></i>';
-      installBtn.title = 'Install Agrifarmers App';
-      installBtn.addEventListener('click', () => this.installApp());
-      document.body.appendChild(installBtn);
-    }
-  },
-  
-  hideInstallButton() {
-    const installBtn = document.getElementById('pwa-install-button');
-    if (installBtn) {
-      installBtn.remove();
-    }
-  },
-  
-  async installApp() {
-    if (!this.deferredPrompt) {
-      showToast('App installation not available', 'info');
-      return;
-    }
-    
-    // Show the install prompt
-    this.deferredPrompt.prompt();
-    
-    // Wait for the user to respond to the prompt
-    const { outcome } = await this.deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
-      this.deferredPrompt = null;
-      this.hideInstallButton();
+    if (result.success) {
+        showToast("✅ Weather API is working! Temperature: " + result.data.main.temp + "°C", 'success', 5000);
     } else {
-      console.log('User dismissed the install prompt');
+        showToast("❌ Weather API failed. Check console for details.", 'error', 5000);
     }
-  },
-  
-  checkIfAppIsInstalled() {
-    if (window.matchMedia('(display-mode: standalone)').matches || 
-        window.navigator.standalone === true) {
-      console.log('App is running in standalone mode');
-      this.hideInstallButton();
-      
-      // Show banner for installed PWA
-      setTimeout(() => {
-        showToast('Welcome to Agrifarmers PWA!', 'success', 3000);
-      }, 1000);
-    }
-  }
 };
 
-// Initialize PWA manager when app loads
-document.addEventListener('DOMContentLoaded', function() {
-  // ... existing DOMContentLoaded code ...
-  
-  // Add this line at the end of the DOMContentLoaded function
-  PwaManager.init();
-});
-
-
-// Handle page visibility change
-document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'visible' && appState.isInitialized) {
-        log('App resumed from background');
-        NetworkManager.updateNetworkStatus();
-    }
-});
-
-// Handle beforeunload for saving state
-window.addEventListener('beforeunload', function() {
-    // Save any pending data
-    if (appState.activeUser) {
-        localStorage.setItem('agrifarmers_user', JSON.stringify(appState.activeUser));
-    }
-});
-
-// ============================================
-// OFFLINE DATA CACHE
-// ============================================
-const OfflineCache = {
-  async cacheWeatherData(data) {
-    try {
-      localStorage.setItem('cached_weather', JSON.stringify({
-        data: data,
-        timestamp: Date.now()
-      }));
-    } catch (error) {
-      console.log('Weather cache error:', error);
-    }
-  },
-  
-  async getCachedWeatherData() {
-    try {
-      const cached = localStorage.getItem('cached_weather');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        // Return data if less than 1 hour old
-        if (Date.now() - parsed.timestamp < 60 * 60 * 1000) {
-          return parsed.data;
-        }
-      }
-    } catch (error) {
-      console.log('Get cached weather error:', error);
-    }
-    return null;
-  },
-  
-  async cacheMarketPrices(prices) {
-    try {
-      localStorage.setItem('cached_prices', JSON.stringify({
-        data: prices,
-        timestamp: Date.now()
-      }));
-    } catch (error) {
-      console.log('Prices cache error:', error);
-    }
-  },
-  
-  async getCachedMarketPrices() {
-    try {
-      const cached = localStorage.getItem('cached_prices');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        // Return data if less than 24 hours old
-        if (Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
-          return parsed.data;
-        }
-      }
-    } catch (error) {
-      console.log('Get cached prices error:', error);
-    }
-    return null;
-  },
-  
-  clearOldCache() {
-    // Clear cache older than 7 days
-    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    
-    ['cached_weather', 'cached_prices'].forEach(key => {
-      try {
-        const cached = localStorage.getItem(key);
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed.timestamp < weekAgo) {
-            localStorage.removeItem(key);
-          }
-        }
-      } catch (error) {
-        // Silently fail
-      }
-    });
-  }
-};
-
-// Initialize offline cache
-OfflineCache.clearOldCache();
-
-// ============================================
-// NETWORK MANAGER (Updated)
-// ============================================
-const NetworkManager = {
-    isOnline: navigator.onLine,
-    
-    init() {
-        this.updateNetworkStatus();
-        this.setupEventListeners();
-    },
-    
-    setupEventListeners() {
-        window.addEventListener('online', () => {
-            this.isOnline = true;
-            this.updateNetworkStatus();
-            showToast(translator.t('toast_online'), 'success');
+window.showWeatherSourceInfo = function() {
+    const content = `
+        <div class="space-y-4">
+            <h4 class="font-bold text-lg">ℹ️ Weather Data Source Info</h4>
             
-            // Refresh weather when back online
-            if (ModalManager.currentModal === 'weatherModal') {
-                showWeatherModal();
-            }
-        });
-        
-        window.addEventListener('offline', () => {
-            this.isOnline = false;
-            this.updateNetworkStatus();
-            showToast(translator.t('toast_offline'), 'info', 3000);
-        });
-    },
+            <div class="space-y-3">
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">API Status:</p>
+                    <p>• Online: ${NetworkManager.isOnline ? '✅ Yes' : '❌ No'}</p>
+                    <p>• API Key: ${CONFIG.WEATHER_API_KEY.substring(0, 8)}...</p>
+                    <p>• Last Test: <span id="last-api-test">Not tested</span></p>
+                </div>
+                
+                <div class="p-3 bg-blue-50 rounded-lg">
+                    <p class="font-medium">Data Sources (in order):</p>
+                    <ol class="list-decimal list-inside ml-2 space-y-1">
+                        <li>Real-time API (when online)</li>
+                        <li>Cached data (up to 1 hour old)</li>
+                        <li>Offline mock data (last resort)</li>
+                    </ol>
+                </div>
+                
+                <div class="p-3 bg-yellow-50 rounded-lg">
+                    <p class="font-medium">Troubleshooting:</p>
+                    <p>1. Check if API key is valid</p>
+                    <p>2. Ensure internet connection</p>
+                    <p>3. Check browser console (F12)</p>
+                    <p>4. Test API with button below</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="debugWeatherAPI()" 
+                    class="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    🔍 Test API Now
+                </button>
+                <button onclick="ModalManager.close()" 
+                    class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                    Close
+                </button>
+            </div>
+        </div>
+    `;
     
-    updateNetworkStatus() {
-        const offlineIndicator = document.getElementById('offline-indicator');
-        const networkStatus = document.getElementById('network-status');
-        const offlineBanner = document.getElementById('offline-mode-banner');
-        
-        if (this.isOnline) {
-            if (offlineIndicator) offlineIndicator.classList.add('hidden');
-            if (offlineBanner) offlineBanner.classList.add('hidden');
-            
-            if (networkStatus) {
-                networkStatus.textContent = 'Online ✓';
-                networkStatus.className = 'fixed top-16 left-0 right-0 z-40 text-center p-2 text-sm font-medium bg-green-500 text-white';
-                setTimeout(() => networkStatus.classList.add('hidden'), 2000);
-            }
-        } else {
-            if (offlineIndicator) offlineIndicator.classList.remove('hidden');
-            if (offlineBanner) offlineBanner.classList.remove('hidden');
-            
-            if (networkStatus) {
-                networkStatus.textContent = 'Offline - Limited functionality';
-                networkStatus.className = 'fixed top-16 left-0 right-0 z-40 text-center p-2 text-sm font-medium bg-yellow-500 text-white';
-            }
-        }
-        
-        // Update the global app state
-        appState.isOfflineMode = !this.isOnline;
-    }
+    ModalManager.open('Weather Source Information', content, 'weatherSourceModal');
 };
 
-
 // ============================================
-// DEBUG FUNCTIONS (Add at the VERY END of your script)
-// ============================================
-
-// Global debug function - call from browser console
-window.testWeatherAPI = async function() {
-    const apiKey = CONFIG.WEATHER_API_KEY;
-    const testUrl = `https://api.openweathermap.org/data/2.5/weather?q=Delhi&appid=${apiKey}&units=metric`;
-    
-    console.log("🔍 Testing OpenWeather API...");
-    console.log("API Key (first 8 chars):", apiKey.substring(0, 8) + "...");
-    console.log("URL:", testUrl);
-    
-    try {
-        const response = await fetch(testUrl);
-        console.log("✅ Response status:", response.status);
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log("✅ API is WORKING! Data received:");
-            console.log("Location:", data.name);
-            console.log("Temperature:", data.main.temp + "°C");
-            console.log("Weather:", data.weather[0].description);
-            console.log("Full response:", data);
-            return true;
-        } else {
-            console.log("❌ API Failed. Status:", response.status);
-            if (response.status === 401) {
-                console.log("❌ INVALID API KEY! Get a new one from: https://home.openweathermap.org/api_keys");
-            }
-            return false;
-        }
-    } catch (error) {
-        console.error("❌ Test Failed:", error);
-        return false;
-    }
-};
-
-// Auto-test on load (optional)
-window.addEventListener('load', function() {
-    setTimeout(() => {
-        // Uncomment to auto-test on load
-        // window.testWeatherAPI();
-    }, 3000);
-});
-
-// Quick test button for the console
-console.log("⚡ Agrifarmers Debug Tools Available:");
-console.log("👉 Type 'testWeatherAPI()' to test weather API");
-console.log("👉 Type 'CONFIG.WEATHER_API_KEY' to see your API key");
-
-// ============================================
-// AUTHENTICATION FUNCTIONS (Keep existing)
+// AUTHENTICATION FUNCTIONS
 // ============================================
 window.handleSignUp = function() {
     const name = document.getElementById('signUpName')?.value.trim() || '';
@@ -1915,6 +1930,202 @@ window.handleLogout = function() {
     log('User logged out');
 };
 
+// ============================================
+// INITIALIZATION
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+    
+    // State change listener
+    const stateSelect = document.getElementById('signUpState');
+    if (stateSelect) {
+        stateSelect.addEventListener('change', populateDistricts);
+    }
+    
+    // Form validation on blur
+    const validateOnBlur = (fieldId, validator) => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('blur', function() {
+                if (validator(this.value)) {
+                    clearFieldError(fieldId);
+                } else {
+                    const messages = {
+                        'signUpName': translator.t('name_error'),
+                        'signUpMobile': translator.t('mobile_error'),
+                        'loginMobile': translator.t('mobile_error')
+                    };
+                    showFieldError(fieldId, messages[fieldId] || translator.t('invalid_input') || 'Invalid input');
+                }
+            });
+        }
+    };
+    
+    validateOnBlur('signUpName', isValidName);
+    validateOnBlur('signUpMobile', isValidMobile);
+    validateOnBlur('loginMobile', isValidMobile);
+    
+    // Lazy load images
+    const lazyImages = document.querySelectorAll('.lazy-image');
+    const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                const src = img.getAttribute('data-src');
+                if (src) {
+                    img.src = src;
+                    img.classList.add('loaded');
+                }
+                imageObserver.unobserve(img);
+            }
+        });
+    });
+    
+    lazyImages.forEach(img => imageObserver.observe(img));
+    
+    // PWA Installation
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+    }
+});
+
+// ============================================
+// APP INITIALIZATION (FIXED - No Loading Stuck)
+// ============================================
+window.addEventListener('load', function() {
+    log('App starting initialization...');
+    
+    const loadingScreen = document.getElementById('loadingScreen');
+    const loadingProgress = document.getElementById('loading-progress');
+    const app = document.getElementById('app');
+    
+    const updateLoading = (message) => {
+        if (loadingProgress) {
+            loadingProgress.textContent = message;
+        }
+    };
+    
+    updateLoading('Initializing app...');
+    
+    // Use a shorter timeout to prevent sticking
+    setTimeout(function() {
+        try {
+            updateLoading('Loading network manager...');
+            NetworkManager.init();
+            
+            updateLoading('Loading translation system...');
+            translator.init();
+            
+            updateLoading('Loading states data...');
+            // This should be quick now
+            setTimeout(() => {
+                populateStates();
+                
+                updateLoading('Setting up navigation...');
+                PageManager.updateNavigation();
+                
+                appState.isInitialized = true;
+                
+                // Hide loading screen after all initialization
+                setTimeout(() => {
+                    if (loadingScreen) {
+                        loadingScreen.style.display = 'none';
+                    }
+                    
+                    if (app) {
+                        app.classList.remove('opacity-0');
+                    }
+                    
+                    log('App initialized successfully');
+                    
+                    // Show welcome message if first visit
+                    if (!localStorage.getItem('agrifarmers_visited')) {
+                        setTimeout(() => {
+                            showToast('Welcome to Agrifarmers!', 'info', 3000);
+                            localStorage.setItem('agrifarmers_visited', 'true');
+                        }, 1000);
+                    }
+                    
+                    // Show app version
+                    const versionEl = document.getElementById('app-version');
+                    if (versionEl) {
+                        versionEl.textContent = CONFIG.VERSION;
+                    }
+                    
+                    // Auto-test weather API on first load (optional)
+                    if (CONFIG.DEBUG_MODE) {
+                        setTimeout(() => {
+                            console.log("⚡ Agrifarmers Debug Tools Available:");
+                            console.log("👉 Type 'debugWeatherAPI()' to test weather API");
+                            console.log("👉 Type 'showWeatherSourceInfo()' for API info");
+                            console.log("👉 Your API key:", CONFIG.WEATHER_API_KEY.substring(0, 8) + "...");
+                        }, 2000);
+                    }
+                    
+                }, 300); // Reduced from 500ms
+                
+            }, 50); // Small delay to ensure DOM is ready
+            
+        } catch (error) {
+            console.error('Initialization error:', error);
+            updateLoading('Error initializing app');
+            
+            // Still hide loading screen even on error
+            setTimeout(() => {
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
+                
+                if (app) {
+                    app.classList.remove('opacity-0');
+                }
+                
+                showToast('App initialized with errors. Check console.', 'error', 5000);
+            }, 1000);
+        }
+        
+    }, 300); // Reduced from 800ms
+});
+
+// ============================================
+// GLOBAL DEBUG FUNCTION (Add to browser console)
+// ============================================
+window.testWeatherAPI = async function() {
+    return await WeatherService.testAPI();
+};
+
+// Handle page visibility change
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible' && appState.isInitialized) {
+        log('App resumed from background');
+        NetworkManager.updateNetworkStatus();
+    }
+});
+
+// Handle beforeunload for saving state
+window.addEventListener('beforeunload', function() {
+    // Save any pending data
+    if (appState.activeUser) {
+        localStorage.setItem('agrifarmers_user', JSON.stringify(appState.activeUser));
+    }
+});
+
 // Check for existing session on load
 window.addEventListener('load', function() {
     const storedUser = localStorage.getItem('agrifarmers_user');
@@ -1932,4 +2143,102 @@ window.addEventListener('load', function() {
         
         PageManager.show('homePage');
     }
+});
+
+// ============================================
+// PWA INSTALLATION PROMPT
+// ============================================
+const PwaManager = {
+  deferredPrompt: null,
+  
+  init() {
+    // Listen for beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later
+      this.deferredPrompt = e;
+      // Show custom install button if not already installed
+      this.showInstallButton();
+      
+      console.log('PWA install prompt available');
+    });
+    
+    // Listen for app installed event
+    window.addEventListener('appinstalled', (evt) => {
+      console.log('PWA installed successfully');
+      this.hideInstallButton();
+      showToast('Agrifarmers installed successfully!', 'success');
+    });
+    
+    // Check if app is already installed
+    this.checkIfAppIsInstalled();
+  },
+  
+  showInstallButton() {
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches || 
+        window.navigator.standalone === true) {
+      return;
+    }
+    
+    // Create or show install button
+    let installBtn = document.getElementById('pwa-install-button');
+    
+    if (!installBtn) {
+      installBtn = document.createElement('button');
+      installBtn.id = 'pwa-install-button';
+      installBtn.className = 'fixed bottom-4 right-4 z-50 bg-[var(--primary-green)] text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition-colors';
+      installBtn.innerHTML = '<i class="fas fa-download text-xl"></i>';
+      installBtn.title = 'Install Agrifarmers App';
+      installBtn.addEventListener('click', () => this.installApp());
+      document.body.appendChild(installBtn);
+    }
+  },
+  
+  hideInstallButton() {
+    const installBtn = document.getElementById('pwa-install-button');
+    if (installBtn) {
+      installBtn.remove();
+    }
+  },
+  
+  async installApp() {
+    if (!this.deferredPrompt) {
+      showToast('App installation not available', 'info');
+      return;
+    }
+    
+    // Show the install prompt
+    this.deferredPrompt.prompt();
+    
+    // Wait for the user to respond to the prompt
+    const { outcome } = await this.deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+      this.deferredPrompt = null;
+      this.hideInstallButton();
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+  },
+  
+  checkIfAppIsInstalled() {
+    if (window.matchMedia('(display-mode: standalone)').matches || 
+        window.navigator.standalone === true) {
+      console.log('App is running in standalone mode');
+      this.hideInstallButton();
+      
+      // Show banner for installed PWA
+      setTimeout(() => {
+        showToast('Welcome to Agrifarmers PWA!', 'success', 3000);
+      }, 1000);
+    }
+  }
+};
+
+// Initialize PWA manager when app loads
+document.addEventListener('DOMContentLoaded', function() {
+  PwaManager.init();
 });
