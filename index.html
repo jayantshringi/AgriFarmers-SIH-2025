@@ -14,6 +14,9 @@
     <link rel="icon" href="icons/icon-192x192.png">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     
+    <!-- Fix for GitHub Pages URL issues -->
+    <base href="/">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -171,36 +174,24 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Market Prices Table */
-        .market-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        /* Offline Page */
+        .offline-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
         }
         
-        .market-table th {
-            background-color: #f3f4f6;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
-        .market-table td {
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .market-table tr:hover {
-            background-color: #f9fafb;
-        }
-        
-        .price-up {
-            color: #138808;
-        }
-        
-        .price-down {
-            color: #e74c3c;
+        .offline-container.hidden {
+            display: none;
         }
         
         /* Mobile Responsive Header */
@@ -260,16 +251,6 @@
             
             .feature-card p {
                 font-size: 13px !important;
-            }
-            
-            /* Market table responsive */
-            .market-table {
-                font-size: 14px;
-            }
-            
-            .market-table th,
-            .market-table td {
-                padding: 8px;
             }
         }
         
@@ -434,6 +415,18 @@
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Offline Fallback Page -->
+    <div id="offlinePage" class="offline-container hidden">
+        <div class="text-center max-w-md mx-auto">
+            <i class="fas fa-wifi-slash text-gray-400 text-6xl mb-6"></i>
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">You're Offline</h1>
+            <p class="text-gray-600 mb-6">Please check your internet connection and try again.</p>
+            <button onclick="window.location.reload()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg">
+                <i class="fas fa-redo mr-2"></i>Retry
+            </button>
+        </div>
+    </div>
+
     <!-- Loading Screen -->
     <div id="loadingScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
