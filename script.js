@@ -1,6 +1,6 @@
 /*
  * Agritarmers Application Script
- * Version: 3.3.0 - Simplified OTP & Fixed PWA
+ * Version: 3.4.0 - Fixed Login, Language & PWA
  */
 
 // ============================================
@@ -8,7 +8,7 @@
 // ============================================
 const CONFIG = {
     APP_NAME: 'Agritarmers',
-    VERSION: '3.3.0',
+    VERSION: '3.4.0',
     DEBUG_MODE: true,
 };
 
@@ -108,7 +108,7 @@ function showToast(message, type = 'info', duration = 3000) {
 }
 
 // ============================================
-// TRANSLATION SYSTEM
+// TRANSLATION SYSTEM (Fixed - Added Punjabi)
 // ============================================
 class TranslationSystem {
     constructor() {
@@ -135,6 +135,8 @@ class TranslationSystem {
         localStorage.setItem('agritarmers_language', langCode);
         this.updateLanguageDisplay();
         this.applyTranslations();
+        
+        showToast(`Language changed to ${langCode === 'en' ? 'English' : langCode === 'hi' ? 'Hindi' : 'Punjabi'}`, 'success');
     }
     
     updateLanguageDisplay() {
@@ -430,6 +432,126 @@ class TranslationSystem {
             important: "महत्वपूर्ण",
             invalid_input: "अमान्य इनपुट",
             checking_connectivity: "कनेक्टिविटी जांच रहा है...",
+        },
+        pa: {
+            app_title: "ਅਗਰੀਟਾਰਮਰਸ - ਤੁਹਾਡਾ ਖੇਤੀ ਸਾਥੀ",
+            app_name: "ਅਗਰੀਟਾਰਮਰਸ",
+            loading_message: "ਤੁਹਾਡਾ ਖੇਤੀ ਸਹਾਇਕ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
+            offline_label: "ਆਫਲਾਈਨ",
+            offline_mode: "ਆਫਲਾਈਨ ਮੋਡ - ਕੁਝ ਡੇਟਾ ਕੈਸ਼ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ",
+            welcome_title: "ਅਗਰੀਟਾਰਮਰਸ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ",
+            welcome_subtitle: "ਆਧੁਨਿਕ ਖੇਤੀ ਲਈ ਤੁਹਾਡਾ ਭਰੋਸੇਮੰਦ ਸਾਥੀ।",
+            get_started_button: "ਸ਼ੁਰੂ ਕਰੋ",
+            login_button: "ਲਾਗਇਨ",
+            login_title: "ਵਾਪਸੀ 'ਤੇ ਸਵਾਗਤ ਹੈ",
+            mobile_number_label: "ਮੋਬਾਈਲ ਨੰਬਰ",
+            mobile_placeholder: "10 ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਾਖਲ ਕਰੋ",
+            mobile_error: "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਵੈਧ 10-ਅੰਕੀ ਮੋਬਾਈਲ ਨੰਬਰ ਦਾਖਲ ਕਰੋ",
+            no_account_text: "ਨਵੇਂ ਹੋ?",
+            signup_link: "ਖਾਤਾ ਬਣਾਓ",
+            signup_title: "ਅਗਰੀਟਾਰਮਰਸ ਨਾਲ ਜੁੜੋ",
+            full_name_label: "ਪੂਰਾ ਨਾਮ",
+            name_placeholder: "ਤੁਹਾਡਾ ਨਾਮ",
+            name_error: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਪੂਰਾ ਨਾਮ ਦਾਖਲ ਕਰੋ",
+            state_label: "ਰਾਜ",
+            select_state: "ਰਾਜ ਚੁਣੋ",
+            state_error: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਰਾਜ ਚੁਣੋ",
+            district_label: "ਜ਼ਿਲ੍ਹਾ",
+            select_district: "ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ",
+            district_error: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ",
+            signup_button: "ਖਾਤਾ ਬਣਾਓ",
+            have_account_text: "ਪਹਿਲਾਂ ਤੋਂ ਖਾਤਾ ਹੈ?",
+            login_link: "ਸਾਈਨ ਇਨ",
+            welcome_text: "ਸਤ ਸ੍ਰੀ ਅਕਾਲ",
+            personalized_dashboard: "ਤੁਹਾਡਾ ਨਿਜੀਕ੍ਰਿਤ ਡੈਸ਼ਬੋਰਡ",
+            weather_info: "ਮੌਸਮ ਪੂਰਵਾਣੁਮਾਨ",
+            weather_subtitle: "ਅੱਜ ਦਾ ਮੌਸਮ ਅਤੇ ਪੂਰਵਾਣੁਮਾਨ",
+            seed_advice: "ਬੀਜ ਸਿਫਾਰਸ਼ਾਂ",
+            seed_subtitle: "ਤੁਹਾਡੇ ਖੇਤਰ ਲਈ ਸਰਵੋਤਮ ਬੀਜ",
+            fertilizer_guide: "ਖਾਦ ਗਾਈਡ",
+            fertilizer_subtitle: "ਤੁਹਾਡੀਆਂ ਫਸਲਾਂ ਲਈ ਪੋਸ਼ਕ ਤੱਤ",
+            crop_calendar: "ਫਸਲ ਕੈਲੰਡਰ",
+            crop_subtitle: "ਮੌਸਮੀ ਬਿਜਾਈ ਗਾਈਡ",
+            market_prices: "ਬਾਜ਼ਾਰ ਕੀਮਤਾਂ",
+            market_subtitle: "ਮੌਜੂਦਾ ਫਸਲ ਕੀਮਤਾਂ",
+            soil_health: "ਮਿੱਟੀ ਸਿਹਤ",
+            soil_subtitle: "ਮਿੱਟੀ ਟੈਸਟਿੰਗ ਮਾਰਗਦਰਸ਼ਨ",
+            current_weather: "ਮੌਜੂਦਾ ਮੌਸਮ",
+            feels_like: "ਅਹਿਸਾਸ",
+            humidity: "ਨਮੀ",
+            wind: "ਹਵਾ",
+            pressure: "ਦਬਾਅ",
+            visibility: "ਦ੍ਰਿਸ਼ਟੀ",
+            sunrise: "ਸੂਰਜ ਚੜ੍ਹਨਾ",
+            sunset: "ਸੂਰਜ ਡੁੱਬਣਾ",
+            forecast: "5-ਦਿਨ ਪੂਰਵਾਣੁਮਾਨ",
+            weather_loading: "ਮੌਸਮ ਡੇਟਾ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
+            weather_error: "ਮੌਸਮ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ",
+            offline_weather: "ਆਫਲਾਈਨ ਮੌਸਮ ਡੇਟਾ",
+            farming_advisory: "ਖੇਤੀ ਸਲਾਹ",
+            high_temp_alert: "ਉੱਚ ਤਾਪਮਾਨ ਚੇਤਾਵਨੀ! ਸਵੇਰੇ ਜਲਦੀ ਜਾਂ ਸ਼ਾਮ ਨੂੰ ਫਸਲਾਂ ਨੂੰ ਪਾਣੀ ਦਿਓ।",
+            low_temp_alert: "ਘੱਟ ਤਾਪਮਾਨ! ਸੈਂਸਟਿਵ ਫਸਲਾਂ ਨੂੰ ਕਵਰ ਨਾਲ ਬਚਾਓ।",
+            good_weather_alert: "ਖੇਤੀ ਗਤੀਵਿਧੀਆਂ ਲਈ ਚੰਗਾ ਮੌਸਮ। ਸਿੰਜਾਈ ਅਤੇ ਖਾਦ ਲਈ ਆਦਰਸ਼।",
+            connect_internet: "ਰੀਅਲ-ਟਾਈਮ ਅੱਪਡੇਟ ਲਈ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ",
+            seed_recommendation: "{season} ਸੀਜ਼ਨ",
+            seed_tip: "ਟਿਪ: ਬਿਹਤਰ ਪੈਦਾਵਾਰ ਲਈ ਹਮੇਸ਼ਾ ਪ੍ਰਮਾਣਿਤ ਬੀਜ ਅਧਿਕਾਰਤ ਡੀਲਰਾਂ ਤੋਂ ਵਰਤੋ।",
+            seed_consult: "ਖੇਤਰ-ਵਿਸ਼ੇਸ਼ ਸਿਫਾਰਸ਼ਾਂ ਲਈ ਸਥਾਨਕ ਖੇਤੀ ਅਧਿਕਾਰੀ ਨਾਲ ਸਲਾਹ ਮਸ਼ਵਰਾ ਕਰੋ।",
+            npk_ratio: "ਐਨਪੀਕੇ ਅਨੁਪਾਤ",
+            nitrogen_phosphorus_potassium: "ਨਾਈਟ੍ਰੋਜਨ:ਫਾਸਫੋਰਸ:ਪੋਟਾਸ਼ੀਅਮ",
+            application_time: "ਅਪਲਾਈ ਸਮਾਂ",
+            before_sowing: "ਬਿਜਾਈ ਤੋਂ ਪਹਿਲਾਂ",
+            basal_dose: "ਬੇਸਲ ਖੁਰਾਕ ਦੀ ਸਿਫਾਰਸ਼ ਕੀਤੀ ਗਈ ਹੈ",
+            soil_testing_important: "ਮਹੱਤਵਪੂਰਨ: ਖਾਦ ਲਗਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਮਿੱਟੀ ਟੈਸਟਿੰਗ ਦੀ ਸਿਫਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।",
+            season: "ਸੀਜ਼ਨ",
+            sowing: "ਬਿਜਾਈ",
+            harvesting: "ਕਟਾਈ",
+            crops: "ਫਸਲਾਂ",
+            current_recommendation: "ਮੌਜੂਦਾ ਸਿਫਾਰਸ਼",
+            kharif_time: "ਹੁਣ ਖਰੀਫ ਫਸਲਾਂ ਜਿਵੇਂ ਚਾਵਲ ਅਤੇ ਕਪਾਹ ਲਈ ਸਹੀ ਸਮਾਂ ਹੈ।",
+            rabi_time: "ਹੁਣ ਰਬੀ ਫਸਲਾਂ ਜਿਵੇਂ ਕਣਕ ਅਤੇ ਸਰੋਂ ਲਈ ਸਹੀ ਸਮਾਂ ਹੈ।",
+            zaid_time: "ਹੁਣ ਜ਼ੈਦ ਫਸਲਾਂ ਜਿਵੇਂ ਤਰਬੂਜ ਅਤੇ ਖੀਰੇ ਲਈ ਚੰਗਾ ਸਮਾਂ ਹੈ।",
+            wheat_price: "ਕਣਕ",
+            rice_price: "ਚਾਵਲ",
+            cotton_price: "ਕਪਾਹ",
+            per_quintal: "/ਕੁਇੰਟਲ",
+            fetching_prices: "ਤਾਜ਼ਾ ਬਾਜ਼ਾਰ ਕੀਮਤਾਂ ਪ੍ਰਾਪਤ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ...",
+            offline_prices: "ਆਫਲਾਈਨ: ਕੀਮਤਾਂ ਮੌਜੂਦਾ ਨਹੀਂ ਹੋ ਸਕਦੀਆਂ।",
+            soil_testing_steps: "ਮਿੱਟੀ ਟੈਸਟਿੰਗ ਕਦਮ",
+            soil_step_1: "ਵੱਖ-ਵੱਖ ਥਾਵਾਂ ਤੋਂ ਮਿੱਟੀ ਦੇ ਨਮੂਨੇ ਇਕੱਠੇ ਕਰੋ",
+            soil_step_2: "ਨਮੂਨਿਆਂ ਨੂੰ ਚੰਗੀ ਤਰ੍ਹਾਂ ਮਿਲਾਓ",
+            soil_step_3: "ਨਜ਼ਦੀਕੀ ਕ੍ਰਿਸ਼ੀ ਵਿਗਿਆਨ ਕੇਂਦਰ 'ਤੇ ਜਾਓ",
+            soil_step_4: "ਸਿਫਾਰਸ਼ਾਂ ਨਾਲ ਮਿੱਟੀ ਸਿਹਤ ਕਾਰਡ ਪ੍ਰਾਪਤ ਕਰੋ",
+            kvk_contact: "ਕੇਵੀਕੇ ਸੰਪਰਕ ਜਾਣਕਾਰੀ",
+            kvk_info: "ਆਪਣੇ ਜ਼ਿਲ੍ਹੇ ਵਿੱਚ ਨਜ਼ਦੀਕੀ ਕ੍ਰਿਸ਼ੀ ਵਿਗਿਆਨ ਕੇਂਦਰ (ਕੇਵੀਕੇ) ਲੱਭੋ।",
+            otp_sent: "OTP ਭੇਜਿਆ ਗਿਆ",
+            otp_display: "ਤੁਹਾਡਾ OTP ਹੈ",
+            otp_verification: "OTP ਤਸਦੀਕ",
+            enter_otp: "6-ਅੰਕੀ OTP ਦਾਖਲ ਕਰੋ",
+            verify_otp: "OTP ਤਸਦੀਕ ਕਰੋ",
+            resend_otp: "OTP ਦੁਬਾਰਾ ਭੇਜੋ",
+            otp_valid_for: "OTP {minutes} ਮਿੰਟ ਲਈ ਵੈਧ ਹੈ",
+            otp_demo_note: "ਡੈਮੋ: ਤੁਹਾਡਾ OTP ਹੇਠਾਂ ਦਿਖਾਇਆ ਗਿਆ ਹੈ",
+            back_to_login: "ਲਾਗਇਨ 'ਤੇ ਵਾਪਸ ਜਾਓ",
+            logout_button: "ਲਾਗ ਆਊਟ",
+            profile_button: "ਪ੍ਰੋਫਾਈਲ",
+            toast_online: "ਆਨਲਾਈਨ ਵਾਪਸ!",
+            toast_offline: "ਤੁਸੀਂ ਆਫਲਾਈਨ ਹੋ। ਕੁਝ ਸੁਵਿਧਾਵਾਂ ਸੀਮਿਤ ਹੋ ਸਕਦੀਆਂ ਹਨ।",
+            toast_login_success: "ਲਾਗਇਨ ਸਫਲ! ਵਾਪਸੀ 'ਤੇ ਸਵਾਗਤ ਹੈ!",
+            toast_signup_success: "ਖਾਤਾ ਸਫਲਤਾਪੂਰਵਕ ਬਣਾਇਆ ਗਿਆ! ਅਗਰੀਟਾਰਮਰਸ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ!",
+            toast_logout: "ਸਫਲਤਾਪੂਰਵਕ ਲਾਗ ਆਊਟ ਕੀਤਾ ਗਿਆ",
+            toast_otp_sent: "OTP ਸਫਲਤਾਪੂਰਵਕ ਭੇਜਿਆ ਗਿਆ!",
+            toast_new_otp: "ਨਵਾਂ OTP ਭੇਜਿਆ ਗਿਆ!",
+            error_no_account: "ਕੋਈ ਖਾਤਾ ਨਹੀਂ ਮਿਲਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਸਾਈਨ ਅੱਪ ਕਰੋ।",
+            error_invalid_otp: "ਅਵੈਧ OTP। ਕਿਰਪਾ ਕਰਕੇ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+            error_network: "ਨੈੱਟਵਰਕ ਤਰੁੱਟੀ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਚੈੱਕ ਕਰੋ।",
+            retry: "ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+            close: "ਬੰਦ ਕਰੋ",
+            online: "ਆਨਲਾਈਨ",
+            offline_limited: "ਆਫਲਾਈਨ - ਸੀਮਿਤ ਕਾਰਜਸ਼ੀਲਤਾ",
+            tip: "ਟਿਪ",
+            important: "ਮਹੱਤਵਪੂਰਨ",
+            invalid_input: "ਅਵੈਧ ਇਨਪੁਟ",
+            checking_connectivity: "ਕਨੈਕਟੀਵਿਟੀ ਚੈੱਕ ਕਰ ਰਿਹਾ ਹੈ...",
         }
     };
 }
@@ -532,7 +654,7 @@ const ModalManager = {
 };
 
 // ============================================
-// PAGE MANAGEMENT
+// PAGE MANAGEMENT (FIXED)
 // ============================================
 const PageManager = {
     pages: ['welcomePage', 'loginPage', 'signUpPage', 'homePage', 'otpPage'],
@@ -543,20 +665,31 @@ const PageManager = {
             return;
         }
         
+        // Hide all pages
         this.pages.forEach(page => {
             const el = document.getElementById(page);
             if (el) el.classList.remove('active');
         });
         
+        // Show target page
         const targetPage = document.getElementById(pageId);
         if (targetPage) targetPage.classList.add('active');
         
+        // Update navigation
         this.updateNavigation();
         
+        // Hide mobile menu
         const mobileMenu = document.getElementById('mobile-menu');
         if (mobileMenu) mobileMenu.classList.add('hidden');
         
         log(`Page changed to: ${pageId}`);
+        
+        // If going to OTP page, setup OTP input
+        if (pageId === 'otpPage') {
+            setTimeout(() => {
+                OTPManager.setupOTPInput();
+            }, 100);
+        }
     },
     
     updateNavigation() {
@@ -567,14 +700,14 @@ const PageManager = {
             const userHTML = `
                 <div class="flex items-center space-x-4">
                     <span class="text-gray-700 hidden md:inline">${appState.activeUser.name}</span>
-                    <button onclick="handleLogout()" class="bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Logout</button>
+                    <button onclick="handleLogout()" class="bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">${translator.t('logout_button')}</button>
                 </div>
             `;
             
             const mobileUserHTML = `
                 <div class="space-y-3">
                     <div class="px-3 py-2 text-gray-700">${appState.activeUser.name}</div>
-                    <button onclick="handleLogout()" class="w-full text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">Logout</button>
+                    <button onclick="handleLogout()" class="w-full text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">${translator.t('logout_button')}</button>
                 </div>
             `;
             
@@ -583,15 +716,15 @@ const PageManager = {
         } else {
             const guestHTML = `
                 <div class="flex items-center space-x-2">
-                    <button onclick="PageManager.show('loginPage')" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Login</button>
-                    <button onclick="PageManager.show('signUpPage')" class="bg-[var(--primary-green)] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">Get Started</button>
+                    <button onclick="PageManager.show('loginPage')" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">${translator.t('login_button')}</button>
+                    <button onclick="PageManager.show('signUpPage')" class="bg-[var(--primary-green)] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">${translator.t('get_started_button')}</button>
                 </div>
             `;
             
             const mobileGuestHTML = `
                 <div class="space-y-1">
-                    <button onclick="PageManager.show('loginPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Login</button>
-                    <button onclick="PageManager.show('signUpPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-[var(--primary-green)] text-white hover:bg-green-700">Get Started</button>
+                    <button onclick="PageManager.show('loginPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">${translator.t('login_button')}</button>
+                    <button onclick="PageManager.show('signUpPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-[var(--primary-green)] text-white hover:bg-green-700">${translator.t('get_started_button')}</button>
                 </div>
             `;
             
@@ -608,13 +741,13 @@ const PageManager = {
 };
 
 // ============================================
-// FORM HANDLING
+// FORM HANDLING (FIXED)
 // ============================================
 function populateStates() {
     const stateSelect = document.getElementById('signUpState');
     if (!stateSelect) return;
     
-    stateSelect.innerHTML = '<option value="">Select State</option>';
+    stateSelect.innerHTML = `<option value="">${translator.t('select_state')}</option>`;
     
     const states = Object.keys(districtData).sort();
     states.forEach(state => {
@@ -632,7 +765,7 @@ function populateDistricts() {
     if (!stateSelect || !districtSelect) return;
     
     const selectedState = stateSelect.value;
-    districtSelect.innerHTML = '<option value="">Select District</option>';
+    districtSelect.innerHTML = `<option value="">${translator.t('select_district')}</option>`;
     
     if (selectedState && districtData[selectedState]) {
         districtData[selectedState].forEach(district => {
@@ -648,29 +781,38 @@ function populateDistricts() {
 }
 
 // ============================================
-// SIMPLE OTP MANAGEMENT
+// SIMPLE OTP MANAGEMENT (FIXED)
 // ============================================
 const OTPManager = {
     generateOTP() {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         appState.lastGeneratedOTP = otp;
+        log('Generated OTP:', otp);
         return otp;
     },
     
     isValidOTP(enteredOTP) {
         if (!appState.lastGeneratedOTP) {
+            log('No OTP generated');
             return false;
         }
         
-        return enteredOTP === appState.lastGeneratedOTP;
+        const isValid = enteredOTP === appState.lastGeneratedOTP;
+        log('OTP validation:', { entered: enteredOTP, expected: appState.lastGeneratedOTP, isValid });
+        return isValid;
     },
     
     setupOTPInput() {
         const otpInput = document.getElementById('otpInput');
-        if (!otpInput) return;
+        if (!otpInput) {
+            console.error('OTP input not found');
+            return;
+        }
         
         otpInput.value = '';
-        otpInput.focus();
+        setTimeout(() => {
+            otpInput.focus();
+        }, 100);
         
         otpInput.addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
@@ -681,11 +823,17 @@ const OTPManager = {
                 }, 300);
             }
         });
+        
+        otpInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && this.value.length === 6) {
+                window.verifyOTP();
+            }
+        });
     }
 };
 
 // ============================================
-// AUTHENTICATION FUNCTIONS
+// AUTHENTICATION FUNCTIONS (FIXED)
 // ============================================
 window.handleSignUp = function() {
     const name = document.getElementById('signUpName')?.value.trim() || '';
@@ -698,22 +846,22 @@ window.handleSignUp = function() {
     let hasError = false;
     
     if (!isValidName(name)) {
-        showFieldError('signUpName', 'Please enter your full name');
+        showFieldError('signUpName', translator.t('name_error'));
         hasError = true;
     }
     
     if (!isValidMobile(mobile)) {
-        showFieldError('signUpMobile', 'Please enter a valid 10-digit mobile number');
+        showFieldError('signUpMobile', translator.t('mobile_error'));
         hasError = true;
     }
     
     if (!state) {
-        showFieldError('signUpState', 'Please select your state');
+        showFieldError('signUpState', translator.t('state_error'));
         hasError = true;
     }
     
     if (!district) {
-        showFieldError('signUpDistrict', 'Please select your district');
+        showFieldError('signUpDistrict', translator.t('district_error'));
         hasError = true;
     }
     
@@ -739,7 +887,9 @@ window.handleSignUp = function() {
     if (nameEl) nameEl.textContent = user.name;
     if (locationEl) locationEl.textContent = `${user.district}, ${user.state}`;
     
-    showToast('Account created successfully! Welcome to Agritarmers!', 'success');
+    showToast(translator.t('toast_signup_success'), 'success');
+    
+    log('User signed up:', user);
 };
 
 window.handleLogin = function() {
@@ -748,7 +898,7 @@ window.handleLogin = function() {
     clearFieldError('loginMobile');
     
     if (!isValidMobile(mobile)) {
-        showFieldError('loginMobile', 'Please enter a valid 10-digit mobile number');
+        showFieldError('loginMobile', translator.t('mobile_error'));
         return;
     }
     
@@ -762,9 +912,9 @@ window.handleLogin = function() {
         }
     }
     
-    showToast('No account found. Please sign up first.', 'error');
-    PageManager.show('signUpPage');
-    document.getElementById('signUpMobile').value = mobile;
+    // If no account found, still proceed to OTP for demo
+    appState.tempUserData = { mobile: mobile };
+    proceedToOTP(mobile);
 };
 
 function proceedToOTP(mobile) {
@@ -775,9 +925,9 @@ function proceedToOTP(mobile) {
     document.getElementById('otpPhoneNumber').textContent = `+91 ${mobile}`;
     document.getElementById('demoOTP').textContent = otp;
     
-    OTPManager.setupOTPInput();
+    showToast(`${translator.t('toast_otp_sent')} ${otp}`, 'info');
     
-    showToast('OTP sent to your device! Use: ' + otp, 'info');
+    log('OTP sent for mobile:', mobile);
 }
 
 window.verifyOTP = function() {
@@ -785,26 +935,34 @@ window.verifyOTP = function() {
     const enteredOTP = otpInput?.value.trim() || '';
     
     if (enteredOTP.length !== 6) {
-        showToast('Please enter 6-digit OTP', 'error');
+        showToast(translator.t('error_invalid_otp'), 'error');
         return;
     }
     
     if (OTPManager.isValidOTP(enteredOTP)) {
         if (appState.tempUserData) {
-            appState.activeUser = appState.tempUserData;
-            appState.activeUser.lastLogin = new Date().toISOString();
-            localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
-            
-            PageManager.show('homePage');
-            
-            const nameEl = document.getElementById('farmerName');
-            const locationEl = document.getElementById('farmerLocation');
-            if (nameEl) nameEl.textContent = appState.activeUser.name;
-            if (locationEl && appState.activeUser.district && appState.activeUser.state) {
-                locationEl.textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
+            // If user has name, it's an existing user
+            if (appState.tempUserData.name) {
+                appState.activeUser = appState.tempUserData;
+                appState.activeUser.lastLogin = new Date().toISOString();
+                localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
+                
+                PageManager.show('homePage');
+                
+                const nameEl = document.getElementById('farmerName');
+                const locationEl = document.getElementById('farmerLocation');
+                if (nameEl) nameEl.textContent = appState.activeUser.name;
+                if (locationEl && appState.activeUser.district && appState.activeUser.state) {
+                    locationEl.textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
+                }
+                
+                showToast(translator.t('toast_login_success'), 'success');
+            } else {
+                // New user, go to signup
+                PageManager.show('signUpPage');
+                document.getElementById('signUpMobile').value = appState.tempUserData.mobile;
+                showToast(translator.t('error_no_account'), 'info');
             }
-            
-            showToast('Login successful! Welcome back!', 'success');
         }
         
         appState.lastGeneratedOTP = null;
@@ -818,9 +976,11 @@ window.verifyOTP = function() {
             PageManager.show('loginPage');
             appState.loginAttempts = 0;
         } else {
-            showToast('Invalid OTP. Please try again.', 'error');
-            otpInput.value = '';
-            otpInput.focus();
+            showToast(translator.t('error_invalid_otp'), 'error');
+            if (otpInput) {
+                otpInput.value = '';
+                otpInput.focus();
+            }
         }
     }
 };
@@ -832,14 +992,16 @@ window.handleLogout = function() {
     appState.loginAttempts = 0;
     
     PageManager.show('welcomePage');
-    showToast('Logged out successfully', 'info');
+    showToast(translator.t('toast_logout'), 'info');
+    
+    log('User logged out');
 };
 
 // ============================================
 // MODAL FUNCTIONS
 // ============================================
 window.openWeatherModal = function() {
-    ModalManager.open('Weather Forecast', '<div class="text-center p-8"><div class="loader inline-block mb-4"></div><p>Loading weather data...</p></div>', 'weatherModal');
+    ModalManager.open('translate:weather_info', '<div class="text-center p-8"><div class="loader inline-block mb-4"></div><p>Loading weather data...</p></div>', 'weatherModal');
     
     setTimeout(() => {
         const content = `
@@ -913,7 +1075,7 @@ window.openSeedModal = function() {
     const content = `
         <div class="space-y-6">
             <div>
-                <h4 class="text-lg font-bold mb-2">Recommended for ${currentSeason} Season</h4>
+                <h4 class="text-lg font-bold mb-2">${translator.t('seed_recommendation', {season: currentSeason})}</h4>
                 <div class="flex flex-wrap gap-2">
                     ${currentSeason === "Kharif" ? 
                         '<span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Rice</span>' +
@@ -933,7 +1095,7 @@ window.openSeedModal = function() {
         </div>
     `;
     
-    ModalManager.open('Seed Recommendations', content, 'seedModal');
+    ModalManager.open('translate:seed_advice', content, 'seedModal');
 };
 
 window.openFertilizerModal = function() {
@@ -941,29 +1103,29 @@ window.openFertilizerModal = function() {
         <div class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-green-50 p-4 rounded-lg">
-                    <h5 class="font-bold mb-2">NPK Ratio</h5>
+                    <h5 class="font-bold mb-2">${translator.t('npk_ratio')}</h5>
                     <p class="text-3xl font-bold text-gray-800">4:2:1</p>
-                    <p class="text-sm text-gray-600">Nitrogen:Phosphorus:Potassium</p>
+                    <p class="text-sm text-gray-600">${translator.t('nitrogen_phosphorus_potassium')}</p>
                 </div>
                 <div class="bg-blue-50 p-4 rounded-lg">
-                    <h5 class="font-bold mb-2">Application Time</h5>
-                    <p class="text-lg font-bold text-gray-800">Before Sowing</p>
-                    <p class="text-sm text-gray-600">Basal dose recommended</p>
+                    <h5 class="font-bold mb-2">${translator.t('application_time')}</h5>
+                    <p class="text-lg font-bold text-gray-800">${translator.t('before_sowing')}</p>
+                    <p class="text-sm text-gray-600">${translator.t('basal_dose')}</p>
                 </div>
             </div>
         </div>
     `;
     
-    ModalManager.open('Fertilizer Guide', content, 'fertilizerModal');
+    ModalManager.open('translate:fertilizer_guide', content, 'fertilizerModal');
 };
 
 window.openCropCalendarModal = function() {
     const currentMonth = new Date().getMonth() + 1;
-    let recommendation = "Now is good time for Zaid crops like Watermelon and Cucumber.";
+    let recommendation = translator.t('zaid_time');
     if (currentMonth >= 5 && currentMonth <= 8) {
-        recommendation = "Now is the perfect time for Kharif crops like Rice and Cotton.";
+        recommendation = translator.t('kharif_time');
     } else if (currentMonth >= 9 || currentMonth <= 1) {
-        recommendation = "Now is the perfect time for Rabi crops like Wheat and Mustard.";
+        recommendation = translator.t('rabi_time');
     }
     
     const content = `
@@ -972,10 +1134,10 @@ window.openCropCalendarModal = function() {
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-gray-100">
-                            <th class="p-3 text-left">Season</th>
-                            <th class="p-3 text-left">Sowing</th>
-                            <th class="p-3 text-left">Harvesting</th>
-                            <th class="p-3 text-left">Crops</th>
+                            <th class="p-3 text-left">${translator.t('season')}</th>
+                            <th class="p-3 text-left">${translator.t('sowing')}</th>
+                            <th class="p-3 text-left">${translator.t('harvesting')}</th>
+                            <th class="p-3 text-left">${translator.t('crops')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1002,32 +1164,32 @@ window.openCropCalendarModal = function() {
             </div>
             
             <div class="bg-green-50 p-4 rounded-lg">
-                <h5 class="font-bold mb-2">Current Recommendation</h5>
+                <h5 class="font-bold mb-2">${translator.t('current_recommendation')}</h5>
                 <p class="text-gray-700">${recommendation}</p>
             </div>
         </div>
     `;
     
-    ModalManager.open('Crop Calendar', content, 'calendarModal');
+    ModalManager.open('translate:crop_calendar', content, 'calendarModal');
 };
 
 window.openMarketPricesModal = function() {
-    ModalManager.open('Market Prices', '<div class="text-center p-8"><div class="loader inline-block mb-4"></div><p>Fetching latest market prices...</p></div>', 'marketModal');
+    ModalManager.open('translate:market_prices', `<div class="text-center p-8"><div class="loader inline-block mb-4"></div><p>${translator.t('fetching_prices')}</p></div>`, 'marketModal');
     
     setTimeout(() => {
         const content = `
             <div class="space-y-4">
                 <div class="flex justify-between p-3 bg-gray-50 rounded-lg">
-                    <span>Wheat</span>
-                    <span class="font-bold">₹2,300/q</span>
+                    <span>${translator.t('wheat_price')}</span>
+                    <span class="font-bold">₹2,300${translator.t('per_quintal')}</span>
                 </div>
                 <div class="flex justify-between p-3 bg-gray-50 rounded-lg">
-                    <span>Rice</span>
-                    <span class="font-bold">₹3,800/q</span>
+                    <span>${translator.t('rice_price')}</span>
+                    <span class="font-bold">₹3,800${translator.t('per_quintal')}</span>
                 </div>
                 <div class="flex justify-between p-3 bg-gray-50 rounded-lg">
-                    <span>Cotton</span>
-                    <span class="font-bold">₹6,500/q</span>
+                    <span>${translator.t('cotton_price')}</span>
+                    <span class="font-bold">₹6,500${translator.t('per_quintal')}</span>
                 </div>
             </div>
         `;
@@ -1043,18 +1205,18 @@ window.openSoilHealthModal = function() {
     const content = `
         <div class="space-y-6">
             <div class="bg-green-50 p-4 rounded-lg">
-                <h4 class="font-bold mb-2">Soil Testing Steps</h4>
+                <h4 class="font-bold mb-2">${translator.t('soil_testing_steps')}</h4>
                 <ol class="list-decimal list-inside space-y-2 text-gray-700">
-                    <li>Collect soil samples from different spots</li>
-                    <li>Mix samples thoroughly</li>
-                    <li>Visit nearest Krishi Vigyan Kendra</li>
-                    <li>Get soil health card with recommendations</li>
+                    <li>${translator.t('soil_step_1')}</li>
+                    <li>${translator.t('soil_step_2')}</li>
+                    <li>${translator.t('soil_step_3')}</li>
+                    <li>${translator.t('soil_step_4')}</li>
                 </ol>
             </div>
         </div>
     `;
     
-    ModalManager.open('Soil Health', content, 'soilModal');
+    ModalManager.open('translate:soil_health', content, 'soilModal');
 };
 
 window.closeModal = ModalManager.close;
@@ -1082,10 +1244,8 @@ const PwaManager = {
             console.log('PWA installed successfully');
             this.hideInstallButton();
             localStorage.setItem('agritarmers_pwa_installed', 'true');
+            showToast('App installed successfully!', 'success');
         });
-        
-        // Periodically check installation status
-        setInterval(() => this.checkIfInstalled(), 5000);
     },
     
     checkIfInstalled() {
@@ -1095,29 +1255,26 @@ const PwaManager = {
         
         if (isInstalled) {
             this.hideInstallButton();
+        } else {
+            // Check again after a delay
+            setTimeout(() => this.checkIfInstalled(), 1000);
         }
     },
     
     showInstallButton() {
         const installButton = document.getElementById('pwa-install-button');
-        if (installButton) {
-            installButton.classList.remove('hidden');
-            installButton.classList.add('flex');
+        if (installButton && !installButton.classList.contains('hidden')) {
+            installButton.style.display = 'flex';
             
-            // Remove existing listeners to prevent duplicates
-            const newButton = installButton.cloneNode(true);
-            installButton.parentNode.replaceChild(newButton, installButton);
-            
-            // Add new listener
-            newButton.addEventListener('click', () => this.installApp());
+            // Add click event listener
+            installButton.onclick = () => this.installApp();
         }
     },
     
     hideInstallButton() {
         const installButton = document.getElementById('pwa-install-button');
         if (installButton) {
-            installButton.classList.add('hidden');
-            installButton.classList.remove('flex');
+            installButton.style.display = 'none';
         }
     },
     
@@ -1134,7 +1291,6 @@ const PwaManager = {
             
             if (outcome === 'accepted') {
                 console.log('User accepted the install prompt');
-                showToast('App installation started!', 'success');
                 this.deferredPrompt = null;
             } else {
                 console.log('User dismissed the install prompt');
@@ -1165,17 +1321,17 @@ function registerServiceWorker() {
 }
 
 // ============================================
-// INITIALIZATION
+// INITIALIZATION (FIXED)
 // ============================================
 function initApp() {
     log('Starting app initialization...');
     
     try {
+        // Initialize translation system first
+        translator.init();
+        
         // Initialize network manager
         NetworkManager.init();
-        
-        // Initialize translation system
-        translator.init();
         
         // Populate states dropdown
         populateStates();
@@ -1224,6 +1380,14 @@ function initApp() {
             }
             
             log('App initialized successfully');
+            
+            // Show welcome toast on first visit
+            if (!localStorage.getItem('agritarmers_visited')) {
+                setTimeout(() => {
+                    showToast('Welcome to Agritarmers!', 'info', 3000);
+                    localStorage.setItem('agritarmers_visited', 'true');
+                }, 1000);
+            }
         }, 500);
         
     } catch (error) {
@@ -1249,7 +1413,7 @@ function initApp() {
 }
 
 // ============================================
-// DOM EVENT LISTENERS
+// DOM EVENT LISTENERS (FIXED)
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
     log('DOM Content Loaded');
@@ -1279,11 +1443,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     clearFieldError(fieldId);
                 } else {
                     const messages = {
-                        'signUpName': 'Please enter your full name',
-                        'signUpMobile': 'Please enter a valid 10-digit mobile number',
-                        'loginMobile': 'Please enter a valid 10-digit mobile number'
+                        'signUpName': translator.t('name_error'),
+                        'signUpMobile': translator.t('mobile_error'),
+                        'loginMobile': translator.t('mobile_error')
                     };
-                    showFieldError(fieldId, messages[fieldId] || 'Invalid input');
+                    showFieldError(fieldId, messages[fieldId] || translator.t('invalid_input'));
                 }
             });
         }
@@ -1295,7 +1459,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Language selector
     document.querySelectorAll('.language-option').forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
             const lang = this.getAttribute('data-lang');
             translator.changeLanguage(lang);
             
@@ -1324,14 +1489,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Form submission prevention
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+    });
+    
+    // Add event listeners for Get Started buttons
+    document.querySelectorAll('[data-action="get-started"]').forEach(button => {
+        button.addEventListener('click', function() {
+            PageManager.show('signUpPage');
+        });
+    });
+    
+    document.querySelectorAll('[data-action="login"]').forEach(button => {
+        button.addEventListener('click', function() {
+            PageManager.show('loginPage');
+        });
+    });
+    
     // Start app initialization
-    initApp();
+    setTimeout(initApp, 100);
 });
 
 // ============================================
 // GLOBAL FUNCTIONS
 // ============================================
-window.showPage = PageManager.show;
+window.showPage = function(pageId) {
+    PageManager.show(pageId);
+};
 
 window.openModal = function(type) {
     let title = '';
@@ -1361,5 +1548,30 @@ window.openModal = function(type) {
 window.addEventListener('beforeunload', function() {
     if (appState.activeUser) {
         localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
+    }
+});
+
+// ============================================
+// WINDOW LOAD EVENT (Backup)
+// ============================================
+window.addEventListener('load', function() {
+    log('Window Loaded');
+    
+    // Double-check if app is initialized
+    if (!appState.isInitialized) {
+        setTimeout(() => {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const app = document.getElementById('app');
+            
+            if (loadingScreen && loadingScreen.style.display !== 'none') {
+                loadingScreen.style.display = 'none';
+            }
+            
+            if (app && app.classList.contains('opacity-0')) {
+                app.classList.remove('opacity-0');
+            }
+            
+            PageManager.show('welcomePage');
+        }, 1000);
     }
 });
