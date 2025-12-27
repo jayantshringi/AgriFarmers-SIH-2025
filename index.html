@@ -108,9 +108,43 @@
             50% { transform: translateY(-5px); }
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        /* Language Selector Styles */
+        .language-selector {
+            position: relative;
+        }
+        
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 150px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+        
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            width: 100%;
+            text-align: left;
+            background: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .language-option:hover {
+            background: #f3f4f6;
+        }
+        
+        .language-option.active {
+            background: #d1fae5;
+            color: #065f46;
         }
         
         /* Footer Styles */
@@ -206,7 +240,7 @@
     <!-- Loading Screen -->
     <div id="loadingScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-        <p class="text-gray-600 text-lg">Loading your farming assistant...</p>
+        <p class="text-gray-600 text-lg" data-translate="loading">Loading your farming assistant...</p>
         <p id="connectivity-status" class="text-sm text-gray-500 mt-2">Checking connectivity...</p>
     </div>
 
@@ -219,11 +253,11 @@
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center">
                             <i class="fas fa-seedling text-green-600 text-2xl mr-2"></i>
-                            <span class="text-xl font-bold text-gray-800">AgriFarmers</span>
+                            <span class="text-xl font-bold text-gray-800" data-translate="app_name">AgriFarmers</span>
                         </div>
                         <div class="hidden md:flex items-center space-x-4">
                             <span id="network-status" class="text-sm px-3 py-1 bg-green-100 text-green-800 rounded-full">
-                                <i class="fas fa-wifi mr-1"></i> Online
+                                <i class="fas fa-wifi mr-1"></i> <span data-translate="online">Online</span>
                             </span>
                         </div>
                     </div>
@@ -251,7 +285,7 @@
         <div id="offline-indicator" class="bg-yellow-100 border-yellow-400 text-yellow-800 px-4 py-2 hidden">
             <div class="container mx-auto flex items-center">
                 <i class="fas fa-wifi-slash mr-2"></i>
-                <span>You are offline. Some features may be limited.</span>
+                <span data-translate="offline_mode">You are offline. Some features may be limited.</span>
             </div>
         </div>
 
@@ -262,35 +296,36 @@
                 <div class="max-w-4xl mx-auto text-center py-12">
                     <div class="mb-8">
                         <i class="fas fa-seedling text-green-600 text-6xl mb-6"></i>
-                        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Welcome to AgriFarmers</h1>
-                        <p class="text-xl text-gray-600 mb-8">Your trusted companion for modern farming.</p>
+                        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4" data-translate="welcome_title">Welcome to AgriFarmers</h1>
+                        <p class="text-xl text-gray-600 mb-8" data-translate="welcome_subtitle">Your trusted companion for modern farming.</p>
                     </div>
                     
                     <div class="grid md:grid-cols-3 gap-6 mb-12">
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <i class="fas fa-seedling text-green-500 text-3xl mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2">Smart Farming</h3>
-                            <p class="text-gray-600">Get personalized crop recommendations and farming advice.</p>
+                            <h3 class="font-bold text-lg mb-2" data-translate="smart_farming">Smart Farming</h3>
+                            <p class="text-gray-600" data-translate="smart_farming_desc">Get personalized crop recommendations and farming advice.</p>
                         </div>
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <i class="fas fa-cloud-sun text-blue-500 text-3xl mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2">Weather Insights</h3>
-                            <p class="text-gray-600">Accurate weather forecasts and farming alerts.</p>
+                            <h3 class="font-bold text-lg mb-2" data-translate="weather_insights">Weather Insights</h3>
+                            <p class="text-gray-600" data-translate="weather_insights_desc">Accurate weather forecasts and farming alerts.</p>
                         </div>
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <i class="fas fa-chart-line text-purple-500 text-3xl mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2">Market Prices</h3>
-                            <p class="text-gray-600">Real-time crop prices and market trends.</p>
+                            <h3 class="font-bold text-lg mb-2" data-translate="market_prices">Market Prices</h3>
+                            <p class="text-gray-600" data-translate="market_prices_desc">Real-time crop prices and market trends.</p>
                         </div>
                     </div>
                     
                     <div class="space-y-4">
                         <button onclick="showPage('signUpPage')" 
                                 class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg w-full md:w-auto">
-                            Get Started
+                            <span data-translate="get_started">Get Started</span>
                         </button>
-                        <p class="text-gray-600">Already have an account? 
-                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline">Login</button>
+                        <p class="text-gray-600">
+                            <span data-translate="already_account">Already have an account?</span> 
+                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline" data-translate="sign_in">Login</button>
                         </p>
                     </div>
                 </div>
@@ -299,26 +334,27 @@
             <!-- Login Page -->
             <div id="loginPage" class="page">
                 <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Welcome Back</h2>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6" data-translate="welcome_back">Welcome Back</h2>
                     
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-gray-700 mb-2">Mobile Number</label>
+                            <label class="block text-gray-700 mb-2" data-translate="mobile_number">Mobile Number</label>
                             <input type="tel" id="loginMobile" 
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                    placeholder="Enter 10-digit mobile number"
-                                   maxlength="10">
+                                   maxlength="10"
+                                   data-translate-placeholder="enter_mobile">
                             <div id="loginMobileError" class="text-red-500 text-sm mt-1 hidden"></div>
                         </div>
                         
                         <button onclick="handleLogin()" 
                                 class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
-                            Continue
+                            <span data-translate="continue">Continue</span>
                         </button>
                         
                         <p class="text-center text-gray-600">
-                            New here? 
-                            <button onclick="showPage('signUpPage')" class="text-green-600 font-medium hover:underline">Create account</button>
+                            <span data-translate="new_here">New here?</span> 
+                            <button onclick="showPage('signUpPage')" class="text-green-600 font-medium hover:underline" data-translate="create_account">Create account</button>
                         </p>
                     </div>
                 </div>
@@ -327,31 +363,33 @@
             <!-- Sign Up Page -->
             <div id="signUpPage" class="page">
                 <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Join AgriFarmers</h2>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6" data-translate="join_agrifarmers">Join AgriFarmers</h2>
                     
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-gray-700 mb-2">Full Name</label>
+                            <label class="block text-gray-700 mb-2" data-translate="full_name">Full Name</label>
                             <input type="text" id="signUpName"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                   placeholder="Your Name">
+                                   placeholder="Your Name"
+                                   data-translate-placeholder="your_name">
                             <div id="signUpNameError" class="text-red-500 text-sm mt-1 hidden"></div>
                         </div>
                         
                         <div>
-                            <label class="block text-gray-700 mb-2">Mobile Number</label>
+                            <label class="block text-gray-700 mb-2" data-translate="mobile_number">Mobile Number</label>
                             <input type="tel" id="signUpMobile"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                    placeholder="Enter 10-digit mobile number"
-                                   maxlength="10">
+                                   maxlength="10"
+                                   data-translate-placeholder="enter_mobile">
                             <div id="signUpMobileError" class="text-red-500 text-sm mt-1 hidden"></div>
                         </div>
                         
                         <div>
-                            <label class="block text-gray-700 mb-2">State</label>
+                            <label class="block text-gray-700 mb-2" data-translate="state">State</label>
                             <select id="signUpState" 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="">Select State</option>
+                                <option value="" data-translate="select_state">Select State</option>
                                 <option value="Haryana">Haryana</option>
                                 <option value="Punjab">Punjab</option>
                                 <option value="Uttar Pradesh">Uttar Pradesh</option>
@@ -360,23 +398,23 @@
                         </div>
                         
                         <div>
-                            <label class="block text-gray-700 mb-2">District</label>
+                            <label class="block text-gray-700 mb-2" data-translate="district">District</label>
                             <select id="signUpDistrict" 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                     disabled>
-                                <option value="">Select District</option>
+                                <option value="" data-translate="select_district">Select District</option>
                             </select>
                             <div id="signUpDistrictError" class="text-red-500 text-sm mt-1 hidden"></div>
                         </div>
                         
                         <button onclick="handleSignUp()" 
                                 class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
-                            Create Account
+                            <span data-translate="create_account">Create Account</span>
                         </button>
                         
                         <p class="text-center text-gray-600">
-                            Already have an account? 
-                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline">Sign in</button>
+                            <span data-translate="already_account">Already have an account?</span> 
+                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline" data-translate="sign_in">Sign in</button>
                         </p>
                     </div>
                 </div>
@@ -385,36 +423,40 @@
             <!-- OTP Page -->
             <div id="otpPage" class="page">
                 <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-2">OTP Verification</h2>
-                    <p class="text-gray-600 mb-6">OTP sent to <span id="otpPhoneNumber" class="font-medium">+91 XXXXXXXX</span></p>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2" data-translate="otp_verification">OTP Verification</h2>
+                    <p class="text-gray-600 mb-6">
+                        <span data-translate="otp_sent_to">OTP sent to</span> <span id="otpPhoneNumber" class="font-medium">+91 XXXXXXXX</span>
+                    </p>
                     
                     <div class="space-y-6">
                         <div class="text-center">
                             <div class="flex justify-center mb-4" id="otpContainer">
                                 <!-- OTP Inputs will be generated here -->
                             </div>
-                            <p class="text-sm text-gray-500 mb-2">Demo: Your OTP is shown below</p>
+                            <p class="text-sm text-gray-500 mb-2" data-translate="demo_otp">Demo: Your OTP is shown below</p>
                             <div id="demoOTP" class="text-2xl font-bold text-green-600 p-3 bg-green-50 rounded-lg inline-block"></div>
                         </div>
                         
                         <div class="text-center">
-                            <p class="text-sm text-gray-600 mb-4">OTP valid for <span id="otpTimer" class="font-bold">02:00</span> minutes</p>
+                            <p class="text-sm text-gray-600 mb-4">
+                                <span data-translate="otp_valid">OTP valid for</span> <span id="otpTimer" class="font-bold">02:00</span> <span data-translate="minutes">minutes</span>
+                            </p>
                             
                             <button onclick="verifyOTP()" 
                                     class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mb-3">
-                                Verify OTP
+                                <span data-translate="verify_otp">Verify OTP</span>
                             </button>
                             
                             <button id="resendOTP" onclick="resendOTP()" 
                                     class="text-green-600 hover:text-green-800 font-medium">
-                                Resend OTP
+                                <span data-translate="resend_otp">Resend OTP</span>
                             </button>
                         </div>
                         
                         <div class="text-center pt-4 border-t">
                             <button onclick="showPage('loginPage')" 
                                     class="text-gray-600 hover:text-gray-800">
-                                ← Back to Login
+                                ← <span data-translate="back_login">Back to Login</span>
                             </button>
                         </div>
                     </div>
@@ -427,12 +469,12 @@
                 <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white mb-8">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h2 class="text-2xl font-bold mb-2" id="welcomeText">Hello</h2>
+                            <h2 class="text-2xl font-bold mb-2" id="welcomeText" data-translate="hello">Hello</h2>
                             <p class="opacity-90" id="farmerName">Farmer</p>
                             <p class="text-sm opacity-80" id="farmerLocation">Location</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm opacity-90">Today</p>
+                            <p class="text-sm opacity-90" data-translate="today">Today</p>
                             <p class="text-xl font-bold" id="currentDate"></p>
                         </div>
                     </div>
@@ -440,7 +482,7 @@
                 
                 <!-- Dashboard -->
                 <div class="mb-8">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Your Farming Dashboard</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4" data-translate="dashboard">Your Farming Dashboard</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- Weather Card -->
@@ -448,8 +490,8 @@
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-cloud-sun text-blue-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2">Weather Forecast</h4>
-                                    <p class="text-sm text-gray-600">Today's weather & forecast</p>
+                                    <h4 class="font-bold text-gray-800 mt-2" data-translate="weather_forecast">Weather Forecast</h4>
+                                    <p class="text-sm text-gray-600" data-translate="weather_desc">Today's weather & forecast</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -464,8 +506,8 @@
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-seedling text-green-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2">Seed Recommendations</h4>
-                                    <p class="text-sm text-gray-600">Best seeds for your region</p>
+                                    <h4 class="font-bold text-gray-800 mt-2" data-translate="seed_recommendations">Seed Recommendations</h4>
+                                    <p class="text-sm text-gray-600" data-translate="seed_desc">Best seeds for your region</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -481,8 +523,8 @@
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-flask text-yellow-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2">Fertilizer Guide</h4>
-                                    <p class="text-sm text-gray-600">Nutrients for your crops</p>
+                                    <h4 class="font-bold text-gray-800 mt-2" data-translate="fertilizer_guide">Fertilizer Guide</h4>
+                                    <p class="text-sm text-gray-600" data-translate="fertilizer_desc">Nutrients for your crops</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -497,8 +539,8 @@
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-calendar-alt text-purple-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2">Crop Calendar</h4>
-                                    <p class="text-sm text-gray-600">Seasonal planting guide</p>
+                                    <h4 class="font-bold text-gray-800 mt-2" data-translate="crop_calendar">Crop Calendar</h4>
+                                    <p class="text-sm text-gray-600" data-translate="crop_desc">Seasonal planting guide</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -513,8 +555,8 @@
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-chart-line text-red-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2">Market Prices</h4>
-                                    <p class="text-sm text-gray-600">Current crop prices</p>
+                                    <h4 class="font-bold text-gray-800 mt-2" data-translate="market_prices_title">Market Prices</h4>
+                                    <p class="text-sm text-gray-600" data-translate="market_desc">Current crop prices</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -529,8 +571,8 @@
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-vial text-orange-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2">Soil Health</h4>
-                                    <p class="text-sm text-gray-600">Soil testing guidance</p>
+                                    <h4 class="font-bold text-gray-800 mt-2" data-translate="soil_health">Soil Health</h4>
+                                    <p class="text-sm text-gray-600" data-translate="soil_desc">Soil testing guidance</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -547,8 +589,8 @@
                     <div class="flex items-start">
                         <i class="fas fa-lightbulb text-yellow-500 text-2xl mr-4 mt-1"></i>
                         <div>
-                            <h4 class="font-bold text-gray-800 mb-2">Today's Farming Advisory</h4>
-                            <p class="text-gray-700" id="farmingAdvisory">Good weather for farming activities. Ideal for irrigation and fertilization.</p>
+                            <h4 class="font-bold text-gray-800 mb-2" data-translate="farming_advisory">Today's Farming Advisory</h4>
+                            <p class="text-gray-700" id="farmingAdvisory" data-translate="good_weather">Good weather for farming activities. Ideal for irrigation and fertilization.</p>
                         </div>
                     </div>
                 </div>
@@ -560,38 +602,38 @@
             <div class="footer-container">
                 <!-- Brand & Description Section -->
                 <div class="footer-section">
-                    <h3 class="text-xl font-bold mb-3">AgriFarmers</h3>
-                    <p class="opacity-90">
+                    <h3 class="text-xl font-bold mb-3" data-translate="app_name">AgriFarmers</h3>
+                    <p class="opacity-90" data-translate="empowering_farmers">
                         Empowering farmers with smart agricultural solutions and real-time insights.
                     </p>
                 </div>
 
                 <!-- Quick Links Section -->
-<div class="footer-section">
-    <h4>Quick Links</h4>
-    <div class="flex flex-wrap gap-4 mt-3">
-        <a href="#" onclick="showPage('welcomePage'); return false;" 
-           class="text-white hover:text-green-200 transition-colors">
-            Home
-        </a>
-        <a href="#" onclick="openAboutModal(); return false;" 
-           class="text-white hover:text-green-200 transition-colors">
-            About
-        </a>
-        <a href="#" onclick="openServicesModal(); return false;" 
-           class="text-white hover:text-green-200 transition-colors">
-            Services
-        </a>
-        <a href="#" onclick="openContactModal(); return false;" 
-           class="text-white hover:text-green-200 transition-colors">
-            Contact
-        </a>
-    </div>
-</div>
+                <div class="footer-section">
+                    <h4 data-translate="quick_links">Quick Links</h4>
+                    <div class="footer-links flex flex-col gap-2 mt-3">
+                        <a href="#" onclick="showPage('welcomePage'); return false;" 
+                           class="text-white hover:text-green-200 transition-colors" data-translate="home">
+                            Home
+                        </a>
+                        <a href="#" onclick="openAboutModal(); return false;" 
+                           class="text-white hover:text-green-200 transition-colors" data-translate="about">
+                            About
+                        </a>
+                        <a href="#" onclick="openServicesModal(); return false;" 
+                           class="text-white hover:text-green-200 transition-colors" data-translate="services">
+                            Services
+                        </a>
+                        <a href="#" onclick="openContactModal(); return false;" 
+                           class="text-white hover:text-green-200 transition-colors" data-translate="contact">
+                            Contact
+                        </a>
+                    </div>
+                </div>
 
                 <!-- Contact Section -->
                 <div class="footer-section">
-                    <h4>Contact</h4>
+                    <h4 data-translate="contact">Contact</h4>
                     <ul class="footer-contact space-y-2">
                         <li class="flex items-center gap-2"><i class="fas fa-map-marker-alt"></i> India </li>
                         <li class="flex items-center gap-2"><i class="fas fa-phone"></i> +91 1800-XXX-XXXX</li>
@@ -603,12 +645,12 @@
             <!-- Bottom Bar -->
             <div class="footer-bottom">
                 <p class="copyright opacity-80">
-                    &copy; <span id="current-year">2025</span> AgriFarmers. All rights reserved.
+                    &copy; <span id="current-year">2025</span> <span data-translate="app_name">AgriFarmers</span>. <span data-translate="all_rights_reserved">All rights reserved</span>.
                 </p>
                 <div class="footer-legal">
-                    <a href="#" onclick="openPrivacyModal(); return false;">Privacy Policy</a>
-                    <a href="#" onclick="openTermsModal(); return false;">Terms of Use</a>
-                    <a href="#" onclick="openSitemapModal(); return false;">Sitemap</a>
+                    <a href="#" onclick="openPrivacyModal(); return false;" data-translate="privacy_policy">Privacy Policy</a>
+                    <a href="#" onclick="openTermsModal(); return false;" data-translate="terms_of_use">Terms of Use</a>
+                    <a href="#" onclick="openSitemapModal(); return false;" data-translate="sitemap">Sitemap</a>
                 </div>
             </div>
         </footer>
@@ -618,1069 +660,9 @@
 
         <!-- Modal Container -->
         <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4 hidden"></div>
-
-        <!-- PWA Install Button -->
-        <!-- This will be created dynamically by JavaScript -->
     </div>
 
-    <!-- Scripts -->
-    <script>
-        // ============================================
-        // GLOBAL STATE MANAGEMENT
-        // ============================================
-        const appState = {
-            activeUser: null,
-            tempUserData: null,
-            lastGeneratedOTP: null,
-            otpTimer: null,
-            otpTimeLeft: 120,
-            deferredPrompt: null,
-            isAppInstalled: false
-        };
-
-        // District Data
-        const districtData = {
-            "Haryana": ["Ambala", "Bhiwani", "Charkhi Dadri", "Faridabad", "Fatehabad", "Gurugram", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mahendragarh", "Nuh", "Palwal", "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"],
-            "Punjab": ["Amritsar", "Barnala", "Bathinda", "Faridkot", "Fatehgarh Sahib", "Fazilka", "Ferozepur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Mansa", "Moga", "Mohali", "Muktsar", "Pathankot", "Patiala", "Rupnagar", "Sangrur", "Shaheed Bhagat Singh Nagar", "Tarn Taran"],
-            "Uttar Pradesh": ["Agra", "Aligarh", "Allahabad", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Azamgarh", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Faizabad", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kanshiram Nagar", "Kaushambi", "Kushinagar", "Lakhimpur Kheri", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Rae Bareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar", "Shahjahanpur", "Shamli", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi"]
-        };
-
-        // ============================================
-        // CORE FUNCTIONS
-        // ============================================
-
-        // Function to show page
-        function showPage(pageId) {
-            console.log('Showing page:', pageId);
-            
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Show selected page
-            const targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
-            
-            // Update navigation based on user state
-            updateNavigation();
-            
-            // Hide mobile menu
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenu) mobileMenu.classList.add('hidden');
-        }
-
-        // Update navigation
-        function updateNavigation() {
-            const navActions = document.getElementById('nav-actions');
-            const mobileNavActions = document.getElementById('mobile-nav-actions');
-            
-            if (appState.activeUser) {
-                // User is logged in
-                const userHTML = `
-                    <div class="flex items-center space-x-4">
-                        <span class="hidden md:inline text-gray-700">${appState.activeUser.name}</span>
-                        <button onclick="handleLogout()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors">
-                            Logout
-                        </button>
-                    </div>
-                `;
-                
-                const mobileUserHTML = `
-                    <div class="space-y-3">
-                        <div class="px-3 py-2 text-gray-700">${appState.activeUser.name}</div>
-                        <button onclick="handleLogout()" class="w-full text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">
-                            Logout
-                        </button>
-                    </div>
-                `;
-                
-                if (navActions) navActions.innerHTML = userHTML;
-                if (mobileNavActions) mobileNavActions.innerHTML = mobileUserHTML;
-            } else {
-                // User is not logged in
-                const guestHTML = `
-                    <div class="flex items-center space-x-2">
-                        <button onclick="showPage('loginPage')" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                            Login
-                        </button>
-                        <button onclick="showPage('signUpPage')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                            Get Started
-                        </button>
-                    </div>
-                `;
-                
-                const mobileGuestHTML = `
-                    <div class="space-y-1">
-                        <button onclick="showPage('loginPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">
-                            Login
-                        </button>
-                        <button onclick="showPage('signUpPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-green-600 text-white hover:bg-green-700">
-                            Get Started
-                        </button>
-                    </div>
-                `;
-                
-                if (navActions) navActions.innerHTML = guestHTML;
-                if (mobileNavActions) mobileNavActions.innerHTML = mobileGuestHTML;
-            }
-        }
-
-        // Handle state change for districts
-        function initializeStateDistrict() {
-            const stateSelect = document.getElementById('signUpState');
-            if (stateSelect) {
-                stateSelect.addEventListener('change', function() {
-                    const state = this.value;
-                    const districtSelect = document.getElementById('signUpDistrict');
-                    
-                    if (districtSelect) {
-                        districtSelect.innerHTML = '<option value="">Select District</option>';
-                        districtSelect.disabled = true;
-                        
-                        if (state && districtData[state]) {
-                            districtData[state].forEach(district => {
-                                const option = document.createElement('option');
-                                option.value = district;
-                                option.textContent = district;
-                                districtSelect.appendChild(option);
-                            });
-                            districtSelect.disabled = false;
-                        }
-                    }
-                });
-            }
-        }
-
-        // Handle sign up
-        function handleSignUp() {
-            const name = document.getElementById('signUpName').value.trim();
-            const mobile = document.getElementById('signUpMobile').value.trim();
-            const state = document.getElementById('signUpState').value;
-            const district = document.getElementById('signUpDistrict').value;
-            
-            // Simple validation
-            if (!name || name.length < 2) {
-                showToast('Please enter a valid name', 'error');
-                return;
-            }
-            
-            if (!/^[6-9]\d{9}$/.test(mobile)) {
-                showToast('Please enter a valid 10-digit mobile number', 'error');
-                return;
-            }
-            
-            if (!state) {
-                showToast('Please select your state', 'error');
-                return;
-            }
-            
-            if (!district) {
-                showToast('Please select your district', 'error');
-                return;
-            }
-            
-            // Create user object
-            const user = {
-                name: name,
-                mobile: mobile,
-                state: state,
-                district: district,
-                joined: new Date().toISOString(),
-                lastLogin: new Date().toISOString()
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('agrifarmers_user', JSON.stringify(user));
-            appState.activeUser = user;
-            
-            // Update home page
-            document.getElementById('farmerName').textContent = user.name;
-            document.getElementById('farmerLocation').textContent = `${user.district}, ${user.state}`;
-            document.getElementById('welcomeText').textContent = `Hello, ${user.name.split(' ')[0]}`;
-            
-            // Show success message and go to home
-            showToast('Account created successfully!', 'success');
-            showPage('homePage');
-        }
-
-        // Handle login
-        function handleLogin() {
-            const mobile = document.getElementById('loginMobile').value.trim();
-            
-            if (!/^[6-9]\d{9}$/.test(mobile)) {
-                showToast('Please enter a valid 10-digit mobile number', 'error');
-                return;
-            }
-            
-            // Check if user exists
-            const storedUser = localStorage.getItem('agrifarmers_user');
-            
-            if (storedUser) {
-                const user = JSON.parse(storedUser);
-                if (user.mobile === mobile) {
-                    // Existing user
-                    proceedToOTP(mobile, user);
-                } else {
-                    // New user
-                    appState.tempUserData = { mobile: mobile };
-                    proceedToOTP(mobile);
-                }
-            } else {
-                // New user
-                appState.tempUserData = { mobile: mobile };
-                proceedToOTP(mobile);
-            }
-        }
-
-        // Proceed to OTP
-        function proceedToOTP(mobile, user = null) {
-            // Generate OTP (for demo, use 123456)
-            const otp = '123456';
-            appState.lastGeneratedOTP = otp;
-            appState.tempUserData = user || { mobile: mobile };
-            
-            // Update OTP page
-            document.getElementById('otpPhoneNumber').textContent = `+91 ${mobile}`;
-            document.getElementById('demoOTP').textContent = otp;
-            
-            // Generate OTP input fields
-            const otpContainer = document.getElementById('otpContainer');
-            otpContainer.innerHTML = '';
-            
-            for (let i = 0; i < 6; i++) {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.maxLength = 1;
-                input.className = 'otp-digit';
-                input.dataset.index = i;
-                
-                input.addEventListener('input', function(e) {
-                    const value = e.target.value;
-                    if (value && /^\d$/.test(value)) {
-                        // Move to next input
-                        const nextInput = document.querySelector(`.otp-digit[data-index="${parseInt(i) + 1}"]`);
-                        if (nextInput) nextInput.focus();
-                    }
-                    
-                    // Remove error class
-                    this.classList.remove('error');
-                });
-                
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && !this.value) {
-                        // Move to previous input
-                        const prevInput = document.querySelector(`.otp-digit[data-index="${parseInt(i) - 1}"]`);
-                        if (prevInput) prevInput.focus();
-                    }
-                });
-                
-                otpContainer.appendChild(input);
-            }
-            
-            // Start OTP timer
-            startOTPTimer();
-            
-            // Show OTP page
-            showPage('otpPage');
-            
-            // Auto-focus first OTP input
-            setTimeout(() => {
-                const firstInput = document.querySelector('.otp-digit[data-index="0"]');
-                if (firstInput) firstInput.focus();
-            }, 100);
-        }
-
-        // Start OTP timer
-        function startOTPTimer() {
-            if (appState.otpTimer) {
-                clearInterval(appState.otpTimer);
-            }
-            
-            appState.otpTimeLeft = 120;
-            const timerElement = document.getElementById('otpTimer');
-            const resendButton = document.getElementById('resendOTP');
-            
-            // Disable resend button
-            if (resendButton) {
-                resendButton.disabled = true;
-                resendButton.classList.add('opacity-50', 'cursor-not-allowed');
-            }
-            
-            appState.otpTimer = setInterval(() => {
-                appState.otpTimeLeft--;
-                
-                const minutes = Math.floor(appState.otpTimeLeft / 60);
-                const seconds = appState.otpTimeLeft % 60;
-                
-                if (timerElement) {
-                    timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                }
-                
-                if (appState.otpTimeLeft <= 0) {
-                    clearInterval(appState.otpTimer);
-                    appState.otpTimer = null;
-                    
-                    if (timerElement) {
-                        timerElement.textContent = '00:00';
-                    }
-                    
-                    if (resendButton) {
-                        resendButton.disabled = false;
-                        resendButton.classList.remove('opacity-50', 'cursor-not-allowed');
-                    }
-                }
-            }, 1000);
-        }
-
-        // Verify OTP
-        function verifyOTP() {
-            // Collect OTP from inputs
-            const otpInputs = document.querySelectorAll('.otp-digit');
-            let enteredOTP = '';
-            
-            otpInputs.forEach(input => {
-                enteredOTP += input.value;
-            });
-            
-            // Validate OTP length
-            if (enteredOTP.length !== 6) {
-                showToast('Please enter all 6 digits', 'error');
-                otpInputs.forEach(input => {
-                    if (!input.value) {
-                        input.classList.add('error');
-                    }
-                });
-                return;
-            }
-            
-            // Validate OTP (for demo, accept 123456)
-            if (enteredOTP === appState.lastGeneratedOTP || enteredOTP === '123456') {
-                // OTP verified
-                showToast('OTP verified successfully!', 'success');
-                
-                // Stop timer
-                if (appState.otpTimer) {
-                    clearInterval(appState.otpTimer);
-                    appState.otpTimer = null;
-                }
-                
-                // Check if user exists or needs to sign up
-                if (appState.tempUserData && appState.tempUserData.name) {
-                    // Existing user
-                    appState.activeUser = appState.tempUserData;
-                    appState.activeUser.lastLogin = new Date().toISOString();
-                    
-                    // Save to localStorage
-                    localStorage.setItem('agrifarmers_user', JSON.stringify(appState.activeUser));
-                    
-                    // Update home page
-                    document.getElementById('farmerName').textContent = appState.activeUser.name;
-                    document.getElementById('farmerLocation').textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
-                    document.getElementById('welcomeText').textContent = `Welcome back, ${appState.activeUser.name.split(' ')[0]}`;
-                    
-                    // Go to home page
-                    showPage('homePage');
-                } else {
-                    // New user - go to sign up
-                    showToast('Please complete your registration', 'info');
-                    showPage('signUpPage');
-                    
-                    // Pre-fill mobile number
-                    if (appState.tempUserData?.mobile) {
-                        document.getElementById('signUpMobile').value = appState.tempUserData.mobile;
-                    }
-                }
-                
-                // Clear temp data
-                appState.tempUserData = null;
-                appState.lastGeneratedOTP = null;
-            } else {
-                // Invalid OTP
-                showToast('Invalid OTP. Please try again.', 'error');
-                otpInputs.forEach(input => {
-                    input.classList.add('error');
-                });
-            }
-        }
-
-        // Resend OTP
-        function resendOTP() {
-            const resendButton = document.getElementById('resendOTP');
-            
-            if (resendButton && !resendButton.disabled) {
-                // For demo, keep same OTP
-                const otp = '123456';
-                appState.lastGeneratedOTP = otp;
-                
-                // Update display
-                document.getElementById('demoOTP').textContent = otp;
-                
-                // Clear OTP inputs
-                document.querySelectorAll('.otp-digit').forEach(input => {
-                    input.value = '';
-                    input.classList.remove('error', 'success');
-                });
-                
-                // Restart timer
-                startOTPTimer();
-                
-                // Focus first input
-                const firstInput = document.querySelector('.otp-digit[data-index="0"]');
-                if (firstInput) firstInput.focus();
-                
-                showToast('New OTP sent!', 'info');
-            }
-        }
-
-        // Handle logout
-        function handleLogout() {
-            appState.activeUser = null;
-            appState.tempUserData = null;
-            
-            // Clear OTP timer if running
-            if (appState.otpTimer) {
-                clearInterval(appState.otpTimer);
-                appState.otpTimer = null;
-            }
-            
-            // Show logout message
-            showToast('Logged out successfully', 'info');
-            
-            // Go to welcome page
-            showPage('welcomePage');
-        }
-
-        // Show toast notification
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-            
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.textContent = message;
-            
-            container.appendChild(toast);
-            
-            // Remove toast after 3 seconds
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => {
-                    if (toast.parentNode === container) {
-                        container.removeChild(toast);
-                    }
-                }, 300);
-            }, 3000);
-        }
-
-        // ============================================
-        // MODAL FUNCTIONS
-        // ============================================
-
-        function openWeatherModal() {
-            openModal('Weather Forecast', `
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h4 class="font-bold text-lg">Noida, India</h4>
-                            <p class="text-gray-600">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-4xl font-bold">28°C</div>
-                            <p class="text-gray-600">Partly Cloudy</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-gray-50 p-3 rounded-lg">
-                            <p class="text-sm text-gray-600">Humidity</p>
-                            <p class="font-bold">65%</p>
-                        </div>
-                        <div class="bg-gray-50 p-3 rounded-lg">
-                            <p class="text-sm text-gray-600">Wind</p>
-                            <p class="font-bold">12 km/h</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <p class="font-medium text-green-800">Farming Advisory:</p>
-                        <p class="text-green-700">Good weather for irrigation and fertilization activities.</p>
-                    </div>
-                </div>
-            `);
-        }
-
-        function openSeedModal() {
-            openModal('Seed Recommendations', `
-                <div class="space-y-4">
-                    <h4 class="font-bold text-lg">Recommended for Kharif Season</h4>
-                    
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                            <div>
-                                <p class="font-bold">Rice</p>
-                                <p class="text-sm text-gray-600">High-yield variety</p>
-                            </div>
-                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Recommended</span>
-                        </div>
-                        
-                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                            <div>
-                                <p class="font-bold">Cotton</p>
-                                <p class="text-sm text-gray-600">BT Cotton variety</p>
-                            </div>
-                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Recommended</span>
-                        </div>
-                        
-                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                            <div>
-                                <p class="font-bold">Maize</p>
-                                <p class="text-sm text-gray-600">Hybrid variety</p>
-                            </div>
-                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Recommended</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-yellow-50 p-3 rounded-lg">
-                        <p class="text-sm text-yellow-800">
-                            <i class="fas fa-lightbulb mr-2"></i>
-                            Tip: Always use certified seeds from authorized dealers for better yield.
-                        </p>
-                    </div>
-                </div>
-            `);
-        }
-
-        function openFertilizerModal() {
-            openModal('Fertilizer Guide', `
-                <div class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-green-50 p-4 rounded-lg">
-                            <h5 class="font-bold mb-2">NPK Ratio</h5>
-                            <p class="text-3xl font-bold text-gray-800">4:2:1</p>
-                            <p class="text-sm text-gray-600">Nitrogen:Phosphorus:Potassium</p>
-                        </div>
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <h5 class="font-bold mb-2">Application Time</h5>
-                            <p class="text-lg font-bold text-gray-800">Before Sowing</p>
-                            <p class="text-sm text-gray-600">Basal dose recommended</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-yellow-50 p-3 rounded-lg">
-                        <p class="text-sm text-yellow-800">
-                            <i class="fas fa-exclamation-triangle mr-2"></i>
-                            Important: Soil testing is recommended before fertilizer application.
-                        </p>
-                    </div>
-                </div>
-            `);
-        }
-
-        function openCropCalendarModal() {
-            openModal('Crop Calendar', `
-                <div class="space-y-4">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="p-2 text-left">Season</th>
-                                    <th class="p-2 text-left">Sowing</th>
-                                    <th class="p-2 text-left">Harvesting</th>
-                                    <th class="p-2 text-left">Crops</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-b">
-                                    <td class="p-2 font-medium">Kharif</td>
-                                    <td class="p-2">Jun - Jul</td>
-                                    <td class="p-2">Sep - Oct</td>
-                                    <td class="p-2">Rice, Maize, Cotton</td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="p-2 font-medium">Rabi</td>
-                                    <td class="p-2">Oct - Nov</td>
-                                    <td class="p-2">Mar - Apr</td>
-                                    <td class="p-2">Wheat, Barley, Mustard</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 font-medium">Zaid</td>
-                                    <td class="p-2">Mar - Jun</td>
-                                    <td class="p-2">Jun - Jul</td>
-                                    <td class="p-2">Watermelon, Cucumber</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <h5 class="font-bold mb-2">Current Recommendation</h5>
-                        <p class="text-gray-700">Now is the perfect time for Kharif crops like Rice and Cotton.</p>
-                    </div>
-                </div>
-            `);
-        }
-
-        function openMarketPricesModal() {
-            openModal('Market Prices', `
-                <div class="space-y-4">
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="font-bold">Wheat</p>
-                                <p class="text-sm text-gray-600">Grade A</p>
-                            </div>
-                            <span class="text-lg font-bold text-green-600">₹2,300/q</span>
-                        </div>
-                        
-                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="font-bold">Rice</p>
-                                <p class="text-sm text-gray-600">Basmati</p>
-                            </div>
-                            <span class="text-lg font-bold text-green-600">₹3,800/q</span>
-                        </div>
-                        
-                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="font-bold">Cotton</p>
-                                <p class="text-sm text-gray-600">Medium Staple</p>
-                            </div>
-                            <span class="text-lg font-bold text-green-600">₹6,500/q</span>
-                        </div>
-                    </div>
-                    
-                    <p class="text-sm text-gray-600 text-center">Prices updated: Today, 10:00 AM</p>
-                </div>
-            `);
-        }
-
-        function openSoilHealthModal() {
-            openModal('Soil Health', `
-                <div class="space-y-4">
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <h4 class="font-bold mb-3">Soil Testing Steps</h4>
-                        <ol class="list-decimal list-inside space-y-2 text-gray-700">
-                            <li>Collect soil samples from different spots in your field</li>
-                            <li>Mix samples thoroughly in a clean container</li>
-                            <li>Visit nearest Krishi Vigyan Kendra (KVK)</li>
-                            <li>Get soil health card with recommendations</li>
-                        </ol>
-                    </div>
-                    
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h4 class="font-bold mb-2">KVK Contact Info</h4>
-                        <p class="text-gray-700">Search for nearest Krishi Vigyan Kendra (KVK) in your district.</p>
-                        <p class="text-sm text-gray-600 mt-2">Call: 1800-180-1551 (Toll-free)</p>
-                    </div>
-                </div>
-            `);
-        }
-
-        // Footer modals
-        function openServicesModal() {
-            openModal('Our Services', `
-                <div class="space-y-4">
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <h5 class="font-bold mb-2">Weather Forecast</h5>
-                        <p class="text-gray-700">Accurate weather predictions for your farming activities.</p>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h5 class="font-bold mb-2">Seed Recommendations</h5>
-                        <p class="text-gray-700">Best seeds for your specific region and soil type.</p>
-                    </div>
-                    <div class="bg-yellow-50 p-4 rounded-lg">
-                        <h5 class="font-bold mb-2">Fertilizer Guide</h5>
-                        <p class="text-gray-700">Optimal fertilizer recommendations for your crops.</p>
-                    </div>
-                    <div class="bg-purple-50 p-4 rounded-lg">
-                        <h5 class="font-bold mb-2">Market Prices</h5>
-                        <p class="text-gray-700">Real-time crop prices and market trends.</p>
-                    </div>
-                </div>
-            `);
-        }
-
-        function openContactModal() {
-            openModal('Contact Us', `
-                <div class="space-y-4">
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <h5 class="font-bold mb-2">Email</h5>
-                        <p class="text-gray-700">help@agrifarmers.com</p>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h5 class="font-bold mb-2">Phone</h5>
-                        <p class="text-gray-700">+91 1800-XXX-XXXX (Toll-free)</p>
-                    </div>
-                    <div class="bg-yellow-50 p-4 rounded-lg">
-                        <h5 class="font-bold mb-2">Address</h5>
-                        <p class="text-gray-700">Noida, Uttar Pradesh, India</p>
-                    </div>
-                </div>
-            `);
-        }
-
-        function openPrivacyModal() {
-            openModal('Privacy Policy', `
-                <div class="space-y-4">
-                    <p class="text-gray-700">We respect your privacy. Your personal information is securely stored and never shared with third parties without your consent.</p>
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h5 class="font-bold mb-2">Data Collection</h5>
-                        <p class="text-sm text-gray-700">We collect only necessary information for providing farming recommendations.</p>
-                    </div>
-                </div>
-            `);
-        }
-
-        function openTermsModal() {
-            openModal('Terms of Use', `
-                <div class="space-y-4">
-                    <p class="text-gray-700">By using AgriFarmers, you agree to our terms and conditions.</p>
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h5 class="font-bold mb-2">User Responsibilities</h5>
-                        <p class="text-sm text-gray-700">Users are responsible for verifying farming advice with local experts.</p>
-                    </div>
-                </div>
-            `);
-        }
-
-        function openSitemapModal() {
-            openModal('Sitemap', `
-                <div class="space-y-3">
-                    <a href="#" onclick="showPage('welcomePage'); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Home</a>
-                    <a href="#" onclick="showPage('loginPage'); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Login</a>
-                    <a href="#" onclick="showPage('signUpPage'); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Sign Up</a>
-                    <a href="#" onclick="openWeatherModal(); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Weather</a>
-                    <a href="#" onclick="openSeedModal(); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Seeds</a>
-                    <a href="#" onclick="openFertilizerModal(); closeModal(); return false;" class="block p-2 hover:bg-gray-100 rounded">Fertilizer</a>
-                </div>
-            `);
-        }
-
-        function openModal(title, content) {
-            const modalContainer = document.getElementById('modal-container');
-            if (!modalContainer) return;
-            
-            modalContainer.innerHTML = `
-                <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden animate-fadeIn">
-                    <div class="flex items-center justify-between p-6 border-b">
-                        <h3 class="text-2xl font-bold text-gray-800">${title}</h3>
-                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-3xl font-light">&times;</button>
-                    </div>
-                    <div class="overflow-y-auto p-6" style="max-height: calc(90vh - 80px);">
-                        ${content}
-                    </div>
-                </div>
-            `;
-            
-            modalContainer.classList.remove('hidden');
-        }
-
-        function closeModal() {
-            const modalContainer = document.getElementById('modal-container');
-            if (modalContainer) {
-                modalContainer.classList.add('hidden');
-            }
-        }
-
-        // ============================================
-        // PWA INSTALLATION SYSTEM (FIXED)
-        // ============================================
-
-        function initializePWA() {
-            console.log('Initializing PWA...');
-            
-            // Check if already installed
-            checkIfAppInstalled();
-            
-            // Listen for beforeinstallprompt event
-            window.addEventListener('beforeinstallprompt', (e) => {
-                console.log('✅ PWA: beforeinstallprompt event fired');
-                e.preventDefault();
-                appState.deferredPrompt = e;
-                showInstallButton();
-                
-                // Auto-show install prompt after 5 seconds
-                setTimeout(() => {
-                    if (appState.deferredPrompt && !appState.isAppInstalled) {
-                        showToast('Install AgriFarmers for better experience', 'info');
-                    }
-                }, 5000);
-            });
-            
-            // Listen for appinstalled event
-            window.addEventListener('appinstalled', () => {
-                console.log('🎉 PWA: App installed successfully');
-                appState.isAppInstalled = true;
-                hideInstallButton();
-                localStorage.setItem('agrifarmers_pwa_installed', 'true');
-                showToast('AgriFarmers installed successfully!', 'success');
-            });
-            
-            // Try to show install button on iOS/Safari
-            setTimeout(() => {
-                if (!appState.isAppInstalled) {
-                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-                    
-                    if (isIOS && isSafari) {
-                        showInstallButton();
-                    }
-                }
-            }, 3000);
-        }
-
-        function checkIfAppInstalled() {
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-            const isInWebApp = window.navigator.standalone === true;
-            const localStorageInstalled = localStorage.getItem('agrifarmers_pwa_installed') === 'true';
-            
-            appState.isAppInstalled = isStandalone || isInWebApp || localStorageInstalled;
-            
-            console.log('PWA Check:', {
-                isStandalone,
-                isInWebApp,
-                localStorageInstalled,
-                isAppInstalled: appState.isAppInstalled
-            });
-            
-            return appState.isAppInstalled;
-        }
-
-        function showInstallButton() {
-            if (appState.isAppInstalled) {
-                hideInstallButton();
-                return;
-            }
-            
-            let installBtn = document.getElementById('pwa-install-button');
-            
-            if (!installBtn) {
-                installBtn = document.createElement('button');
-                installBtn.id = 'pwa-install-button';
-                installBtn.innerHTML = `
-                    <i class="fas fa-download text-xl"></i>
-                    <span class="ml-2 hidden md:inline">Install AgriFarmers</span>
-                `;
-                installBtn.title = 'Install AgriFarmers as app for better experience';
-                installBtn.onclick = installApp;
-                
-                document.body.appendChild(installBtn);
-            }
-            
-            installBtn.style.display = 'flex';
-            console.log('PWA Install button shown');
-        }
-
-        function hideInstallButton() {
-            const installBtn = document.getElementById('pwa-install-button');
-            if (installBtn) {
-                installBtn.style.display = 'none';
-            }
-        }
-
-        async function installApp() {
-            console.log('Install button clicked');
-            
-            if (appState.deferredPrompt) {
-                console.log('Using browser install prompt');
-                try {
-                    appState.deferredPrompt.prompt();
-                    const { outcome } = await appState.deferredPrompt.userChoice;
-                    
-                    console.log(`User choice: ${outcome}`);
-                    
-                    if (outcome === 'accepted') {
-                        showToast('Installing AgriFarmers...', 'success');
-                        appState.deferredPrompt = null;
-                    } else {
-                        showToast('Installation cancelled. You can install later from browser menu.', 'info');
-                    }
-                } catch (error) {
-                    console.error('Installation error:', error);
-                    showManualInstallInstructions();
-                }
-            } else {
-                console.log('No install prompt available, showing manual instructions');
-                showManualInstallInstructions();
-            }
-        }
-
-        function showManualInstallInstructions() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            const isAndroid = /Android/.test(navigator.userAgent);
-            
-            let instructions = '';
-            
-            if (isIOS) {
-                instructions = `
-                    <div class="space-y-4">
-                        <h4 class="font-bold text-lg">Install AgriFarmers on iPhone/iPad:</h4>
-                        <ol class="space-y-3 list-decimal list-inside">
-                            <li>Tap the <strong>Share</strong> button <i class="fas fa-share"></i></li>
-                            <li>Scroll and tap <strong>"Add to Home Screen"</strong></li>
-                            <li>Tap <strong>"Add"</strong> to finish</li>
-                        </ol>
-                        <div class="bg-yellow-50 p-3 rounded-lg">
-                            <p class="text-sm text-yellow-800">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                Note: Safari browser is required for installation on iOS
-                            </p>
-                        </div>
-                    </div>
-                `;
-            } else if (isAndroid) {
-                instructions = `
-                    <div class="space-y-4">
-                        <h4 class="font-bold text-lg">Install AgriFarmers on Android:</h4>
-                        <ol class="space-y-3 list-decimal list-inside">
-                            <li>Tap <strong>Menu</strong> (⋮) in Chrome browser</li>
-                            <li>Tap <strong>"Install app"</strong> or "Add to Home screen"</li>
-                            <li>Tap <strong>"Install"</strong> to confirm</li>
-                        </ol>
-                        <div class="bg-yellow-50 p-3 rounded-lg">
-                            <p class="text-sm text-yellow-800">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                Note: Chrome browser is required for installation on Android
-                            </p>
-                        </div>
-                    </div>
-                `;
-            } else {
-                instructions = `
-                    <div class="space-y-4">
-                        <h4 class="font-bold text-lg">Install AgriFarmers on Desktop:</h4>
-                        <ol class="space-y-3 list-decimal list-inside">
-                            <li>Click <strong>Install</strong> button in Chrome/Edge address bar</li>
-                            <li>Or click <strong>•••</strong> menu → "Install AgriFarmers"</li>
-                        </ol>
-                        <div class="bg-yellow-50 p-3 rounded-lg">
-                            <p class="text-sm text-yellow-800">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                Note: Chrome or Edge browser is required for installation
-                            </p>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            openModal('Install AgriFarmers', instructions);
-        }
-
-        // ============================================
-        // NETWORK STATUS
-        // ============================================
-
-        function updateNetworkStatus() {
-            const offlineIndicator = document.getElementById('offline-indicator');
-            const networkStatus = document.getElementById('network-status');
-            
-            if (navigator.onLine) {
-                if (offlineIndicator) offlineIndicator.classList.add('hidden');
-                if (networkStatus) {
-                    networkStatus.innerHTML = '<i class="fas fa-wifi mr-1"></i> Online';
-                    networkStatus.className = 'text-sm px-3 py-1 bg-green-100 text-green-800 rounded-full';
-                }
-                document.getElementById('connectivity-status').textContent = 'Online';
-            } else {
-                if (offlineIndicator) offlineIndicator.classList.remove('hidden');
-                if (networkStatus) {
-                    networkStatus.innerHTML = '<i class="fas fa-wifi-slash mr-1"></i> Offline';
-                    networkStatus.className = 'text-sm px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full';
-                }
-                document.getElementById('connectivity-status').textContent = 'Offline - Limited functionality';
-                showToast('You are offline. Some features may be limited.', 'info');
-            }
-        }
-
-        // ============================================
-        // APP INITIALIZATION
-        // ============================================
-
-        function initializeApp() {
-            console.log('Initializing AgriFarmers App...');
-            
-            // Update current year in footer
-            document.getElementById('current-year').textContent = new Date().getFullYear();
-            
-            // Update current date
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            
-            // Initialize state/district dropdown
-            initializeStateDistrict();
-            
-            // Update network status
-            updateNetworkStatus();
-            window.addEventListener('online', updateNetworkStatus);
-            window.addEventListener('offline', updateNetworkStatus);
-            
-            // Check for existing user
-            const storedUser = localStorage.getItem('agrifarmers_user');
-            if (storedUser) {
-                try {
-                    appState.activeUser = JSON.parse(storedUser);
-                    
-                    // Update home page
-                    document.getElementById('farmerName').textContent = appState.activeUser.name;
-                    document.getElementById('farmerLocation').textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
-                    document.getElementById('welcomeText').textContent = `Welcome back, ${appState.activeUser.name.split(' ')[0]}`;
-                    
-                    // Show home page
-                    showPage('homePage');
-                } catch (e) {
-                    console.error('Error parsing user data:', e);
-                    localStorage.removeItem('agrifarmers_user');
-                    showPage('welcomePage');
-                }
-            } else {
-                showPage('welcomePage');
-            }
-            
-            // Initialize PWA
-            initializePWA();
-            
-            // Set up mobile menu toggle
-            const mobileMenuBtn = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            
-            if (mobileMenuBtn && mobileMenu) {
-                mobileMenuBtn.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                });
-            }
-            
-            // Hide loading screen after 2 seconds
-            setTimeout(() => {
-                document.getElementById('loadingScreen').style.display = 'none';
-                document.getElementById('app').classList.remove('opacity-0');
-                
-                // Show welcome toast
-                showToast('Welcome to AgriFarmers!', 'info');
-            }, 2000);
-        }
-
-        // Start the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initializeApp);
-
-        // Register service worker for offline capabilities
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(registration => {
-                        console.log('✅ Service Worker registered:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('Service Worker registration failed:', error);
-                    });
-            });
-        }
-    </script>
+    <!-- External Script -->
+    <script src="script.js"></script>
 </body>
 </html>
