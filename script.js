@@ -1751,72 +1751,7 @@ const NetworkManager = {
     }
 };
 
-// ============================================
-// WEATHER SERVICE
-// ============================================
-const WeatherService = {
-    async getWeatherData(city = null) {
-        try {
-            let location = city || 'Delhi';
-            
-            if (appState.activeUser && appState.activeUser.district) {
-                location = appState.activeUser.district;
-            }
-            
-            // Mock data for demo
-            return this.getMockWeatherData();
-            
-        } catch (error) {
-            log('Weather API error:', error);
-            return this.getMockWeatherData();
-        }
-    },
-    
-    getWeatherIcon(iconCode) {
-        const iconMap = {
-            '01d': 'fas fa-sun text-yellow-500',
-            '01n': 'fas fa-moon text-gray-400',
-            '02d': 'fas fa-cloud-sun text-orange-400',
-            '02n': 'fas fa-cloud-moon text-gray-500',
-            '03d': 'fas fa-cloud text-gray-500',
-            '03n': 'fas fa-cloud text-gray-600',
-            '04d': 'fas fa-cloud text-gray-600',
-            '04n': 'fas fa-cloud text-gray-700',
-            '09d': 'fas fa-cloud-rain text-blue-500',
-            '09n': 'fas fa-cloud-rain text-blue-600',
-            '10d': 'fas fa-cloud-sun-rain text-blue-400',
-            '10n': 'fas fa-cloud-moon-rain text-blue-500',
-            '11d': 'fas fa-bolt text-yellow-600',
-            '11n': 'fas fa-bolt text-yellow-700',
-            '13d': 'fas fa-snowflake text-blue-300',
-            '13n': 'fas fa-snowflake text-blue-400',
-            '50d': 'fas fa-smog text-gray-400',
-            '50n': 'fas fa-smog text-gray-500'
-        };
-        
-        return iconMap[iconCode] || 'fas fa-cloud text-gray-500';
-    },
-    
-    getMockWeatherData() {
-        return {
-            current: {
-                temp: 28,
-                feelsLike: 30,
-                humidity: 65,
-                windSpeed: '12',
-                windDirection: 'NE',
-                description: 'Partly Cloudy',
-                icon: '02d',
-                pressure: 1013,
-                sunrise: '06:15',
-                sunset: '18:45',
-                visibility: '10'
-            },
-            location: appState.activeUser?.district || 'Delhi',
-            isMockData: true
-        };
-    }
-};
+async getWeatherData
 
 // District data (keep as is)
 const districtData = {
