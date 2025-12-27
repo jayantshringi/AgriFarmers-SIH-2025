@@ -1,18 +1,14 @@
 /*
  * Agritarmers Application Script
- * Version: 3.2.0 - Fixed Loading Screen & Optimized Initialization
+ * Version: 3.3.0 - Simplified OTP & Fixed PWA
  */
 
 // ============================================
 // CONFIGURATION
 // ============================================
 const CONFIG = {
-    WEATHER_API_KEY: '44a55de0f2e0674cb9160f50459d51d4',
-    WEATHER_API_URL: 'https://api.openweathermap.org/data/2.5',
-    OTP_EXPIRY_MINUTES: 5,
-    MAX_LOGIN_ATTEMPTS: 3,
     APP_NAME: 'Agritarmers',
-    VERSION: '3.2.0',
+    VERSION: '3.3.0',
     DEBUG_MODE: true,
 };
 
@@ -21,17 +17,12 @@ const CONFIG = {
 // ============================================
 const appState = {
     activeUser: null,
-    weatherChart: null,
-    pages: ['welcomePage', 'loginPage', 'signUpPage', 'homePage', 'otpPage'],
     currentLanguage: 'en',
     isInitialized: false,
     tempUserData: null,
     lastGeneratedOTP: null,
-    otpExpiry: null,
     isOfflineMode: false,
-    loginAttempts: 0,
-    otpTimer: null,
-    otpTimeLeft: 120
+    loginAttempts: 0
 };
 
 // ============================================
@@ -534,11 +525,6 @@ const ModalManager = {
         const container = document.getElementById('modal-container');
         if (!container) return;
         
-        if (appState.weatherChart) {
-            appState.weatherChart.destroy();
-            appState.weatherChart = null;
-        }
-        
         container.classList.add('hidden');
         container.innerHTML = '';
         this.currentModal = null;
@@ -549,13 +535,15 @@ const ModalManager = {
 // PAGE MANAGEMENT
 // ============================================
 const PageManager = {
+    pages: ['welcomePage', 'loginPage', 'signUpPage', 'homePage', 'otpPage'],
+    
     show(pageId) {
-        if (!appState.pages.includes(pageId)) {
+        if (!this.pages.includes(pageId)) {
             console.error(`Page ${pageId} not found`);
             return;
         }
         
-        appState.pages.forEach(page => {
+        this.pages.forEach(page => {
             const el = document.getElementById(page);
             if (el) el.classList.remove('active');
         });
@@ -595,15 +583,15 @@ const PageManager = {
         } else {
             const guestHTML = `
                 <div class="flex items-center space-x-2">
-                    <button onclick="showPage('loginPage')" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Login</button>
-                    <button onclick="showPage('signUpPage')" class="bg-[var(--primary-green)] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">Get Started</button>
+                    <button onclick="PageManager.show('loginPage')" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Login</button>
+                    <button onclick="PageManager.show('signUpPage')" class="bg-[var(--primary-green)] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">Get Started</button>
                 </div>
             `;
             
             const mobileGuestHTML = `
                 <div class="space-y-1">
-                    <button onclick="showPage('loginPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Login</button>
-                    <button onclick="showPage('signUpPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-[var(--primary-green)] text-white hover:bg-green-700">Get Started</button>
+                    <button onclick="PageManager.show('loginPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Login</button>
+                    <button onclick="PageManager.show('signUpPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-[var(--primary-green)] text-white hover:bg-green-700">Get Started</button>
                 </div>
             `;
             
@@ -660,159 +648,39 @@ function populateDistricts() {
 }
 
 // ============================================
-// OTP MANAGEMENT (FIXED)
+// SIMPLE OTP MANAGEMENT
 // ============================================
 const OTPManager = {
     generateOTP() {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         appState.lastGeneratedOTP = otp;
-        appState.otpExpiry = Date.now() + (CONFIG.OTP_EXPIRY_MINUTES * 60 * 1000);
         return otp;
     },
     
     isValidOTP(enteredOTP) {
-        if (!appState.lastGeneratedOTP || !appState.otpExpiry) {
-            console.log('No OTP or expiry found');
-            return false;
-        }
-        
-        if (Date.now() > appState.otpExpiry) {
-            showToast('OTP has expired. Please request a new one.', 'error');
+        if (!appState.lastGeneratedOTP) {
             return false;
         }
         
         return enteredOTP === appState.lastGeneratedOTP;
     },
     
-    startOTPTimer() {
-        this.stopOTPTimer();
+    setupOTPInput() {
+        const otpInput = document.getElementById('otpInput');
+        if (!otpInput) return;
         
-        appState.otpTimeLeft = 120;
-        const timerElement = document.getElementById('timer');
-        const resendButton = document.getElementById('resendOTPBtn');
+        otpInput.value = '';
+        otpInput.focus();
         
-        if (timerElement) {
-            timerElement.textContent = '02:00';
-        }
-        
-        if (resendButton) {
-            resendButton.disabled = true;
-            resendButton.classList.remove('bg-green-500', 'text-white');
-            resendButton.classList.add('bg-gray-200', 'text-gray-500');
-        }
-        
-        appState.otpTimer = setInterval(() => {
-            appState.otpTimeLeft--;
+        otpInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
             
-            const minutes = Math.floor(appState.otpTimeLeft / 60);
-            const seconds = appState.otpTimeLeft % 60;
-            
-            if (timerElement) {
-                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            if (this.value.length === 6) {
+                setTimeout(() => {
+                    window.verifyOTP();
+                }, 300);
             }
-            
-            if (appState.otpTimeLeft <= 0) {
-                this.stopOTPTimer();
-                if (timerElement) {
-                    timerElement.textContent = '00:00';
-                }
-                if (resendButton) {
-                    resendButton.disabled = false;
-                    resendButton.classList.remove('bg-gray-200', 'text-gray-500');
-                    resendButton.classList.add('bg-green-500', 'text-white');
-                }
-            }
-        }, 1000);
-    },
-    
-    stopOTPTimer() {
-        if (appState.otpTimer) {
-            clearInterval(appState.otpTimer);
-            appState.otpTimer = null;
-        }
-    },
-    
-    setupOTPInputs() {
-        const otpInputs = document.querySelectorAll('.otp-digit');
-        
-        otpInputs.forEach((input, index) => {
-            input.value = '';
-            
-            input.addEventListener('input', (e) => {
-                e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                
-                if (e.target.value.length === 1 && index < otpInputs.length - 1) {
-                    otpInputs[index + 1].focus();
-                }
-                
-                const allFilled = Array.from(otpInputs).every(input => input.value.length === 1);
-                if (allFilled) {
-                    setTimeout(() => {
-                        window.verifyOTP();
-                    }, 300);
-                }
-            });
-            
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !input.value && index > 0) {
-                    otpInputs[index - 1].focus();
-                }
-            });
         });
-        
-        setTimeout(() => {
-            if (otpInputs[0]) {
-                otpInputs[0].focus();
-            }
-        }, 100);
-    }
-};
-
-// ============================================
-// WEATHER SERVICE (Delhi References Removed)
-// ============================================
-const WeatherService = {
-    async getWeatherData() {
-        try {
-            let location = 'Noida';
-            
-            if (appState.activeUser && appState.activeUser.district) {
-                location = appState.activeUser.district;
-            }
-            
-            return {
-                ...this.getMockWeatherData(),
-                isMockData: true,
-                source: 'mock'
-            };
-            
-        } catch (error) {
-            console.log('Weather error:', error);
-            return {
-                ...this.getMockWeatherData(),
-                isMockData: true,
-                source: 'mock'
-            };
-        }
-    },
-    
-    getMockWeatherData() {
-        return {
-            current: {
-                temp: 28,
-                feelsLike: 30,
-                humidity: 65,
-                windSpeed: '12',
-                windDirection: 'NE',
-                description: 'Partly Cloudy',
-                icon: '02d',
-                pressure: 1013,
-                sunrise: '06:15',
-                sunset: '18:45',
-                visibility: '10'
-            },
-            location: appState.activeUser?.district || 'Noida, India'
-        };
     }
 };
 
@@ -894,8 +762,9 @@ window.handleLogin = function() {
         }
     }
     
-    appState.tempUserData = { mobile: mobile };
-    proceedToOTP(mobile);
+    showToast('No account found. Please sign up first.', 'error');
+    PageManager.show('signUpPage');
+    document.getElementById('signUpMobile').value = mobile;
 };
 
 function proceedToOTP(mobile) {
@@ -906,90 +775,54 @@ function proceedToOTP(mobile) {
     document.getElementById('otpPhoneNumber').textContent = `+91 ${mobile}`;
     document.getElementById('demoOTP').textContent = otp;
     
-    OTPManager.setupOTPInputs();
-    OTPManager.startOTPTimer();
+    OTPManager.setupOTPInput();
     
-    showToast('OTP sent successfully!', 'success');
+    showToast('OTP sent to your device! Use: ' + otp, 'info');
 }
 
 window.verifyOTP = function() {
-    const otpInputs = document.querySelectorAll('.otp-digit');
-    let enteredOTP = '';
-    otpInputs.forEach(input => {
-        enteredOTP += input.value;
-    });
+    const otpInput = document.getElementById('otpInput');
+    const enteredOTP = otpInput?.value.trim() || '';
     
     if (enteredOTP.length !== 6) {
-        showToast('Invalid OTP. Please try again.', 'error');
+        showToast('Please enter 6-digit OTP', 'error');
         return;
     }
     
     if (OTPManager.isValidOTP(enteredOTP)) {
-        OTPManager.stopOTPTimer();
-        
         if (appState.tempUserData) {
-            if (appState.tempUserData.name) {
-                appState.activeUser = appState.tempUserData;
-                appState.activeUser.lastLogin = new Date().toISOString();
-                localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
-                
-                PageManager.show('homePage');
-                
-                const nameEl = document.getElementById('farmerName');
-                const locationEl = document.getElementById('farmerLocation');
-                if (nameEl) nameEl.textContent = appState.activeUser.name;
-                if (locationEl && appState.activeUser.district && appState.activeUser.state) {
-                    locationEl.textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
-                }
-                
-                showToast('Login successful! Welcome back!', 'success');
-            } else {
-                PageManager.show('signUpPage');
-                document.getElementById('signUpMobile').value = appState.tempUserData.mobile;
-                showToast('Please complete your registration', 'info');
+            appState.activeUser = appState.tempUserData;
+            appState.activeUser.lastLogin = new Date().toISOString();
+            localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
+            
+            PageManager.show('homePage');
+            
+            const nameEl = document.getElementById('farmerName');
+            const locationEl = document.getElementById('farmerLocation');
+            if (nameEl) nameEl.textContent = appState.activeUser.name;
+            if (locationEl && appState.activeUser.district && appState.activeUser.state) {
+                locationEl.textContent = `${appState.activeUser.district}, ${appState.activeUser.state}`;
             }
+            
+            showToast('Login successful! Welcome back!', 'success');
         }
         
         appState.lastGeneratedOTP = null;
-        appState.otpExpiry = null;
         appState.tempUserData = null;
         appState.loginAttempts = 0;
         
     } else {
         appState.loginAttempts++;
-        if (appState.loginAttempts >= CONFIG.MAX_LOGIN_ATTEMPTS) {
+        if (appState.loginAttempts >= 3) {
             showToast('Too many failed attempts. Please try again later.', 'error');
             PageManager.show('loginPage');
             appState.loginAttempts = 0;
         } else {
             showToast('Invalid OTP. Please try again.', 'error');
-            
-            otpInputs.forEach(input => {
-                input.value = '';
-            });
-            
-            setTimeout(() => {
-                if (otpInputs[0]) {
-                    otpInputs[0].focus();
-                }
-            }, 100);
+            otpInput.value = '';
+            otpInput.focus();
         }
     }
-};
-
-window.resendOTP = function() {
-    const otp = OTPManager.generateOTP();
-    
-    document.getElementById('demoOTP').textContent = otp;
-    
-    document.querySelectorAll('.otp-digit').forEach(input => {
-        input.value = '';
-    });
-    
-    OTPManager.setupOTPInputs();
-    OTPManager.startOTPTimer();
-    
-    showToast('New OTP sent!', 'success');
 };
 
 window.handleLogout = function() {
@@ -1003,26 +836,16 @@ window.handleLogout = function() {
 };
 
 // ============================================
-// GLOBAL FUNCTIONS
+// MODAL FUNCTIONS
 // ============================================
-window.showPage = PageManager.show;
-
 window.openWeatherModal = function() {
-    const loadingContent = `
-        <div class="text-center p-8">
-            <div class="loader inline-block mb-4"></div>
-            <p class="text-gray-600">Loading weather data...</p>
-        </div>
-    `;
-    
-    ModalManager.open('Weather Forecast', loadingContent, 'weatherModal');
+    ModalManager.open('Weather Forecast', '<div class="text-center p-8"><div class="loader inline-block mb-4"></div><p>Loading weather data...</p></div>', 'weatherModal');
     
     setTimeout(() => {
-        const weatherData = WeatherService.getMockWeatherData();
         const content = `
             <div class="space-y-6">
                 <div class="text-center mb-2">
-                    <h4 class="text-lg font-bold">${weatherData.location}</h4>
+                    <h4 class="text-lg font-bold">${appState.activeUser?.district || 'Noida'}, India</h4>
                     <p class="text-gray-600">${new Date().toLocaleDateString('en', { 
                         weekday: 'long', 
                         year: 'numeric', 
@@ -1037,10 +860,10 @@ window.openWeatherModal = function() {
                             <div class="flex items-center">
                                 <i class="fas fa-cloud-sun text-5xl text-orange-400 mr-4"></i>
                                 <div>
-                                    <div class="text-4xl font-bold text-gray-800">${weatherData.current.temp}°C</div>
-                                    <p class="text-gray-600 capitalize">${weatherData.current.description}</p>
+                                    <div class="text-4xl font-bold text-gray-800">28°C</div>
+                                    <p class="text-gray-600 capitalize">Partly Cloudy</p>
                                     <p class="text-sm text-gray-500">
-                                        Feels like ${weatherData.current.feelsLike}°C
+                                        Feels like 30°C
                                     </p>
                                 </div>
                             </div>
@@ -1051,23 +874,23 @@ window.openWeatherModal = function() {
                         <div class="text-center p-3 bg-white rounded-lg shadow-sm">
                             <i class="fas fa-wind text-blue-500 mb-1"></i>
                             <div class="text-sm text-gray-600">Wind</div>
-                            <div class="font-bold">${weatherData.current.windSpeed} km/h</div>
-                            <div class="text-xs text-gray-500">${weatherData.current.windDirection}</div>
+                            <div class="font-bold">12 km/h</div>
+                            <div class="text-xs text-gray-500">NE</div>
                         </div>
                         <div class="text-center p-3 bg-white rounded-lg shadow-sm">
                             <i class="fas fa-tint text-blue-400 mb-1"></i>
                             <div class="text-sm text-gray-600">Humidity</div>
-                            <div class="font-bold">${weatherData.current.humidity}%</div>
+                            <div class="font-bold">65%</div>
                         </div>
                         <div class="text-center p-3 bg-white rounded-lg shadow-sm">
                             <i class="fas fa-compress-alt text-green-500 mb-1"></i>
                             <div class="text-sm text-gray-600">Pressure</div>
-                            <div class="font-bold">${weatherData.current.pressure} hPa</div>
+                            <div class="font-bold">1013 hPa</div>
                         </div>
                         <div class="text-center p-3 bg-white rounded-lg shadow-sm">
                             <i class="fas fa-eye text-purple-500 mb-1"></i>
                             <div class="text-sm text-gray-600">Visibility</div>
-                            <div class="font-bold">${weatherData.current.visibility} km</div>
+                            <div class="font-bold">10 km</div>
                         </div>
                     </div>
                 </div>
@@ -1237,20 +1060,18 @@ window.openSoilHealthModal = function() {
 window.closeModal = ModalManager.close;
 
 // ============================================
-// PWA INSTALLATION
+// PWA INSTALLATION (FIXED)
 // ============================================
 const PwaManager = {
     deferredPrompt: null,
     
     init() {
-        // Check if already installed
-        if (this.isAppInstalled()) {
-            this.hideInstallButton();
-            return;
-        }
+        // Check if app is already installed
+        this.checkIfInstalled();
         
         // Listen for beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt event fired');
             e.preventDefault();
             this.deferredPrompt = e;
             this.showInstallButton();
@@ -1260,76 +1081,95 @@ const PwaManager = {
         window.addEventListener('appinstalled', () => {
             console.log('PWA installed successfully');
             this.hideInstallButton();
+            localStorage.setItem('agritarmers_pwa_installed', 'true');
         });
+        
+        // Periodically check installation status
+        setInterval(() => this.checkIfInstalled(), 5000);
+    },
+    
+    checkIfInstalled() {
+        const isInstalled = localStorage.getItem('agritarmers_pwa_installed') === 'true' || 
+                          window.matchMedia('(display-mode: standalone)').matches ||
+                          window.navigator.standalone === true;
+        
+        if (isInstalled) {
+            this.hideInstallButton();
+        }
     },
     
     showInstallButton() {
         const installButton = document.getElementById('pwa-install-button');
         if (installButton) {
-            installButton.style.display = 'flex';
-            installButton.addEventListener('click', () => this.installApp());
+            installButton.classList.remove('hidden');
+            installButton.classList.add('flex');
+            
+            // Remove existing listeners to prevent duplicates
+            const newButton = installButton.cloneNode(true);
+            installButton.parentNode.replaceChild(newButton, installButton);
+            
+            // Add new listener
+            newButton.addEventListener('click', () => this.installApp());
         }
     },
     
     hideInstallButton() {
         const installButton = document.getElementById('pwa-install-button');
         if (installButton) {
-            installButton.style.display = 'none';
+            installButton.classList.add('hidden');
+            installButton.classList.remove('flex');
         }
     },
     
     async installApp() {
         if (!this.deferredPrompt) {
             console.log('No install prompt available');
+            showToast('Installation prompt not available', 'info');
             return;
         }
         
-        this.deferredPrompt.prompt();
-        const { outcome } = await this.deferredPrompt.userChoice;
-        
-        if (outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-            this.deferredPrompt = null;
-            this.hideInstallButton();
-        } else {
-            console.log('User dismissed the install prompt');
+        try {
+            this.deferredPrompt.prompt();
+            const { outcome } = await this.deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+                showToast('App installation started!', 'success');
+                this.deferredPrompt = null;
+            } else {
+                console.log('User dismissed the install prompt');
+                showToast('Installation cancelled', 'info');
+            }
+        } catch (error) {
+            console.error('Installation error:', error);
+            showToast('Installation failed. Please try again.', 'error');
         }
-    },
-    
-    isAppInstalled() {
-        return window.matchMedia('(display-mode: standalone)').matches || 
-               window.navigator.standalone === true;
     }
 };
 
 // ============================================
-// SERVICE WORKER REGISTRATION (Fixed)
+// SERVICE WORKER REGISTRATION
 // ============================================
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js')
-            .then(registration => {
-                console.log('Service Worker registered:', registration.scope);
-            })
-            .catch(error => {
-                console.log('Service Worker registration failed:', error);
-            });
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        });
     }
 }
 
 // ============================================
-// INITIALIZATION (Fixed - No More Stuck Loading)
+// INITIALIZATION
 // ============================================
 function initApp() {
     log('Starting app initialization...');
     
-    // Update loading message
-    const loadingProgress = document.getElementById('loading-progress');
-    if (loadingProgress) {
-        loadingProgress.textContent = 'Initializing app...';
-    }
-    
-    // Step 1: Initialize basic components (fast)
     try {
         // Initialize network manager
         NetworkManager.init();
@@ -1343,8 +1183,8 @@ function initApp() {
         // Initialize PWA
         PwaManager.init();
         
-        // Register service worker (non-blocking)
-        setTimeout(registerServiceWorker, 0);
+        // Register service worker
+        registerServiceWorker();
         
         // Check for existing user
         const storedUser = localStorage.getItem('agritarmers_user');
@@ -1359,6 +1199,10 @@ function initApp() {
             if (locationEl && user.district && user.state) {
                 locationEl.textContent = `${user.district}, ${user.state}`;
             }
+            
+            PageManager.show('homePage');
+        } else {
+            PageManager.show('welcomePage');
         }
         
         // Update navigation
@@ -1366,7 +1210,7 @@ function initApp() {
         
         appState.isInitialized = true;
         
-        // Hide loading screen after short delay
+        // Hide loading screen
         setTimeout(() => {
             const loadingScreen = document.getElementById('loadingScreen');
             const app = document.getElementById('app');
@@ -1380,21 +1224,12 @@ function initApp() {
             }
             
             log('App initialized successfully');
-            
-            // Show welcome toast on first visit
-            if (!localStorage.getItem('agritarmers_visited')) {
-                setTimeout(() => {
-                    showToast('Welcome to Agritarmers!', 'info', 3000);
-                    localStorage.setItem('agritarmers_visited', 'true');
-                }, 1000);
-            }
-            
-        }, 500); // Reduced from longer delays
+        }, 500);
         
     } catch (error) {
         console.error('Initialization error:', error);
         
-        // Still show app even on error
+        // Show app even on error
         setTimeout(() => {
             const loadingScreen = document.getElementById('loadingScreen');
             const app = document.getElementById('app');
@@ -1407,7 +1242,8 @@ function initApp() {
                 app.classList.remove('opacity-0');
             }
             
-            showToast('App loaded with limited functionality', 'warning');
+            PageManager.show('welcomePage');
+            showToast('App loaded successfully', 'success');
         }, 300);
     }
 }
@@ -1488,58 +1324,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Lazy loading images
-    const lazyImages = document.querySelectorAll('.lazy-image');
-    if (lazyImages.length > 0) {
-        const imageObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    const src = img.getAttribute('data-src');
-                    if (src) {
-                        img.src = src;
-                        img.classList.add('loaded');
-                    }
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-        
-        lazyImages.forEach(img => imageObserver.observe(img));
-    }
-    
     // Start app initialization
     initApp();
 });
 
 // ============================================
-// WINDOW LOAD EVENT (Backup)
+// GLOBAL FUNCTIONS
 // ============================================
-window.addEventListener('load', function() {
-    log('Window Loaded');
-    
-    // Double-check if app is initialized (in case DOMContentLoaded failed)
-    if (!appState.isInitialized) {
-        setTimeout(() => {
-            const loadingScreen = document.getElementById('loadingScreen');
-            const app = document.getElementById('app');
-            
-            if (loadingScreen && loadingScreen.style.display !== 'none') {
-                log('Forcing loading screen hide');
-                loadingScreen.style.display = 'none';
-            }
-            
-            if (app && app.classList.contains('opacity-0')) {
-                app.classList.remove('opacity-0');
-            }
-        }, 2000); // Max 2 seconds wait
-    }
-});
+window.showPage = PageManager.show;
 
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
-function openModal(type) {
+window.openModal = function(type) {
     let title = '';
     let content = '';
     
@@ -1552,14 +1346,6 @@ function openModal(type) {
             title = 'Terms of Use';
             content = '<p class="text-gray-700">By using Agritarmers, you agree to our terms and conditions.</p>';
             break;
-        case 'sitemap':
-            title = 'Sitemap';
-            content = '<p class="text-gray-700">Home • Login • Sign Up • Dashboard</p>';
-            break;
-        case 'services':
-            title = 'Our Services';
-            content = '<p class="text-gray-700">Weather • Seeds • Fertilizer • Market Prices • Crop Calendar • Soil Health</p>';
-            break;
         case 'contact':
             title = 'Contact Us';
             content = '<p class="text-gray-700">Email: help@agritarmers.com<br>Phone: +91 701XXXXXXX</p>';
@@ -1567,9 +1353,7 @@ function openModal(type) {
     }
     
     ModalManager.open(title, content);
-}
-
-window.openModal = openModal;
+};
 
 // ============================================
 // CLEANUP ON UNLOAD
@@ -1577,10 +1361,5 @@ window.openModal = openModal;
 window.addEventListener('beforeunload', function() {
     if (appState.activeUser) {
         localStorage.setItem('agritarmers_user', JSON.stringify(appState.activeUser));
-    }
-    
-    // Stop OTP timer
-    if (appState.otpTimer) {
-        clearInterval(appState.otpTimer);
     }
 });
