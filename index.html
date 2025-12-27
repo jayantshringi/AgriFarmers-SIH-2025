@@ -14,8 +14,8 @@
     <link rel="icon" href="icons/icon-192x192.png">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     
-    <!-- Fix for GitHub Pages URL issues -->
-    <base href="/">
+    <!-- Fix for GitHub Pages -->
+    <base href="/AgriFarmers-SIH-2025/">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,6 +32,31 @@
         .page { display: none; }
         .page.active { display: block; }
         
+        /* Loading Screen */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -50,10 +75,6 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
         
         /* OTP Input Styling */
         .otp-digit {
@@ -69,10 +90,8 @@
             border-color: #138808;
             outline: none;
         }
-        .otp-digit.error { border-color: #e74c3c; }
-        .otp-digit.success { border-color: #138808; }
         
-        /* Card Hover Effects */
+        /* Feature Cards */
         .feature-card {
             transition: all 0.3s ease;
             cursor: pointer;
@@ -101,77 +120,11 @@
             box-shadow: 0 4px 20px rgba(19, 136, 8, 0.3);
             z-index: 9999;
             transition: all 0.3s ease;
-            animation: float 3s ease-in-out infinite;
         }
         
         #pwa-install-button:hover {
             background: linear-gradient(135deg, #0d6006, #084c04);
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(19, 136, 8, 0.4);
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-        }
-        
-        /* Language Selector Styles */
-        .language-selector {
-            position: relative;
-        }
-        
-        .language-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            min-width: 140px;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            z-index: 50;
-            margin-top: 5px;
-        }
-        
-        .language-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            width: 100%;
-            text-align: left;
-            background: white;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 14px;
-        }
-        
-        .language-option:hover {
-            background: #f3f4f6;
-        }
-        
-        .language-option.active {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
-        /* Weather Loading Animation */
-        .weather-loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            color: #666;
-        }
-        
-        .weather-loading i {
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
         
         /* Offline Page */
@@ -190,100 +143,37 @@
             padding: 20px;
         }
         
-        .offline-container.hidden {
-            display: none;
+        /* Location Modal */
+        .location-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
         
-        /* Mobile Responsive Header */
-        @media (max-width: 768px) {
-            .header-container {
-                padding-left: 12px;
-                padding-right: 12px;
-            }
-            
-            .mobile-actions {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-            
-            .language-btn-mobile {
-                padding: 6px 10px !important;
-                font-size: 14px !important;
-            }
-            
-            .logout-btn-mobile {
-                padding: 6px 12px !important;
-                font-size: 14px !important;
-            }
-            
-            .user-name-mobile {
-                font-size: 14px !important;
-                max-width: 80px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-            
-            #pwa-install-button {
-                bottom: 70px;
-                right: 12px;
-                padding: 10px 18px;
-                font-size: 14px;
-            }
-            
-            /* Make OTP inputs smaller on mobile */
-            .otp-digit {
-                width: 40px;
-                height: 50px;
-                font-size: 18px;
-                margin: 0 2px;
-            }
-            
-            /* Make cards more compact on mobile */
-            .feature-card {
-                padding: 15px !important;
-            }
-            
-            .feature-card h4 {
-                font-size: 16px !important;
-            }
-            
-            .feature-card p {
-                font-size: 13px !important;
-            }
+        .location-modal {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 100%;
         }
         
-        @media (max-width: 480px) {
-            .otp-digit {
-                width: 35px;
-                height: 45px;
-                font-size: 16px;
-                margin: 0 1px;
-            }
-            
-            .header-container {
-                padding-left: 8px;
-                padding-right: 8px;
-            }
-            
-            .mobile-actions {
-                gap: 6px;
-            }
-            
-            .language-btn-mobile {
-                padding: 5px 8px !important;
-                font-size: 13px !important;
-                min-width: auto;
-            }
-            
-            .logout-btn-mobile {
-                padding: 5px 10px !important;
-                font-size: 13px !important;
-            }
+        /* Weather Loading */
+        .weather-loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        /* Footer Styles */
+        /* Footer */
         .footer {
             background: linear-gradient(to right, #1a5f23, #138808);
             color: white;
@@ -299,34 +189,6 @@
             gap: 30px;
         }
         
-        .footer-section h4 {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            border-bottom: 2px solid rgba(255,255,255,0.2);
-            padding-bottom: 5px;
-        }
-        
-        .footer-links {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .footer-links li {
-            margin-bottom: 8px;
-        }
-        
-        .footer-links a {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-            text-decoration: underline;
-        }
-        
         .footer-bottom {
             max-width: 1200px;
             margin: 30px auto 0;
@@ -335,87 +197,33 @@
             text-align: center;
         }
         
-        .footer-legal {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 10px;
-        }
-        
-        .footer-legal a {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-        }
-        
-        .footer-legal a:hover {
-            color: white;
-            text-decoration: underline;
-        }
-        
+        /* Responsive */
         @media (max-width: 768px) {
-            .footer-container {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-            
-            .footer-legal {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
             #pwa-install-button {
-                bottom: 80px;
-                right: 15px;
-                padding: 10px 20px;
+                bottom: 70px;
+                right: 12px;
+                padding: 10px 18px;
                 font-size: 14px;
             }
-        }
-        
-        /* Location Permission Modal */
-        .location-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            z-index: 1001;
-            max-width: 400px;
-            width: 90%;
-        }
-        
-        .location-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-        
-        /* Geolocation Status */
-        .geolocation-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            background: #e8f5e9;
-            color: #138808;
-        }
-        
-        .geolocation-status.error {
-            background: #ffebee;
-            color: #e74c3c;
+            
+            .otp-digit {
+                width: 40px;
+                height: 50px;
+                font-size: 18px;
+                margin: 0 2px;
+            }
         }
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Offline Fallback Page -->
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <div class="spinner rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+        <p class="text-gray-600 text-lg" data-translate="loading">Loading your farming assistant...</p>
+        <p id="connectivity-status" class="text-sm text-gray-500 mt-2">Checking connectivity...</p>
+    </div>
+
+    <!-- Offline Page -->
     <div id="offlinePage" class="offline-container hidden">
         <div class="text-center max-w-md mx-auto">
             <i class="fas fa-wifi-slash text-gray-400 text-6xl mb-6"></i>
@@ -427,314 +235,86 @@
         </div>
     </div>
 
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-        <p class="text-gray-600 text-lg" data-translate="loading">Loading your farming assistant...</p>
-        <p id="connectivity-status" class="text-sm text-gray-500 mt-2">Checking connectivity...</p>
-    </div>
-
     <!-- App Container -->
-    <div id="app" class="min-h-screen opacity-0 transition-opacity duration-500">
+    <div id="app" class="min-h-screen hidden">
         <!-- Navigation -->
         <nav class="bg-white shadow-md">
-            <div class="header-container mx-auto px-4 py-3">
+            <div class="container mx-auto px-4 py-3">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-3">
-                        <div class="flex items-center">
-                            <i class="fas fa-seedling text-green-600 text-xl md:text-2xl mr-2"></i>
-                            <span class="text-lg md:text-xl font-bold text-gray-800" data-translate="app_name">AgriFarmers</span>
-                        </div>
-                        <div class="hidden md:flex items-center">
-                            <span id="network-status" class="text-xs md:text-sm px-2 md:px-3 py-1 bg-green-100 text-green-800 rounded-full">
-                                <i class="fas fa-wifi mr-1"></i> <span data-translate="online">Online</span>
-                            </span>
-                            <span id="geolocation-status" class="text-xs md:text-sm px-2 md:px-3 py-1 bg-blue-100 text-blue-800 rounded-full ml-2 hidden">
-                                <i class="fas fa-location-dot mr-1"></i> <span>Location</span>
-                            </span>
-                        </div>
+                        <i class="fas fa-seedling text-green-600 text-2xl"></i>
+                        <span class="text-xl font-bold text-gray-800">AgriFarmers</span>
                     </div>
-                    
-                    <!-- Desktop Navigation -->
-                    <div id="nav-actions" class="hidden md:flex items-center space-x-2">
-                        <!-- Dynamic content will be inserted here -->
-                    </div>
-                    
-                    <!-- Mobile Actions -->
-                    <div class="mobile-actions md:hidden">
-                        <div id="mobile-nav-actions" class="flex items-center space-x-2">
-                            <!-- Dynamic mobile content -->
-                        </div>
-                        <!-- Mobile Menu Button -->
-                        <button id="mobile-menu-button" class="text-gray-600 ml-2">
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Mobile Menu Dropdown -->
-            <div id="mobile-menu" class="md:hidden bg-white border-t border-gray-200 px-4 py-3 hidden">
-                <div id="mobile-menu-content" class="space-y-2">
-                    <!-- Mobile menu content will be inserted here -->
+                    <div id="nav-actions"></div>
                 </div>
             </div>
         </nav>
-
-        <!-- Offline Indicator -->
-        <div id="offline-indicator" class="bg-yellow-100 border-yellow-400 text-yellow-800 px-4 py-2 hidden">
-            <div class="container mx-auto flex items-center">
-                <i class="fas fa-wifi-slash mr-2"></i>
-                <span data-translate="offline_mode">You are offline. Some features may be limited.</span>
-            </div>
-        </div>
-
-        <!-- Location Permission Modal -->
-        <div id="locationModal" class="location-modal-overlay hidden">
-            <div class="location-modal">
-                <div class="text-center mb-6">
-                    <i class="fas fa-location-dot text-green-600 text-4xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Enable Location Services</h3>
-                    <p class="text-gray-600 mb-6">To provide accurate weather forecasts and localized farming advice, please enable location access.</p>
-                </div>
-                <div class="space-y-3">
-                    <button onclick="requestGeolocationPermission()" 
-                            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
-                        <i class="fas fa-check-circle mr-2"></i> Allow Location Access
-                    </button>
-                    <button onclick="hideLocationModal()" 
-                            class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg">
-                        <i class="fas fa-times-circle mr-2"></i> Maybe Later
-                    </button>
-                </div>
-                <p class="text-xs text-gray-500 mt-4 text-center">Your location data is only used to provide localized services and is never shared.</p>
-            </div>
-        </div>
 
         <!-- Pages -->
         <div class="container mx-auto px-4 py-6">
             <!-- Welcome Page -->
             <div id="welcomePage" class="page active">
-                <div class="max-w-4xl mx-auto text-center py-8 md:py-12">
-                    <div class="mb-6 md:mb-8">
-                        <i class="fas fa-seedling text-green-600 text-5xl md:text-6xl mb-4 md:mb-6"></i>
-                        <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-3 md:mb-4" data-translate="welcome_title">Welcome to AgriFarmers</h1>
-                        <p class="text-lg md:text-xl text-gray-600 mb-6 md:mb-8" data-translate="welcome_subtitle">Your trusted companion for modern farming.</p>
-                    </div>
+                <div class="max-w-4xl mx-auto text-center py-12">
+                    <i class="fas fa-seedling text-green-600 text-6xl mb-6"></i>
+                    <h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome to AgriFarmers</h1>
+                    <p class="text-xl text-gray-600 mb-8">Your trusted companion for modern farming.</p>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
-                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-md">
-                            <i class="fas fa-location-dot text-green-500 text-2xl md:text-3xl mb-3 md:mb-4"></i>
-                            <h3 class="font-bold text-base md:text-lg mb-1 md:mb-2" data-translate="smart_location">Smart Location</h3>
-                            <p class="text-sm md:text-gray-600" data-translate="location_desc">Get location-based weather and farming advice.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <i class="fas fa-location-dot text-green-500 text-3xl mb-4"></i>
+                            <h3 class="font-bold text-lg mb-2">Smart Location</h3>
+                            <p class="text-gray-600">Get location-based weather and farming advice.</p>
                         </div>
-                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-md">
-                            <i class="fas fa-cloud-sun text-blue-500 text-2xl md:text-3xl mb-3 md:mb-4"></i>
-                            <h3 class="font-bold text-base md:text-lg mb-1 md:mb-2" data-translate="live_weather">Live Weather</h3>
-                            <p class="text-sm md:text-gray-600" data-translate="weather_insights_desc">Accurate weather forecasts and farming alerts.</p>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <i class="fas fa-cloud-sun text-blue-500 text-3xl mb-4"></i>
+                            <h3 class="font-bold text-lg mb-2">Live Weather</h3>
+                            <p class="text-gray-600">Accurate weather forecasts and farming alerts.</p>
                         </div>
-                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-md">
-                            <i class="fas fa-chart-line text-purple-500 text-2xl md:text-3xl mb-3 md:mb-4"></i>
-                            <h3 class="font-bold text-base md:text-lg mb-1 md:mb-2" data-translate="market_prices">Market Prices</h3>
-                            <p class="text-sm md:text-gray-600" data-translate="market_prices_desc">Real-time crop prices and market trends.</p>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <i class="fas fa-chart-line text-purple-500 text-3xl mb-4"></i>
+                            <h3 class="font-bold text-lg mb-2">Market Prices</h3>
+                            <p class="text-gray-600">Real-time crop prices and market trends.</p>
                         </div>
                     </div>
                     
-                    <div class="space-y-3 md:space-y-4">
-                        <button onclick="showPage('signUpPage')" 
-                                class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 md:px-8 rounded-lg text-base md:text-lg w-full md:w-auto">
-                            <i class="fas fa-arrow-right mr-2"></i><span data-translate="get_started">Get Started</span>
-                        </button>
-                        <div id="location-access-btn" class="hidden">
-                            <button onclick="requestGeolocationPermission(true)" 
-                                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 md:px-8 rounded-lg text-base md:text-lg w-full md:w-auto">
-                                <i class="fas fa-location-dot mr-2"></i><span>Enable Location Services</span>
-                            </button>
-                        </div>
-                        <p class="text-sm md:text-gray-600">
-                            <span data-translate="already_account">Already have an account?</span> 
-                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline" data-translate="sign_in">Login</button>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Login Page -->
-            <div id="loginPage" class="page">
-                <div class="max-w-md mx-auto bg-white p-6 md:p-8 rounded-xl shadow-md">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6" data-translate="welcome_back">Welcome Back</h2>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-gray-700 mb-2" data-translate="mobile_number">Mobile Number</label>
-                            <input type="tel" id="loginMobile" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                   placeholder="Enter 10-digit mobile number"
-                                   maxlength="10"
-                                   data-translate-placeholder="enter_mobile">
-                            <div id="loginMobileError" class="text-red-500 text-sm mt-1 hidden"></div>
-                        </div>
-                        
-                        <button onclick="handleLogin()" 
-                                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
-                            <i class="fas fa-sign-in-alt mr-2"></i><span data-translate="continue">Continue</span>
-                        </button>
-                        
-                        <p class="text-center text-gray-600 text-sm md:text-base">
-                            <span data-translate="new_here">New here?</span> 
-                            <button onclick="showPage('signUpPage')" class="text-green-600 font-medium hover:underline" data-translate="create_account">Create account</button>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sign Up Page -->
-            <div id="signUpPage" class="page">
-                <div class="max-w-md mx-auto bg-white p-6 md:p-8 rounded-xl shadow-md">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6" data-translate="join_agrifarmers">Join AgriFarmers</h2>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-gray-700 mb-2" data-translate="full_name">Full Name</label>
-                            <input type="text" id="signUpName"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                   placeholder="Your Name"
-                                   data-translate-placeholder="your_name">
-                            <div id="signUpNameError" class="text-red-500 text-sm mt-1 hidden"></div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-gray-700 mb-2" data-translate="mobile_number">Mobile Number</label>
-                            <input type="tel" id="signUpMobile"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                   placeholder="Enter 10-digit mobile number"
-                                   maxlength="10"
-                                   data-translate-placeholder="enter_mobile">
-                            <div id="signUpMobileError" class="text-red-500 text-sm mt-1 hidden"></div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-gray-700 mb-2" data-translate="state">State</label>
-                            <select id="signUpState" 
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="" data-translate="select_state">Select State</option>
-                                <option value="Haryana">Haryana</option>
-                                <option value="Punjab">Punjab</option>
-                                <option value="Uttar Pradesh">Uttar Pradesh</option>
-                                <option value="Maharashtra">Maharashtra</option>
-                                <option value="Karnataka">Karnataka</option>
-                                <option value="Tamil Nadu">Tamil Nadu</option>
-                                <option value="Rajasthan">Rajasthan</option>
-                                <option value="Gujarat">Gujarat</option>
-                            </select>
-                            <div id="signUpStateError" class="text-red-500 text-sm mt-1 hidden"></div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-gray-700 mb-2" data-translate="district">District</label>
-                            <select id="signUpDistrict" 
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                    disabled>
-                                <option value="" data-translate="select_district">Select District</option>
-                            </select>
-                            <div id="signUpDistrictError" class="text-red-500 text-sm mt-1 hidden"></div>
-                        </div>
-                        
-                        <button onclick="handleSignUp()" 
-                                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
-                            <i class="fas fa-user-plus mr-2"></i><span data-translate="create_account">Create Account</span>
-                        </button>
-                        
-                        <p class="text-center text-gray-600 text-sm md:text-base">
-                            <span data-translate="already_account">Already have an account?</span> 
-                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline" data-translate="sign_in">Sign in</button>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- OTP Page -->
-            <div id="otpPage" class="page">
-                <div class="max-w-md mx-auto bg-white p-6 md:p-8 rounded-xl shadow-md">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2" data-translate="otp_verification">OTP Verification</h2>
-                    <p class="text-gray-600 mb-4 md:mb-6 text-sm md:text-base">
-                        <span data-translate="otp_sent_to">OTP sent to</span> <span id="otpPhoneNumber" class="font-medium">+91 XXXXXXXX</span>
-                    </p>
-                    
-                    <div class="space-y-6">
-                        <div class="text-center">
-                            <div class="flex justify-center mb-4" id="otpContainer">
-                                <!-- OTP Inputs will be generated here -->
-                            </div>
-                            <p class="text-xs md:text-sm text-gray-500 mb-2" data-translate="demo_otp">Demo: Your OTP is shown below</p>
-                            <div id="demoOTP" class="text-xl md:text-2xl font-bold text-green-600 p-3 bg-green-50 rounded-lg inline-block"></div>
-                        </div>
-                        
-                        <div class="text-center">
-                            <p class="text-xs md:text-sm text-gray-600 mb-4">
-                                <span data-translate="otp_valid">OTP valid for</span> <span id="otpTimer" class="font-bold">02:00</span> <span data-translate="minutes">minutes</span>
-                            </p>
-                            
-                            <button onclick="verifyOTP()" 
-                                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mb-3">
-                                <i class="fas fa-check-circle mr-2"></i><span data-translate="verify_otp">Verify OTP</span>
-                            </button>
-                            
-                            <button id="resendOTP" onclick="resendOTP()" 
-                                    class="text-green-600 hover:text-green-800 font-medium text-sm md:text-base">
-                                <i class="fas fa-redo mr-1"></i><span data-translate="resend_otp">Resend OTP</span>
-                            </button>
-                        </div>
-                        
-                        <div class="text-center pt-4 border-t">
-                            <button onclick="showPage('loginPage')" 
-                                    class="text-gray-600 hover:text-gray-800 text-sm md:text-base">
-                                <i class="fas fa-arrow-left mr-1"></i><span data-translate="back_login">Back to Login</span>
-                            </button>
-                        </div>
-                    </div>
+                    <button onclick="showPage('homePage')" 
+                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg">
+                        <i class="fas fa-arrow-right mr-2"></i>Get Started
+                    </button>
                 </div>
             </div>
 
             <!-- Home Page -->
             <div id="homePage" class="page">
                 <!-- User Info -->
-                <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-4 md:p-6 text-white mb-6 md:mb-8">
+                <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white mb-8">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h2 class="text-xl md:text-2xl font-bold mb-2" id="welcomeText" data-translate="hello">Hello</h2>
-                            <p class="opacity-90 text-sm md:text-base" id="farmerName">Farmer</p>
+                            <h2 class="text-2xl font-bold mb-2">Hello Farmer</h2>
                             <div class="flex items-center mt-1">
                                 <i class="fas fa-location-dot text-xs mr-1"></i>
-                                <p class="text-xs md:text-sm opacity-80" id="farmerLocation">Fetching your location...</p>
-                            </div>
-                            <div class="geolocation-status mt-2 hidden" id="geolocationStatus">
-                                <i class="fas fa-location-dot"></i>
-                                <span>Location: Active</span>
+                                <p class="text-sm opacity-80" id="farmerLocation">Fetching your location...</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-xs md:text-sm opacity-90" data-translate="today">Today</p>
-                            <p class="text-lg md:text-xl font-bold" id="currentDate"></p>
-                            <button onclick="getUserLocation()" class="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded mt-2">
-                                <i class="fas fa-sync-alt mr-1"></i> Refresh
-                            </button>
+                            <p class="text-sm opacity-90">Today</p>
+                            <p class="text-xl font-bold" id="currentDate"></p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Dashboard -->
-                <div class="mb-6 md:mb-8">
-                    <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-3 md:mb-4" data-translate="dashboard">Your Farming Dashboard</h3>
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Your Farming Dashboard</h3>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- Weather Card -->
-                        <div onclick="openWeatherModal()" class="feature-card bg-white p-4 md:p-6 rounded-xl shadow-md border border-blue-100 hover:border-blue-300">
-                            <div class="flex items-start justify-between mb-3 md:mb-4">
+                        <div onclick="openWeatherModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-blue-100">
+                            <div class="flex items-start justify-between mb-4">
                                 <div>
-                                    <i class="fas fa-cloud-sun text-blue-500 text-xl md:text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-base md:text-lg" data-translate="weather_forecast">Weather Forecast</h4>
-                                    <p class="text-xs md:text-sm text-gray-600" data-translate="weather_desc">Today's weather & forecast</p>
+                                    <i class="fas fa-cloud-sun text-blue-500 text-2xl"></i>
+                                    <h4 class="font-bold text-gray-800 mt-2 text-lg">Weather Forecast</h4>
+                                    <p class="text-sm text-gray-600">Today's weather & forecast</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -744,129 +324,47 @@
                                     <span class="text-gray-600">Loading weather...</span>
                                 </div>
                             </div>
-                            <div id="weatherError" class="text-red-500 text-xs mt-2 hidden"></div>
-                        </div>
-                        
-                        <!-- Seeds Card -->
-                        <div onclick="openSeedModal()" class="feature-card bg-white p-4 md:p-6 rounded-xl shadow-md border border-green-100 hover:border-green-300">
-                            <div class="flex items-start justify-between mb-3 md:mb-4">
-                                <div>
-                                    <i class="fas fa-seedling text-green-500 text-xl md:text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-base md:text-lg" data-translate="seed_recommendations">Seed Recommendations</h4>
-                                    <p class="text-xs md:text-sm text-gray-600" data-translate="seed_desc">Best seeds for your region</p>
-                                </div>
-                                <i class="fas fa-chevron-right text-gray-400"></i>
-                            </div>
-                            <div class="flex flex-wrap gap-1 md:gap-2">
-                                <span class="px-2 md:px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">Wheat</span>
-                                <span class="px-2 md:px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">Rice</span>
-                                <span class="px-2 md:px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">Cotton</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Fertilizer Card -->
-                        <div onclick="openFertilizerModal()" class="feature-card bg-white p-4 md:p-6 rounded-xl shadow-md border border-yellow-100 hover:border-yellow-300">
-                            <div class="flex items-start justify-between mb-3 md:mb-4">
-                                <div>
-                                    <i class="fas fa-flask text-yellow-500 text-xl md:text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-base md:text-lg" data-translate="fertilizer_guide">Fertilizer Guide</h4>
-                                    <p class="text-xs md:text-sm text-gray-600" data-translate="fertilizer_desc">Nutrients for your crops</p>
-                                </div>
-                                <i class="fas fa-chevron-right text-gray-400"></i>
-                            </div>
-                            <div class="text-gray-700">
-                                <p class="font-medium text-sm md:text-base">NPK Ratio: <span class="font-bold">4:2:1</span></p>
-                                <p class="text-xs md:text-sm text-gray-600">Apply before sowing</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Crop Calendar Card -->
-                        <div onclick="openCropCalendarModal()" class="feature-card bg-white p-4 md:p-6 rounded-xl shadow-md border border-purple-100 hover:border-purple-300">
-                            <div class="flex items-start justify-between mb-3 md:mb-4">
-                                <div>
-                                    <i class="fas fa-calendar-alt text-purple-500 text-xl md:text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-base md:text-lg" data-translate="crop_calendar">Crop Calendar</h4>
-                                    <p class="text-xs md:text-sm text-gray-600" data-translate="crop_desc">Seasonal planting guide</p>
-                                </div>
-                                <i class="fas fa-chevron-right text-gray-400"></i>
-                            </div>
-                            <div class="text-gray-700">
-                                <p class="font-medium text-sm md:text-base">Current: <span class="font-bold">Kharif Season</span></p>
-                                <p class="text-xs md:text-sm text-gray-600">Jun - Oct</p>
-                            </div>
                         </div>
                         
                         <!-- Market Prices Card -->
-                        <div onclick="openMarketPricesModal()" class="feature-card bg-white p-4 md:p-6 rounded-xl shadow-md border border-red-100 hover:border-red-300">
-                            <div class="flex items-start justify-between mb-3 md:mb-4">
+                        <div onclick="openMarketPricesModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-red-100">
+                            <div class="flex items-start justify-between mb-4">
                                 <div>
-                                    <i class="fas fa-chart-line text-red-500 text-xl md:text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-base md:text-lg" data-translate="market_prices_title">Market Prices</h4>
-                                    <p class="text-xs md:text-sm text-gray-600" data-translate="market_desc">Current crop prices</p>
+                                    <i class="fas fa-chart-line text-red-500 text-2xl"></i>
+                                    <h4 class="font-bold text-gray-800 mt-2 text-lg">Market Prices</h4>
+                                    <p class="text-sm text-gray-600">Current crop prices</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
                             <div id="marketPricesCard">
                                 <div class="text-gray-700">
-                                    <p class="font-medium text-sm md:text-base">Loading market prices...</p>
+                                    <p class="font-medium">Loading market prices...</p>
                                 </div>
                             </div>
-                            <div id="marketError" class="text-red-500 text-xs mt-2 hidden"></div>
                         </div>
                         
-                        <!-- Soil Health Card -->
-                        <div onclick="openSoilHealthModal()" class="feature-card bg-white p-4 md:p-6 rounded-xl shadow-md border border-orange-100 hover:border-orange-300">
-                            <div class="flex items-start justify-between mb-3 md:mb-4">
+                        <!-- Seeds Card -->
+                        <div onclick="openSeedModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-green-100">
+                            <div class="flex items-start justify-between mb-4">
                                 <div>
-                                    <i class="fas fa-vial text-orange-500 text-xl md:text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-base md:text-lg" data-translate="soil_health">Soil Health</h4>
-                                    <p class="text-xs md:text-sm text-gray-600" data-translate="soil_desc">Soil testing guidance</p>
+                                    <i class="fas fa-seedling text-green-500 text-2xl"></i>
+                                    <h4 class="font-bold text-gray-800 mt-2 text-lg">Seed Recommendations</h4>
+                                    <p class="text-sm text-gray-600">Best seeds for your region</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
-                            <div class="text-gray-700">
-                                <p class="font-medium text-sm md:text-base">4 Steps to Test Soil</p>
-                                <p class="text-xs md:text-sm text-gray-600">Get your soil health card</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Wheat</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Rice</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Cotton</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Location Services Prompt -->
-                <div id="locationPrompt" class="bg-blue-50 border border-blue-200 rounded-xl p-4 md:p-6 mb-6 md:mb-8 hidden">
-                    <div class="flex items-start">
-                        <i class="fas fa-location-dot text-blue-500 text-xl md:text-2xl mr-3 md:mr-4 mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-gray-800 mb-2 text-base md:text-lg">Enable Location Services</h4>
-                            <p class="text-gray-700 text-sm md:text-base mb-3">Get accurate weather forecasts and localized farming advice by enabling location services.</p>
-                            <div class="flex space-x-3">
-                                <button onclick="requestGeolocationPermission()" 
-                                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
-                                    <i class="fas fa-check mr-1"></i> Enable Location
-                                </button>
-                                <button onclick="document.getElementById('locationPrompt').classList.add('hidden')" 
-                                        class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg text-sm">
-                                    <i class="fas fa-times mr-1"></i> Not Now
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Farming Advisory -->
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 md:p-6 mb-6 md:mb-8">
-                    <div class="flex items-start">
-                        <i class="fas fa-lightbulb text-yellow-500 text-xl md:text-2xl mr-3 md:mr-4 mt-1"></i>
-                        <div>
-                            <h4 class="font-bold text-gray-800 mb-2 text-base md:text-lg" data-translate="farming_advisory">Today's Farming Advisory</h4>
-                            <p class="text-gray-700 text-sm md:text-base" id="farmingAdvisory" data-translate="good_weather">Good weather for farming activities. Ideal for irrigation and fertilization.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Weather Details Section -->
-                <div class="bg-white rounded-xl shadow-md p-4 md:p-6 mb-6 md:mb-8">
-                    <h4 class="font-bold text-gray-800 mb-4 text-base md:text-lg">Detailed Weather Information</h4>
+                <!-- Weather Details -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                    <h4 class="font-bold text-gray-800 mb-4">Detailed Weather Information</h4>
                     <div id="weatherDetails" class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <!-- Weather details will be loaded here -->
                     </div>
@@ -877,58 +375,13 @@
         <!-- Footer -->
         <footer class="footer">
             <div class="footer-container">
-                <!-- Brand & Description Section -->
                 <div class="footer-section">
-                    <h3 class="text-lg md:text-xl font-bold mb-3" data-translate="app_name">AgriFarmers</h3>
-                    <p class="opacity-90 text-sm md:text-base" data-translate="empowering_farmers">
-                        Empowering farmers with smart agricultural solutions and real-time insights.
-                    </p>
-                </div>
-
-                <!-- Quick Links Section -->
-                <div class="footer-section">
-                    <h4 data-translate="quick_links">Quick Links</h4>
-                    <div class="footer-links flex flex-col gap-2 mt-3">
-                        <a href="#" onclick="showPage('welcomePage'); return false;" 
-                           class="text-white hover:text-green-200 transition-colors text-sm md:text-base" data-translate="home">
-                            Home
-                        </a>
-                        <a href="#" onclick="openAboutModal(); return false;" 
-                           class="text-white hover:text-green-200 transition-colors text-sm md:text-base" data-translate="about">
-                            About
-                        </a>
-                        <a href="#" onclick="openServicesModal(); return false;" 
-                           class="text-white hover:text-green-200 transition-colors text-sm md:text-base" data-translate="services">
-                            Services
-                        </a>
-                        <a href="#" onclick="openContactModal(); return false;" 
-                           class="text-white hover:text-green-200 transition-colors text-sm md:text-base" data-translate="contact">
-                            Contact
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Contact Section -->
-                <div class="footer-section">
-                    <h4 data-translate="contact">Contact</h4>
-                    <ul class="footer-contact space-y-2">
-                        <li class="flex items-center gap-2 text-sm md:text-base"><i class="fas fa-map-marker-alt"></i> India </li>
-                        <li class="flex items-center gap-2 text-sm md:text-base"><i class="fas fa-phone"></i> +91 1800-XXX-XXXX</li>
-                        <li class="flex items-center gap-2 text-sm md:text-base"><i class="fas fa-envelope"></i> help@agrifarmers.com</li>
-                    </ul>
+                    <h3 class="text-xl font-bold mb-3">AgriFarmers</h3>
+                    <p class="opacity-90">Empowering farmers with smart agricultural solutions and real-time insights.</p>
                 </div>
             </div>
-
-            <!-- Bottom Bar -->
             <div class="footer-bottom">
-                <p class="copyright opacity-80 text-sm md:text-base">
-                    &copy; <span id="current-year">2025</span> <span data-translate="app_name">AgriFarmers</span>. <span data-translate="all_rights_reserved">All rights reserved</span>.
-                </p>
-                <div class="footer-legal">
-                    <a href="#" onclick="openPrivacyModal(); return false;" class="text-sm md:text-base" data-translate="privacy_policy">Privacy Policy</a>
-                    <a href="#" onclick="openTermsModal(); return false;" class="text-sm md:text-base" data-translate="terms_of_use">Terms of Use</a>
-                    <a href="#" onclick="openSitemapModal(); return false;" class="text-sm md:text-base" data-translate="sitemap">Sitemap</a>
-                </div>
+                <p>&copy; 2024 AgriFarmers. All rights reserved.</p>
             </div>
         </footer>
         
@@ -939,13 +392,9 @@
         
         <!-- Toast Container -->
         <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
-
-        <!-- Modal Container -->
-        <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4 hidden"></div>
     </div>
 
-    <!-- External Script -->
+    <!-- Main Script -->
     <script src="script.js"></script>
-    <script src="service-worker.js"></script>
 </body>
 </html>
