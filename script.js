@@ -1,23 +1,14 @@
-// Configuration
+// App Configuration
 const CONFIG = {
-    WEATHER_API_KEY: '44a55de0f2e0674cb9160f50459d51d4', 
-    GITHUB_PAGES: true,
-    REPO_NAME: 'AgriFarmers-SIH-2025',
-    DEMO_OTP: '123456'
+    DEMO_OTP: '123456',
+    REPO_NAME: 'AgriFarmers-SIH-2025'
 };
 
 // App State
 let deferredPrompt = null;
-let userLocation = null;
 let currentUser = null;
 let otpTimer = null;
 let currentLanguage = 'en';
-let districtData = {
-    'Haryana': ['Ambala', 'Bhiwani', 'Faridabad', 'Fatehabad', 'Gurugram', 'Hisar', 'Jhajjar', 'Jind', 'Kaithal', 'Karnal', 'Kurukshetra', 'Mahendragarh', 'Nuh', 'Palwal', 'Panchkula', 'Panipat', 'Rewari', 'Rohtak', 'Sirsa', 'Sonipat', 'Yamunanagar'],
-    'Punjab': ['Amritsar', 'Barnala', 'Bathinda', 'Faridkot', 'Fatehgarh Sahib', 'Fazilka', 'Ferozepur', 'Gurdaspur', 'Hoshiarpur', 'Jalandhar', 'Kapurthala', 'Ludhiana', 'Mansa', 'Moga', 'Pathankot', 'Patiala', 'Rupnagar', 'Sangrur', 'SAS Nagar', 'Tarn Taran'],
-    'Rajasthan': ['Ajmer', 'Alwar', 'Banswara', 'Baran', 'Barmer', 'Bharatpur', 'Bhilwara', 'Bikaner', 'Bundi', 'Chittorgarh', 'Churu', 'Dausa', 'Dholpur', 'Dungarpur', 'Hanumangarh', 'Jaipur', 'Jaisalmer', 'Jalore', 'Jhalawar', 'Jhunjhunu', 'Jodhpur', 'Karauli', 'Kota', 'Nagaur', 'Pali', 'Pratapgarh', 'Rajsamand', 'Sawai Madhopur', 'Sikar', 'Sirohi', 'Sri Ganganagar', 'Tonk', 'Udaipur'],
-
-};
 
 // Translations
 const translations = {
@@ -78,43 +69,23 @@ const translations = {
         
         // Common
         'rights_reserved': 'All rights reserved',
-        'install_app': 'Install App',
-        'location_permission': 'Allow location access for accurate weather',
-        'location_denied': 'Location permission denied',
-        'weather_error': 'Failed to fetch weather data',
-        'market_error': 'Failed to fetch market prices',
-        'success': 'Success',
-        'error': 'Error',
-        'info': 'Info'
+        'install_app': 'Install App'
     },
     
     hi: {
-        // Header
         'app_name': 'एग्रीफार्मर्स',
         'logout': 'लॉगआउट',
-        
-        // Welcome Page
         'welcome_title': 'एग्रीफार्मर्स में आपका स्वागत है',
         'welcome_subtitle': 'आधुनिक खेती के लिए आपका विश्वसनीय साथी',
-        'smart_location': 'स्मार्ट लोकेशन',
-        'location_desc': 'स्थान-आधारित मौसम और कृषि सलाह प्राप्त करें',
-        'live_weather': 'लाइव मौसम',
-        'weather_desc': 'सटीक मौसम पूर्वानुमान और कृषि अलर्ट',
-        'market_prices': 'बाजार मूल्य',
-        'market_desc': 'रियल-टाइम फसल मूल्य और बाजार रुझान',
         'get_started': 'शुरू करें',
         'no_account': 'खाता नहीं है?',
         'sign_up': 'साइन अप करें',
-        
-        // Login Page
         'login_title': 'एग्रीफार्मर्स में लॉगिन करें',
         'mobile_number': 'मोबाइल नंबर',
         'enter_mobile': '10 अंकों का मोबाइल नंबर दर्ज करें',
         'send_otp': 'OTP भेजें',
         'have_account': 'पहले से खाता है?',
         'login': 'लॉगिन',
-        
-        // Sign Up Page
         'signup_title': 'खाता बनाएं',
         'full_name': 'पूरा नाम',
         'enter_name': 'अपना पूरा नाम दर्ज करें',
@@ -122,8 +93,6 @@ const translations = {
         'select_state': 'राज्य चुनें',
         'district': 'जिला',
         'select_district': 'जिला चुनें',
-        
-        // OTP Page
         'otp_title': 'OTP सत्यापन',
         'otp_sent': 'OTP भेजा गया',
         'demo_otp': 'डेमो OTP:',
@@ -132,56 +101,30 @@ const translations = {
         'verify_otp': 'OTP सत्यापित करें',
         'resend_otp': 'OTP पुनः भेजें',
         'back_login': 'लॉगिन पर वापस',
-        
-        // Home Page
         'hello': 'नमस्ते',
         'today': 'आज',
         'dashboard': 'आपका कृषि डैशबोर्ड',
         'weather_forecast': 'मौसम पूर्वानुमान',
         'seed_recommendations': 'बीज सिफारिशें',
-        'seed_desc': 'आपके क्षेत्र के लिए सर्वोत्तम बीज',
         'farming_tips': 'आज की कृषि सलाह',
-        'default_tip': 'कृषि गतिविधियों के लिए अच्छा मौसम। सिंचाई और उर्वरक के लिए आदर्श।',
-        
-        // Common
         'rights_reserved': 'सर्वाधिकार सुरक्षित',
-        'install_app': 'ऐप इंस्टॉल करें',
-        'location_permission': 'सटीक मौसम के लिए लोकेशन एक्सेस दें',
-        'location_denied': 'लोकेशन अनुमति अस्वीकृत',
-        'weather_error': 'मौसम डेटा प्राप्त करने में विफल',
-        'market_error': 'बाजार मूल्य प्राप्त करने में विफल',
-        'success': 'सफलता',
-        'error': 'त्रुटि',
-        'info': 'जानकारी'
+        'install_app': 'ऐप इंस्टॉल करें'
     },
     
     pa: {
-        // Header
         'app_name': 'ਐਗਰੀਫਾਰਮਰਸ',
         'logout': 'ਲਾੱਗ ਆਊਟ',
-        
-        // Welcome Page
         'welcome_title': 'ਐਗਰੀਫਾਰਮਰਸ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ',
         'welcome_subtitle': 'ਆਧੁਨਿਕ ਖੇਤੀ ਲਈ ਤੁਹਾਡਾ ਭਰੋਸੇਮੰਦ ਸਾਥੀ',
-        'smart_location': 'ਸਮਾਰਟ ਲੋਕੇਸ਼ਨ',
-        'location_desc': 'ਸਥਾਨ-ਅਧਾਰਿਤ ਮੌਸਮ ਅਤੇ ਖੇਤੀ ਸਲਾਹ ਪ੍ਰਾਪਤ ਕਰੋ',
-        'live_weather': 'ਲਾਈਵ ਮੌਸਮ',
-        'weather_desc': 'ਸਟੀਕ ਮੌਸਮ ਪੂਰਵ-ਅਨੁਮਾਨ ਅਤੇ ਖੇਤੀ ਅਲਰਟ',
-        'market_prices': 'ਬਾਜ਼ਾਰ ਮੁੱਲ',
-        'market_desc': 'ਰੀਅਲ-ਟਾਈਮ ਫਸਲ ਮੁੱਲ ਅਤੇ ਬਾਜ਼ਾਰ ਰੁਝਾਨ',
         'get_started': 'ਸ਼ੁਰੂ ਕਰੋ',
         'no_account': 'ਖਾਤਾ ਨਹੀਂ ਹੈ?',
         'sign_up': 'ਸਾਈਨ ਅੱਪ ਕਰੋ',
-        
-        // Login Page
         'login_title': 'ਐਗਰੀਫਾਰਮਰਸ ਵਿੱਚ ਲਾਗਿਨ ਕਰੋ',
         'mobile_number': 'ਮੋਬਾਈਲ ਨੰਬਰ',
         'enter_mobile': '10 ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਾਖਲ ਕਰੋ',
         'send_otp': 'OTP ਭੇਜੋ',
         'have_account': 'ਪਹਿਲਾਂ ਤੋਂ ਖਾਤਾ ਹੈ?',
         'login': 'ਲਾਗਿਨ',
-        
-        // Sign Up Page
         'signup_title': 'ਖਾਤਾ ਬਣਾਓ',
         'full_name': 'ਪੂਰਾ ਨਾਮ',
         'enter_name': 'ਆਪਣਾ ਪੂਰਾ ਨਾਮ ਦਾਖਲ ਕਰੋ',
@@ -189,8 +132,6 @@ const translations = {
         'select_state': 'ਰਾਜ ਚੁਣੋ',
         'district': 'ਜ਼ਿਲ੍ਹਾ',
         'select_district': 'ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ',
-        
-        // OTP Page
         'otp_title': 'OTP ਪੁਸ਼ਟੀਕਰਨ',
         'otp_sent': 'OTP ਭੇਜਿਆ ਗਿਆ',
         'demo_otp': 'ਡੈਮੋ OTP:',
@@ -199,119 +140,84 @@ const translations = {
         'verify_otp': 'OTP ਪੁਸ਼ਟੀ ਕਰੋ',
         'resend_otp': 'OTP ਦੁਬਾਰਾ ਭੇਜੋ',
         'back_login': 'ਲਾਗਿਨ ਤੇ ਵਾਪਸ',
-        
-        // Home Page
         'hello': 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ',
         'today': 'ਅੱਜ',
         'dashboard': 'ਤੁਹਾਡਾ ਖੇਤੀ ਡੈਸ਼ਬੋਰਡ',
         'weather_forecast': 'ਮੌਸਮ ਪੂਰਵ-ਅਨੁਮਾਨ',
         'seed_recommendations': 'ਬੀਜ ਸਿਫਾਰਿਸ਼ਾਂ',
-        'seed_desc': 'ਤੁਹਾਡੇ ਖੇਤਰ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ ਬੀਜ',
         'farming_tips': 'ਅੱਜ ਦੀ ਖੇਤੀ ਸਲਾਹ',
-        'default_tip': 'ਖੇਤੀ ਗਤੀਵਿਧੀਆਂ ਲਈ ਚੰਗਾ ਮੌਸਮ। ਸਿੰਜਾਈ ਅਤੇ ਖਾਦ ਲਈ ਆਦਰਸ਼।',
-        
-        // Common
         'rights_reserved': 'ਸਾਰੇ ਅਧਿਕਾਰ ਸੁਰੱਖਿਅਤ',
-        'install_app': 'ਐਪ ਇੰਸਟਾਲ ਕਰੋ',
-        'location_permission': 'ਸਟੀਕ ਮੌਸਮ ਲਈ ਟਿਕਾਣਾ ਪਹੁੰਚ ਦਿਓ',
-        'location_denied': 'ਟਿਕਾਣਾ ਇਜਾਜ਼ਤ ਨਾਮਨਜ਼ੂਰ',
-        'weather_error': 'ਮੌਸਮ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ',
-        'market_error': 'ਬਾਜ਼ਾਰ ਮੁੱਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ',
-        'success': 'ਸਫਲਤਾ',
-        'error': 'ਗਲਤੀ',
-        'info': 'ਜਾਣਕਾਰੀ'
+        'install_app': 'ਐਪ ਇੰਸਟਾਲ ਕਰੋ'
     }
 };
 
-// DOM Elements
-const elements = {
-    loadingScreen: document.getElementById('loadingScreen'),
-    app: document.getElementById('app'),
-    pwaInstallButton: document.getElementById('pwa-install-button'),
-    toastContainer: document.getElementById('toastContainer'),
-    farmerLocation: document.getElementById('farmerLocation'),
-    farmerName: document.getElementById('farmerName'),
-    weatherCardContent: document.getElementById('weatherCardContent'),
-    marketPricesCard: document.getElementById('marketPricesCard'),
-    currentDate: document.getElementById('currentDate'),
-    logoutButton: document.getElementById('logoutButton'),
-    languageButton: document.getElementById('languageButton'),
-    languageDropdown: document.getElementById('languageDropdown'),
-    currentLanguage: document.getElementById('currentLanguage'),
-    otpPhoneNumber: document.getElementById('otpPhoneNumber'),
-    signUpState: document.getElementById('signUpState'),
-    signUpDistrict: document.getElementById('signUpDistrict'),
-    loginMobile: document.getElementById('loginMobile'),
-    signUpName: document.getElementById('signUpName'),
-    signUpMobile: document.getElementById('signUpMobile')
+// District data
+const districtData = {
+    'Haryana': ['Ambala', 'Bhiwani', 'Faridabad', 'Fatehabad', 'Gurugram', 'Hisar', 'Jhajjar', 'Jind', 'Kaithal', 'Karnal', 'Kurukshetra', 'Mahendragarh', 'Nuh', 'Palwal', 'Panchkula', 'Panipat', 'Rewari', 'Rohtak', 'Sirsa', 'Sonipat', 'Yamunanagar'],
+    'Punjab': ['Amritsar', 'Barnala', 'Bathinda', 'Faridkot', 'Fatehgarh Sahib', 'Fazilka', 'Ferozepur', 'Gurdaspur', 'Hoshiarpur', 'Jalandhar', 'Kapurthala', 'Ludhiana', 'Mansa', 'Moga', 'Pathankot', 'Patiala', 'Rupnagar', 'Sangrur', 'SAS Nagar', 'Tarn Taran'],
+    'Rajasthan': ['Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Ajmer', 'Bikaner', 'Alwar', 'Bhilwara', 'Chittorgarh'],
+    'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Agra', 'Varanasi', 'Allahabad', 'Meerut', 'Ghaziabad', 'Aligarh'],
+    'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Thane', 'Nashik', 'Aurangabad', 'Solapur']
 };
 
 // Initialize App
 function initApp() {
-    console.log('Initializing AgriFarmers App...');
+    console.log('Initializing AgriFarmers...');
     
-    // Load saved user and language
-    loadSavedData();
-    
-    // Set current date
-    updateCurrentDate();
-    
-    // Initialize PWA
-    initPWA();
-    
-    // Initialize language selector
-    initLanguageSelector();
-    
-    // Initialize state-district mapping
-    initStateDistrict();
-    
-    // Show app after loading
-    setTimeout(() => {
-        elements.loadingScreen.style.display = 'none';
-        elements.app.style.display = 'block';
-        
-        // Check if user is already logged in
-        if (currentUser) {
-            showPage('homePage');
-            updateUserInfo();
-        } else {
-            showPage('welcomePage');
-        }
-    }, 1000);
-}
-
-// Load saved data from localStorage
-function loadSavedData() {
-    // Load user data
+    // Load saved data
     const savedUser = localStorage.getItem('agrifarmers_user');
+    const savedLang = localStorage.getItem('agrifarmers_language');
+    
     if (savedUser) {
         currentUser = JSON.parse(savedUser);
     }
     
-    // Load language
-    const savedLang = localStorage.getItem('agrifarmers_language');
     if (savedLang && translations[savedLang]) {
         currentLanguage = savedLang;
     }
     
     // Apply language
     changeLanguage(currentLanguage, false);
+    
+    // Set up state-district mapping
+    setupStateDistrict();
+    
+    // Initialize PWA
+    initPWA();
+    
+    // Set current date
+    updateCurrentDate();
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    // Show app after short delay
+    setTimeout(() => {
+        showApp();
+    }, 800); // Reduced from 1500ms to 800ms
 }
 
-// Save data to localStorage
-function saveData() {
-    if (currentUser) {
-        localStorage.setItem('agrifarmers_user', JSON.stringify(currentUser));
-    }
-    localStorage.setItem('agrifarmers_language', currentLanguage);
-}
-
-// Update current date
-function updateCurrentDate() {
-    const now = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    elements.currentDate.textContent = now.toLocaleDateString(currentLanguage === 'hi' ? 'hi-IN' : 
-                                                              currentLanguage === 'pa' ? 'pa-IN' : 'en-IN', options);
+// Show app
+function showApp() {
+    const loadingScreen = document.getElementById('loadingScreen');
+    const app = document.getElementById('app');
+    
+    // Fade out loading screen
+    loadingScreen.classList.add('loading-hidden');
+    
+    // Show app after fade
+    setTimeout(() => {
+        loadingScreen.style.display = 'none';
+        app.style.display = 'block';
+        
+        // Show appropriate page
+        if (currentUser) {
+            showPage('homePage');
+            updateUserInfo();
+        } else {
+            showPage('welcomePage');
+        }
+    }, 500);
 }
 
 // Show Page
@@ -326,547 +232,40 @@ function showPage(pageId) {
     if (page) {
         page.classList.add('active');
         
-        // Update header based on page
-        updateHeader(pageId);
+        // Update header
+        updateHeader();
         
-        // If home page, fetch data
+        // Page-specific actions
         if (pageId === 'homePage') {
             updateUserInfo();
-            getUserLocation();
-        }
-        
-        // If OTP page, setup OTP inputs
-        if (pageId === 'otpPage') {
+            loadWeatherData();
+            loadMarketPrices();
+        } else if (pageId === 'otpPage') {
             setupOTPInputs();
         }
     }
 }
 
 // Update header
-function updateHeader(pageId) {
+function updateHeader() {
+    const logoutButton = document.getElementById('logoutButton');
+    const currentLanguageSpan = document.getElementById('currentLanguage');
+    
     if (currentUser) {
-        elements.logoutButton.classList.remove('hidden');
-        elements.currentLanguage.textContent = currentLanguage === 'en' ? 'English' : 
-                                              currentLanguage === 'hi' ? 'हिंदी' : 'ਪੰਜਾਬੀ';
+        logoutButton.classList.remove('hidden');
+        logoutButton.innerHTML = `<i class="fas fa-sign-out-alt mr-2"></i>${translations[currentLanguage]['logout']}`;
     } else {
-        elements.logoutButton.classList.add('hidden');
+        logoutButton.classList.add('hidden');
     }
-}
-
-// Update user info on home page
-function updateUserInfo() {
-    if (currentUser) {
-        elements.farmerName.textContent = currentUser.name;
-        document.querySelector('#welcomeText').textContent = 
-            currentLanguage === 'en' ? 'Hello' : 
-            currentLanguage === 'hi' ? 'नमस्ते' : 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ';
-    }
-}
-
-// Login handler
-function handleLogin() {
-    const mobile = elements.loginMobile.value.trim();
-    
-    // Validate mobile
-    if (!mobile || mobile.length !== 10 || !/^\d+$/.test(mobile)) {
-        showError('loginMobileError', 'Please enter a valid 10-digit mobile number');
-        return;
-    }
-    
-    // Store mobile for OTP
-    localStorage.setItem('temp_mobile', mobile);
-    elements.otpPhoneNumber.textContent = `+91 ${mobile}`;
-    
-    // Show OTP page
-    showPage('otpPage');
-    startOTPTimer();
-    showToast('OTP sent to your mobile number', 'success');
-}
-
-// Sign Up handler
-function handleSignUp() {
-    const name = elements.signUpName.value.trim();
-    const mobile = elements.signUpMobile.value.trim();
-    const state = elements.signUpState.value;
-    const district = elements.signUpDistrict.value;
-    
-    // Validate inputs
-    let valid = true;
-    
-    if (!name) {
-        showError('signUpNameError', 'Please enter your name');
-        valid = false;
-    }
-    
-    if (!mobile || mobile.length !== 10 || !/^\d+$/.test(mobile)) {
-        showError('signUpMobileError', 'Please enter a valid 10-digit mobile number');
-        valid = false;
-    }
-    
-    if (!state) {
-        showError('signUpStateError', 'Please select your state');
-        valid = false;
-    }
-    
-    if (!district) {
-        showError('signUpDistrictError', 'Please select your district');
-        valid = false;
-    }
-    
-    if (!valid) return;
-    
-    // Store user data for OTP
-    const tempUser = {
-        name: name,
-        mobile: mobile,
-        state: state,
-        district: district
-    };
-    localStorage.setItem('temp_user', JSON.stringify(tempUser));
-    
-    // Show OTP page
-    elements.otpPhoneNumber.textContent = `+91 ${mobile}`;
-    showPage('otpPage');
-    startOTPTimer();
-    showToast('OTP sent to your mobile number', 'success');
-}
-
-// Setup OTP inputs
-function setupOTPInputs() {
-    const container = document.getElementById('otpContainer');
-    container.innerHTML = '';
-    
-    for (let i = 0; i < 6; i++) {
-        const input = document.createElement('input');
-        input.type = 'tel';
-        input.maxLength = 1;
-        input.className = 'otp-digit';
-        input.dataset.index = i;
-        input.addEventListener('input', handleOTPInput);
-        input.addEventListener('keydown', handleOTPKeyDown);
-        container.appendChild(input);
-    }
-    
-    // Focus first input
-    container.firstChild.focus();
-}
-
-// Handle OTP input
-function handleOTPInput(e) {
-    const input = e.target;
-    const index = parseInt(input.dataset.index);
-    const value = input.value;
-    
-    if (value && index < 5) {
-        const nextInput = input.parentElement.querySelector(`[data-index="${index + 1}"]`);
-        if (nextInput) nextInput.focus();
-    }
-    
-    // Auto verify if all inputs filled
-    if (index === 5 && value) {
-        const allInputs = document.querySelectorAll('.otp-digit');
-        const allFilled = Array.from(allInputs).every(input => input.value);
-        if (allFilled) {
-            setTimeout(verifyOTP, 300);
-        }
-    }
-}
-
-// Handle OTP keydown
-function handleOTPKeyDown(e) {
-    const input = e.target;
-    const index = parseInt(input.dataset.index);
-    
-    if (e.key === 'Backspace' && !input.value && index > 0) {
-        const prevInput = input.parentElement.querySelector(`[data-index="${index - 1}"]`);
-        if (prevInput) prevInput.focus();
-    }
-}
-
-// Start OTP timer
-function startOTPTimer() {
-    let timeLeft = 120; // 2 minutes
-    
-    if (otpTimer) {
-        clearInterval(otpTimer);
-    }
-    
-    otpTimer = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        document.getElementById('otpTimer').textContent = 
-            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        
-        if (timeLeft <= 0) {
-            clearInterval(otpTimer);
-            document.getElementById('resendOTP').disabled = false;
-        }
-        
-        timeLeft--;
-    }, 1000);
-}
-
-// Verify OTP
-function verifyOTP() {
-    const inputs = document.querySelectorAll('.otp-digit');
-    const enteredOTP = Array.from(inputs).map(input => input.value).join('');
-    
-    if (enteredOTP === CONFIG.DEMO_OTP) {
-        // Check if it's login or signup
-        const tempMobile = localStorage.getItem('temp_mobile');
-        const tempUser = localStorage.getItem('temp_user');
-        
-        if (tempUser) {
-            // Signup flow
-            const userData = JSON.parse(tempUser);
-            currentUser = {
-                id: Date.now(),
-                name: userData.name,
-                mobile: userData.mobile,
-                state: userData.state,
-                district: userData.district,
-                joined: new Date().toISOString()
-            };
-            
-            // Clear temp data
-            localStorage.removeItem('temp_user');
-            localStorage.removeItem('temp_mobile');
-            
-            // Save user
-            saveData();
-            
-            // Show success
-            showToast('Account created successfully!', 'success');
-            showPage('homePage');
-        } else if (tempMobile) {
-            // Login flow
-            currentUser = {
-                id: 1,
-                name: 'Demo User',
-                mobile: tempMobile,
-                state: 'Haryana',
-                district: 'Ambala',
-                joined: new Date().toISOString()
-            };
-            
-            // Clear temp data
-            localStorage.removeItem('temp_mobile');
-            
-            // Save user
-            saveData();
-            
-            // Show success
-            showToast('Login successful!', 'success');
-            showPage('homePage');
-        }
-        
-        clearInterval(otpTimer);
-    } else {
-        showToast('Invalid OTP. Please try again.', 'error');
-        
-        // Shake animation for OTP inputs
-        inputs.forEach(input => {
-            input.style.animation = 'shake 0.5s';
-            setTimeout(() => {
-                input.style.animation = '';
-            }, 500);
-        });
-    }
-}
-
-// Resend OTP
-function resendOTP() {
-    startOTPTimer();
-    showToast('OTP resent to your mobile number', 'info');
-}
-
-// Location Functions
-function getUserLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude } = position.coords;
-                userLocation = { lat: latitude, lon: longitude };
-                
-                // Get location name
-                const locationName = await getLocationName(latitude, longitude);
-                elements.farmerLocation.textContent = locationName;
-                
-                // Fetch weather data
-                fetchWeatherData(latitude, longitude);
-                
-                // Fetch market prices
-                fetchMarketPrices();
-            },
-            (error) => {
-                console.error('Geolocation error:', error);
-                elements.farmerLocation.textContent = 'Location not available';
-                showMockData();
-            },
-            { enableHighAccuracy: true, timeout: 10000 }
-        );
-    } else {
-        elements.farmerLocation.textContent = 'Location not supported';
-        showMockData();
-    }
-}
-
-async function getLocationName(lat, lon) {
-    try {
-        const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
-        );
-        const data = await response.json();
-        
-        if (data.address) {
-            const city = data.address.city || data.address.town || data.address.village || '';
-            const state = data.address.state || '';
-            return city ? `${city}, ${state}` : 'Location detected';
-        }
-    } catch (error) {
-        console.error('Location name error:', error);
-    }
-    
-    return `Location: ${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
-}
-
-// Weather API Functions
-async function fetchWeatherData(lat, lon) {
-    try {
-        const apiKey = CONFIG.WEATHER_API_KEY;
-        const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
-        );
-        
-        if (response.ok) {
-            const data = await response.json();
-            displayWeatherData(data);
-        } else {
-            throw new Error('Weather API failed');
-        }
-    } catch (error) {
-        console.error('Weather fetch error:', error);
-        displayMockWeatherData();
-    }
-}
-
-function displayWeatherData(data) {
-    const temp = Math.round(data.main.temp);
-    const feelsLike = Math.round(data.main.feels_like);
-    const humidity = data.main.humidity;
-    const description = data.weather[0].description;
-    
-    elements.weatherCardContent.innerHTML = `
-        <div class="flex items-center">
-            <span class="text-3xl font-bold text-gray-800">${temp}°C</span>
-            <span class="ml-3 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                ${description}
-            </span>
-        </div>
-        <div class="mt-3 text-sm text-gray-600">
-            <div class="flex items-center">
-                <i class="fas fa-temperature-low mr-2"></i>
-                <span>Feels like ${feelsLike}°C</span>
-            </div>
-            <div class="flex items-center mt-1">
-                <i class="fas fa-tint mr-2"></i>
-                <span>Humidity: ${humidity}%</span>
-            </div>
-        </div>
-    `;
-}
-
-function displayMockWeatherData() {
-    elements.weatherCardContent.innerHTML = `
-        <div class="flex items-center">
-            <span class="text-3xl font-bold text-gray-800">28°C</span>
-            <span class="ml-3 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                Partly Cloudy
-            </span>
-        </div>
-        <div class="mt-3 text-sm text-gray-600">
-            <div class="flex items-center">
-                <i class="fas fa-temperature-low mr-2"></i>
-                <span>Feels like 30°C</span>
-            </div>
-            <div class="flex items-center mt-1">
-                <i class="fas fa-tint mr-2"></i>
-                <span>Humidity: 65%</span>
-            </div>
-        </div>
-    `;
-}
-
-// Market Prices Functions
-async function fetchMarketPrices() {
-    try {
-        // Using mock data
-        const mockPrices = getMockMarketPrices();
-        displayMarketPrices(mockPrices);
-    } catch (error) {
-        console.error('Market prices error:', error);
-        displayMockMarketPrices();
-    }
-}
-
-function getMockMarketPrices() {
-    return [
-        { crop: 'Wheat', price: '₹2,300', unit: 'Quintal', change: '+2%' },
-        { crop: 'Rice', price: '₹3,800', unit: 'Quintal', change: '+1.5%' },
-        { crop: 'Tomato', price: '₹25', unit: 'kg', change: '+5%' },
-        { crop: 'Potato', price: '₹18', unit: 'kg', change: '-2%' }
-    ];
-}
-
-function displayMarketPrices(prices) {
-    let html = '';
-    prices.slice(0, 2).forEach(item => {
-        const changeColor = item.change.startsWith('+') ? 'text-green-600' : 'text-red-600';
-        html += `
-            <div class="mb-2">
-                <div class="flex justify-between items-center">
-                    <span class="font-medium">${item.crop}</span>
-                    <span class="font-bold">${item.price}/${item.unit}</span>
-                </div>
-                <div class="text-sm ${changeColor}">
-                    ${item.change} from yesterday
-                </div>
-            </div>
-        `;
-    });
-    
-    elements.marketPricesCard.innerHTML = html;
-}
-
-function displayMockMarketPrices() {
-    elements.marketPricesCard.innerHTML = `
-        <div class="mb-2">
-            <div class="flex justify-between items-center">
-                <span class="font-medium">Wheat</span>
-                <span class="font-bold">₹2,300/Quintal</span>
-            </div>
-            <div class="text-sm text-green-600">
-                +2% from yesterday
-            </div>
-        </div>
-        <div>
-            <div class="flex justify-between items-center">
-                <span class="font-medium">Rice</span>
-                <span class="font-bold">₹3,800/Quintal</span>
-            </div>
-            <div class="text-sm text-green-600">
-                +1.5% from yesterday
-            </div>
-        </div>
-    `;
-}
-
-// Show mock data
-function showMockData() {
-    displayMockWeatherData();
-    displayMockMarketPrices();
-}
-
-// PWA Functions - FIXED
-function initPWA() {
-    // Listen for beforeinstallprompt event
-    window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent Chrome 67 and earlier from automatically showing the prompt
-        e.preventDefault();
-        
-        // Stash the event so it can be triggered later
-        deferredPrompt = e;
-        
-        // Show install button
-        elements.pwaInstallButton.classList.remove('hidden');
-        
-        console.log('PWA installable - showing install button');
-    });
-    
-    // Handle install button click
-    elements.pwaInstallButton.addEventListener('click', async () => {
-        if (!deferredPrompt) {
-            showToast('App installation not available', 'error');
-            return;
-        }
-        
-        console.log('Showing install prompt');
-        
-        // Show the install prompt
-        deferredPrompt.prompt();
-        
-        // Wait for the user to respond to the prompt
-        const { outcome } = await deferredPrompt.userChoice;
-        
-        console.log(`User response to install prompt: ${outcome}`);
-        
-        if (outcome === 'accepted') {
-            showToast('App installed successfully!', 'success');
-            elements.pwaInstallButton.classList.add('hidden');
-        } else {
-            showToast('App installation cancelled', 'info');
-        }
-        
-        // Clear the deferredPrompt variable
-        deferredPrompt = null;
-    });
-    
-    // Listen for app installed event
-    window.addEventListener('appinstalled', () => {
-        console.log('PWA was installed');
-        elements.pwaInstallButton.classList.add('hidden');
-        deferredPrompt = null;
-        
-        // Track installation in analytics if needed
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'install', {
-                'event_category': 'PWA',
-                'event_label': 'App Installation'
-            });
-        }
-    });
-    
-    // Check if app is already installed
-    if (window.matchMedia('(display-mode: standalone)').matches ||
-        window.navigator.standalone === true) {
-        console.log('App is running in standalone mode');
-        elements.pwaInstallButton.classList.add('hidden');
-    }
-    
-    // Register Service Worker
-    if ('serviceWorker' in navigator) {
-        const swPath = CONFIG.GITHUB_PAGES ? 
-            `/${CONFIG.REPO_NAME}/service-worker.js` : 
-            './service-worker.js';
-            
-        navigator.serviceWorker.register(swPath)
-            .then(registration => {
-                console.log('Service Worker registered:', registration);
-            })
-            .catch(error => {
-                console.log('Service Worker registration failed:', error);
-            });
-    }
-}
-
-// Language Functions
-function initLanguageSelector() {
-    // Toggle language dropdown
-    elements.languageButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        elements.languageDropdown.classList.toggle('hidden');
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', () => {
-        elements.languageDropdown.classList.add('hidden');
-    });
     
     // Update language display
-    updateLanguageDisplay();
+    currentLanguageSpan.textContent = 
+        currentLanguage === 'en' ? 'English' : 
+        currentLanguage === 'hi' ? 'हिंदी' : 'ਪੰਜਾਬੀ';
 }
 
-function changeLanguage(lang, showToastMsg = true) {
+// Change language
+function changeLanguage(lang, showToast = true) {
     if (!translations[lang]) return;
     
     currentLanguage = lang;
@@ -888,93 +287,426 @@ function changeLanguage(lang, showToastMsg = true) {
         }
     });
     
-    // Update language display
-    updateLanguageDisplay();
+    // Update header
+    updateHeader();
     
-    // Update date format
+    // Update date
     updateCurrentDate();
     
-    // Update user greeting
-    if (currentUser) {
-        updateUserInfo();
+    if (showToast) {
+        showToast(`Language changed to ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : 'Punjabi'}`);
+    }
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Language dropdown
+    const languageButton = document.getElementById('languageButton');
+    const languageDropdown = document.getElementById('languageDropdown');
+    
+    if (languageButton && languageDropdown) {
+        languageButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            languageDropdown.classList.toggle('hidden');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            languageDropdown.classList.add('hidden');
+        });
     }
     
-    if (showToastMsg) {
-        showToast(`Language changed to ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : 'Punjabi'}`, 'success');
+    // Logout button
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', handleLogout);
+    }
+    
+    // PWA install button
+    const installButton = document.getElementById('pwa-install-button');
+    if (installButton) {
+        installButton.addEventListener('click', handleInstall);
     }
 }
 
-function updateLanguageDisplay() {
-    elements.currentLanguage.textContent = 
-        currentLanguage === 'en' ? 'English' : 
-        currentLanguage === 'hi' ? 'हिंदी' : 'ਪੰਜਾਬੀ';
+// Setup state-district mapping
+function setupStateDistrict() {
+    const stateSelect = document.getElementById('signUpState');
+    const districtSelect = document.getElementById('signUpDistrict');
+    
+    if (stateSelect && districtSelect) {
+        stateSelect.addEventListener('change', function() {
+            const state = this.value;
+            districtSelect.innerHTML = '<option value="" data-i18n="select_district">Select District</option>';
+            
+            if (state && districtData[state]) {
+                districtSelect.disabled = false;
+                districtData[state].forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district;
+                    option.textContent = district;
+                    districtSelect.appendChild(option);
+                });
+            } else {
+                districtSelect.disabled = true;
+            }
+            
+            // Re-translate
+            changeLanguage(currentLanguage, false);
+        });
+    }
 }
 
-// State-District Functions
-function initStateDistrict() {
-    elements.signUpState.addEventListener('change', function() {
-        const state = this.value;
-        const districtSelect = elements.signUpDistrict;
+// Login handler
+function handleLogin() {
+    const mobileInput = document.getElementById('loginMobile');
+    const mobile = mobileInput.value.trim();
+    
+    if (!mobile || mobile.length !== 10 || !/^\d+$/.test(mobile)) {
+        showError('loginMobileError', 'Please enter a valid 10-digit mobile number');
+        return;
+    }
+    
+    // Store mobile for OTP
+    localStorage.setItem('temp_mobile', mobile);
+    
+    // Show OTP page
+    document.getElementById('otpPhoneNumber').textContent = `+91 ${mobile}`;
+    showPage('otpPage');
+    startOTPTimer();
+    showToast('OTP sent to your mobile number');
+}
+
+// Sign up handler
+function handleSignUp() {
+    const name = document.getElementById('signUpName').value.trim();
+    const mobile = document.getElementById('signUpMobile').value.trim();
+    const state = document.getElementById('signUpState').value;
+    const district = document.getElementById('signUpDistrict').value;
+    
+    // Validate
+    if (!name) {
+        showError('signUpNameError', 'Please enter your name');
+        return;
+    }
+    
+    if (!mobile || mobile.length !== 10 || !/^\d+$/.test(mobile)) {
+        showError('signUpMobileError', 'Please enter a valid 10-digit mobile number');
+        return;
+    }
+    
+    if (!state) {
+        showError('signUpStateError', 'Please select your state');
+        return;
+    }
+    
+    if (!district) {
+        showError('signUpDistrictError', 'Please select your district');
+        return;
+    }
+    
+    // Store user data
+    const tempUser = { name, mobile, state, district };
+    localStorage.setItem('temp_user', JSON.stringify(tempUser));
+    localStorage.setItem('temp_mobile', mobile);
+    
+    // Show OTP page
+    document.getElementById('otpPhoneNumber').textContent = `+91 ${mobile}`;
+    showPage('otpPage');
+    startOTPTimer();
+    showToast('OTP sent to your mobile number');
+}
+
+// Setup OTP inputs
+function setupOTPInputs() {
+    const container = document.getElementById('otpContainer');
+    container.innerHTML = '';
+    
+    for (let i = 0; i < 6; i++) {
+        const input = document.createElement('input');
+        input.type = 'tel';
+        input.maxLength = 1;
+        input.className = 'otp-digit';
+        input.dataset.index = i;
+        input.addEventListener('input', handleOTPInput);
+        input.addEventListener('keydown', handleOTPKeyDown);
+        container.appendChild(input);
+    }
+    
+    // Show demo OTP
+    document.getElementById('demoOTP').textContent = CONFIG.DEMO_OTP;
+    
+    // Focus first input
+    setTimeout(() => {
+        container.firstChild?.focus();
+    }, 100);
+}
+
+// Handle OTP input
+function handleOTPInput(e) {
+    const input = e.target;
+    const index = parseInt(input.dataset.index);
+    const value = input.value;
+    
+    if (value && index < 5) {
+        const nextInput = input.parentElement.querySelector(`[data-index="${index + 1}"]`);
+        if (nextInput) nextInput.focus();
+    }
+    
+    // Auto verify if all filled
+    if (index === 5 && value) {
+        const allInputs = document.querySelectorAll('.otp-digit');
+        const allFilled = Array.from(allInputs).every(input => input.value);
+        if (allFilled) {
+            setTimeout(verifyOTP, 300);
+        }
+    }
+}
+
+// Handle OTP keydown
+function handleOTPKeyDown(e) {
+    const input = e.target;
+    const index = parseInt(input.dataset.index);
+    
+    if (e.key === 'Backspace' && !input.value && index > 0) {
+        const prevInput = input.parentElement.querySelector(`[data-index="${index - 1}"]`);
+        if (prevInput) {
+            prevInput.focus();
+            prevInput.value = '';
+        }
+    }
+}
+
+// Start OTP timer
+function startOTPTimer() {
+    let timeLeft = 120;
+    const timerElement = document.getElementById('otpTimer');
+    
+    if (otpTimer) clearInterval(otpTimer);
+    
+    otpTimer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         
-        // Clear previous options
-        districtSelect.innerHTML = '<option value="" data-i18n="select_district">Select District</option>';
-        
-        if (state && districtData[state]) {
-            // Enable district select
-            districtSelect.disabled = false;
-            
-            // Add district options
-            districtData[state].forEach(district => {
-                const option = document.createElement('option');
-                option.value = district;
-                option.textContent = district;
-                districtSelect.appendChild(option);
-            });
-        } else {
-            // Disable district select
-            districtSelect.disabled = true;
+        if (timeLeft <= 0) {
+            clearInterval(otpTimer);
+            document.getElementById('resendOTP').disabled = false;
         }
         
-        // Re-translate
-        changeLanguage(currentLanguage, false);
-    });
+        timeLeft--;
+    }, 1000);
 }
 
-// Modal Functions
-function openWeatherModal() {
-    showToast('Weather details opened', 'info');
+// Verify OTP
+function verifyOTP() {
+    const inputs = document.querySelectorAll('.otp-digit');
+    const enteredOTP = Array.from(inputs).map(input => input.value).join('');
+    
+    if (enteredOTP === CONFIG.DEMO_OTP) {
+        clearInterval(otpTimer);
+        
+        // Check if login or signup
+        const tempUser = localStorage.getItem('temp_user');
+        const tempMobile = localStorage.getItem('temp_mobile');
+        
+        if (tempUser) {
+            // Signup
+            const userData = JSON.parse(tempUser);
+            currentUser = {
+                id: Date.now(),
+                name: userData.name,
+                mobile: userData.mobile,
+                state: userData.state,
+                district: userData.district,
+                joined: new Date().toISOString()
+            };
+            
+            localStorage.removeItem('temp_user');
+            localStorage.removeItem('temp_mobile');
+        } else if (tempMobile) {
+            // Login
+            currentUser = {
+                id: 1,
+                name: 'Demo Farmer',
+                mobile: tempMobile,
+                state: 'Haryana',
+                district: 'Ambala',
+                joined: new Date().toISOString()
+            };
+            
+            localStorage.removeItem('temp_mobile');
+        }
+        
+        // Save user
+        localStorage.setItem('agrifarmers_user', JSON.stringify(currentUser));
+        
+        showToast('Login successful!');
+        showPage('homePage');
+    } else {
+        showToast('Invalid OTP. Please try again.', 'error');
+        inputs.forEach(input => {
+            input.style.borderColor = '#e74c3c';
+            setTimeout(() => {
+                input.style.borderColor = '';
+            }, 1000);
+        });
+    }
 }
 
-function openMarketPricesModal() {
-    showToast('Market prices opened', 'info');
+// Resend OTP
+function resendOTP() {
+    startOTPTimer();
+    showToast('OTP resent to your mobile number');
 }
 
-function openSeedModal() {
-    showToast('Seed recommendations opened', 'info');
-}
-
-// Logout Function
+// Logout handler
 function handleLogout() {
     currentUser = null;
     localStorage.removeItem('agrifarmers_user');
     showPage('welcomePage');
-    showToast('Logged out successfully', 'success');
+    showToast('Logged out successfully');
 }
 
-// Error Display
+// Update user info
+function updateUserInfo() {
+    if (currentUser) {
+        document.getElementById('farmerName').textContent = currentUser.name;
+        document.querySelector('#welcomeText').textContent = translations[currentLanguage]['hello'];
+    }
+}
+
+// Update current date
+function updateCurrentDate() {
+    const now = new Date();
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    
+    let locale = 'en-IN';
+    if (currentLanguage === 'hi') locale = 'hi-IN';
+    if (currentLanguage === 'pa') locale = 'pa-IN';
+    
+    document.getElementById('currentDate').textContent = 
+        now.toLocaleDateString(locale, options);
+}
+
+// Load weather data
+function loadWeatherData() {
+    // Mock weather data for demo
+    setTimeout(() => {
+        document.getElementById('weatherCardContent').innerHTML = `
+            <div class="flex items-center">
+                <span class="text-3xl font-bold text-gray-800">28°C</span>
+                <span class="ml-3 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                    Partly Cloudy
+                </span>
+            </div>
+            <div class="mt-3 text-sm text-gray-600">
+                <div class="flex items-center">
+                    <i class="fas fa-temperature-low mr-2"></i>
+                    <span>Feels like 30°C</span>
+                </div>
+                <div class="flex items-center mt-1">
+                    <i class="fas fa-tint mr-2"></i>
+                    <span>Humidity: 65%</span>
+                </div>
+            </div>
+        `;
+    }, 1000);
+}
+
+// Load market prices
+function loadMarketPrices() {
+    // Mock market data for demo
+    setTimeout(() => {
+        document.getElementById('marketPricesCard').innerHTML = `
+            <div class="mb-2">
+                <div class="flex justify-between items-center">
+                    <span class="font-medium">Wheat</span>
+                    <span class="font-bold">₹2,300/Quintal</span>
+                </div>
+                <div class="text-sm text-green-600">
+                    +2% from yesterday
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between items-center">
+                    <span class="font-medium">Rice</span>
+                    <span class="font-bold">₹3,800/Quintal</span>
+                </div>
+                <div class="text-sm text-green-600">
+                    +1.5% from yesterday
+                </div>
+            </div>
+        `;
+    }, 1000);
+}
+
+// PWA Installation
+function initPWA() {
+    // Handle beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install button
+        const installButton = document.getElementById('pwa-install-button');
+        if (installButton) {
+            installButton.classList.remove('hidden');
+        }
+    });
+    
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+        const swPath = `/${CONFIG.REPO_NAME}/service-worker.js`;
+        
+        navigator.serviceWorker.register(swPath)
+            .then(registration => {
+                console.log('Service Worker registered:', registration);
+            })
+            .catch(error => {
+                console.log('Service Worker registration failed:', error);
+            });
+    }
+}
+
+// Handle install button click
+function handleInstall() {
+    if (!deferredPrompt) return;
+    
+    deferredPrompt.prompt();
+    
+    deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+            showToast('App installed successfully!');
+            document.getElementById('pwa-install-button').classList.add('hidden');
+        }
+        deferredPrompt = null;
+    });
+}
+
+// Show error
 function showError(elementId, message) {
     const element = document.getElementById(elementId);
     if (element) {
         element.textContent = message;
         element.classList.remove('hidden');
+        
         setTimeout(() => {
             element.classList.add('hidden');
         }, 3000);
     }
 }
 
-// Toast Notification
-function showToast(message, type = 'info') {
+// Show toast
+function showToast(message, type = 'success') {
+    const toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) return;
+    
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `
@@ -982,37 +714,42 @@ function showToast(message, type = 'info') {
         ${message}
     `;
     
-    elements.toastContainer.appendChild(toast);
+    toastContainer.appendChild(toast);
     
     setTimeout(() => {
-        toast.style.animation = 'slideOut 0.3s ease';
+        toast.style.animation = 'slideIn 0.3s ease reverse';
         setTimeout(() => {
             toast.remove();
         }, 300);
     }, 3000);
 }
 
-// Event Listeners
+// Modal functions
+function openWeatherModal() {
+    showToast('Weather details opened');
+}
+
+function openMarketPricesModal() {
+    showToast('Market prices opened');
+}
+
+function openSeedModal() {
+    showToast('Seed recommendations opened');
+}
+
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', initApp);
 
-// Online/Offline detection
-window.addEventListener('online', () => {
-    document.getElementById('connectivity-status').textContent = 'Connected ✓';
-    document.getElementById('connectivity-status').style.color = '#138808';
-});
-
-window.addEventListener('offline', () => {
-    document.getElementById('connectivity-status').textContent = 'Offline - Using cached data';
-    document.getElementById('connectivity-status').style.color = '#e74c3c';
-});
-
-// Add shake animation for OTP
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-`;
-document.head.appendChild(style);
+// Add style for toast animation
+document.head.insertAdjacentHTML('beforeend', `
+    <style>
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+`);
