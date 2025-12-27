@@ -2,675 +2,1338 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Farming assistant for Indian farmers">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriFarmers - Your Farming Companion</title>
     
-    <!-- PWA Meta Tags (Single Set - Removed Duplicates) -->
-    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+    <!-- PWA Requirements -->
     <meta name="theme-color" content="#138808">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="AgriFarmers">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    <link rel="apple-touch-startup-image" href="icons/icon-512x512.png">
+    <meta name="description" content="Your trusted companion for modern farming">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-192x192.png">
     
-
-    <!-- Splash screens for iOS -->
-    <link rel="apple-touch-startup-image" href="icon-512x512.png">
-
-    <!-- Manifest -->
-<link rel="manifest" href="manifest.json">
-
-<!-- iOS meta tags -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="AgriFarmers">
-<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-
-<!-- Windows meta tags -->
-<meta name="msapplication-TileColor" content="#2d5016">
-<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
-<meta name="theme-color" content="#2d5016">
-    
-    <!-- Windows PWA meta -->
-=======
-    <!-- Windows meta tags -->
->>>>>>> 304202c (Fixing PWA)
-    <meta name="msapplication-TileColor" content="#138808">
-    <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
-    
-    <title data-translate="app_title">AgriFarmers - Your Farming Companion</title>
-    
-    <!-- External dependencies -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
-
-    <!-- Local CSS -->
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Critical CSS - Inline for faster load -->
+    <!-- Custom Styles -->
     <style>
-        :root{--primary-green:#138808;--primary-saffron:#FF9933}
-        body{font-family:'Inter',sans-serif;background-color:#f9fafb}
-        .page{display:none}.page.active{display:flex}
-        .loader{border:5px solid rgba(19,136,8,0.2);border-radius:50%;border-top-color:#138808;animation:spin 1s linear infinite}
-        @keyframes spin{to{transform:rotate(360deg)}}
-        .toast{position:fixed;top:100px;right:20px;padding:12px 20px;border-radius:6px;color:white;z-index:1000;transform:translateX(150%);transition:transform 0.3s ease}
-        .toast.show{transform:translateX(0)}
+        .page { display: none; }
+        .page.active { display: block; }
         
-        /* Fade in animation */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .animate-fadeIn {
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        /* PWA Install Button */
-        #pwa-install-button {
+        .toast {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             right: 20px;
-            background: var(--primary-green);
+            padding: 12px 20px;
+            border-radius: 8px;
             color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(19, 136, 8, 0.3);
             z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease;
+        }
+        .toast-success { background: #138808; }
+        .toast-error { background: #e74c3c; }
+        .toast-info { background: #3498db; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
-        #pwa-install-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(19, 136, 8, 0.4);
+        /* OTP Input Styling */
+        .otp-digit {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            margin: 0 5px;
+        }
+        .otp-digit:focus {
+            border-color: #138808;
+            outline: none;
+        }
+        .otp-digit.error { border-color: #e74c3c; }
+        .otp-digit.success { border-color: #138808; }
+        
+        /* Card Hover Effects */
+        .feature-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
     </style>
 </head>
-
-<body class="bg-gray-50 flex flex-col min-h-screen">
-    <!-- Network status indicator -->
-    <div id="network-status" class="fixed top-16 left-0 right-0 z-40 text-center p-2 text-sm font-medium hidden"></div>
-    
-    <!-- PWA Install Button -->
-    <button id="pwa-install-button" title="Install App" aria-label="Install App">
-        <i class="fas fa-download"></i>
-    </button>
-    
-    <!-- Loading screen -->
-    <div id="loadingScreen" class="fixed inset-0 bg-white z-[100] flex flex-col justify-center items-center">
-        <div class="loader"></div>
-        <h2 class="text-2xl font-bold text-gray-800 mt-4">AgriFarmers</h2>
-        <p class="text-gray-600" data-translate="loading_message">Loading your farming assistant...</p>
-        <div id="loading-progress" class="mt-4 text-sm text-gray-500">Checking connectivity...</div>
+<body class="bg-gray-50">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
+        <p class="text-gray-600 text-lg">Loading your farming assistant...</p>
+        <p id="connectivity-status" class="text-sm text-gray-500 mt-2">Checking connectivity...</p>
     </div>
 
-    <!-- Main app container -->
-    <div id="app" class="opacity-0 transition-opacity duration-500 flex-grow">
-        <!-- Header with navigation -->
-        <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
-            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
-                    <!-- Logo -->
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <span class="text-2xl font-bold text-[var(--primary-green)]">🌱 <span data-translate="app_name">AgriFarmers</span></span>
+    <!-- App Container -->
+    <div id="app" class="min-h-screen opacity-0 transition-opacity duration-500">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-md">
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-tractor text-green-600 text-2xl mr-2"></i>
+                            <span class="text-xl font-bold text-gray-800">AgriFarmers</span>
                         </div>
-                        <!-- Offline indicator -->
-                        <div id="offline-indicator" class="ml-2 hidden">
-                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded" data-translate="offline_label">Offline</span>
+                        <div class="hidden md:flex items-center space-x-4">
+                            <span id="network-status" class="text-sm px-3 py-1 bg-green-100 text-green-800 rounded-full">
+                                <i class="fas fa-wifi mr-1"></i> Online
+                            </span>
                         </div>
                     </div>
                     
-                    <!-- Desktop navigation -->
-                    <div class="hidden md:block">
-                        <div class="ml-4 flex items-center md:ml-6">
-                            <!-- Desktop Language Selector -->
-                            <div class="language-selector mr-4">
-                                <button id="desktop-language-btn" class="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                    <i class="fas fa-globe mr-1"></i>
-                                    <span id="current-language-desktop">EN</span>
-                                    <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                                </button>
-                                <div class="language-dropdown">
-                                    <div class="language-option" data-lang="en">
-                                        <div class="language-flag bg-blue-600"></div>
-                                        <span>English</span>
-                                    </div>
-                                    <div class="language-option" data-lang="hi">
-                                        <div class="language-flag bg-green-600"></div>
-                                        <span>हिन्दी</span>
-                                    </div>
-                                    <div class="language-option" data-lang="pa">
-                                        <div class="language-flag bg-yellow-500"></div>
-                                        <span>ਪੰਜਾਬੀ</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- User actions will be populated by JS -->
-                            <div id="nav-actions"></div>
-                        </div>
+                    <div id="nav-actions" class="flex items-center space-x-2">
+                        <!-- Dynamic content will be inserted here -->
                     </div>
                     
-                    <!-- Mobile menu button -->
-                    <div class="flex items-center md:hidden">
-                        <!-- Mobile Language Selector -->
-                        <div class="language-selector mr-4">
-                            <button id="mobile-language-btn" class="flex items-center text-gray-700 hover:text-gray-900">
-                                <i class="fas fa-globe mr-1"></i>
-                                <span id="current-language">EN</span>
-                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                            </button>
-                            <div class="language-dropdown">
-                                <div class="language-option" data-lang="en">
-                                    <div class="language-flag bg-blue-600"></div>
-                                    <span>English</span>
-                                </div>
-                                <div class="language-option" data-lang="hi">
-                                    <div class="language-flag bg-green-600"></div>
-                                    <span>हिन्दी</span>
-                                </div>
-                                <div class="language-option" data-lang="pa">
-                                    <div class="language-flag bg-yellow-500"></div>
-                                    <span>ਪੰਜਾਬੀ</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Hamburger menu -->
-                        <button id="mobile-menu-button" type="button"
-                            class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500"
-                            aria-controls="mobile-menu" aria-expanded="false">
-                            <span class="sr-only" data-translate="open_menu">Open main menu</span>
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                    </div>
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
                 </div>
-            </nav>
-            
-            <!-- Mobile menu -->
-            <div class="md:hidden hidden" id="mobile-menu">
-                <div id="mobile-nav-actions" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <!-- Mobile navigation will be populated by JS -->
-                </div>
-            </div>
-        </header>
-
-        <!-- Main content area -->
-        <main class="pt-16">
-            <!-- Welcome page -->
-            <div id="welcomePage" class="page active flex-col justify-center items-center p-4">
-                <div class="container mx-auto">
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden md:flex">
-                        <div class="p-8 md:p-12 lg:p-16 flex-1 flex flex-col justify-center text-center md:text-left">
-                            <h1 class="text-4xl md:text-5xl font-bold text-gray-800" data-translate="welcome_title">
-                                Welcome to AgriFarmers
-                            </h1>
-                            <p class="mt-4 text-lg text-gray-600" data-translate="welcome_subtitle">
-                                Your trusted companion for modern farming. Get personalized advice on seeds, fertilizers, and weather to boost your yield.
-                            </p>
-                            <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                                <button onclick="showPage('signUpPage')"
-                                    class="w-full sm:w-auto bg-[var(--primary-green)] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300"
-                                    data-translate="get_started_button">
-                                    Get Started
-                                </button>
-                                <button onclick="showPage('loginPage')"
-                                    class="w-full sm:w-auto bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors"
-                                    data-translate="login_button">
-                                    Login
-                                </button>
-                            </div>
-                        </div>
-                        <div class="flex-1 hidden md:block">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%23f0f9f0'/%3E%3Ctext x='50%25' y='50%25' font-family='Inter' font-size='24' text-anchor='middle' fill='%23138808'%3E🌱 Farming Assistant%3C/text%3E%3C/svg%3E"
-                                data-src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                                alt="Farmer in a field" class="w-full h-full object-cover lazy-image">
-                        </div>
+                
+                <!-- Mobile Menu -->
+                <div id="mobile-menu" class="md:hidden mt-3 hidden">
+                    <div id="mobile-nav-actions" class="space-y-2">
+                        <!-- Dynamic mobile content -->
                     </div>
                 </div>
             </div>
+        </nav>
 
-            <!-- Login page -->
-            <div id="loginPage" class="page flex-col justify-center items-center p-4">
-                <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-6" data-translate="login_title">
-                        Welcome Back
-                    </h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="loginMobile" class="block text-sm font-medium text-gray-700" data-translate="mobile_number_label">
-                                Mobile Number
-                            </label>
-                            <input type="tel" id="loginMobile"
-                                class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                placeholder="Enter 10-digit mobile number" maxlength="10" data-translate="mobile_placeholder">
-                            <div id="loginMobileError" class="error-message" data-translate="mobile_error">
-                                Please enter a valid 10-digit mobile number
-                            </div>
-                        </div>
-                        <button onclick="handleLogin()"
-                            class="w-full bg-[var(--primary-green)] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
-                            data-translate="login_button">
-                            Login
-                        </button>
-                    </div>
-                    <p class="text-center mt-6 text-sm text-gray-600">
-                        <span data-translate="no_account_text">New here?</span> 
-                        <button onclick="showPage('signUpPage')"
-                            class="font-medium text-[var(--primary-green)] hover:underline ml-1"
-                            data-translate="signup_link">
-                            Create account
-                        </button>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Signup page -->
-            <div id="signUpPage" class="page flex-col justify-center items-center p-4">
-                <div class="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg">
-                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-6" data-translate="signup_title">
-                        Join AgriFarmers
-                    </h2>
-                    <div class="space-y-4">
-                        <!-- Name field -->
-                        <div>
-                            <label for="signUpName" class="block text-sm font-medium text-gray-700" data-translate="full_name_label">
-                                Full Name
-                            </label>
-                            <input type="text" id="signUpName"
-                                class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                placeholder="Your Name" data-translate="name_placeholder">
-                            <div id="signUpNameError" class="error-message" data-translate="name_error">
-                                Please enter your full name
-                            </div>
-                        </div>
-                        
-                        <!-- Mobile field -->
-                        <div>
-                            <label for="signUpMobile" class="block text-sm font-medium text-gray-700" data-translate="mobile_number_label">
-                                Mobile Number
-                            </label>
-                            <input type="tel" id="signUpMobile"
-                                class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                placeholder="10-digit mobile number" maxlength="10" data-translate="mobile_placeholder">
-                            <div id="signUpMobileError" class="error-message" data-translate="mobile_error">
-                                Please enter a valid 10-digit mobile number
-                            </div>
-                        </div>
-                        
-                        <!-- Location fields -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label for="signUpState" class="block text-sm font-medium text-gray-700" data-translate="state_label">
-                                    State
-                                </label>
-                                <select id="signUpState"
-                                    class="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
-                                    <option value="" data-translate="select_state">Select State</option>
-                                </select>
-                                <div id="signUpStateError" class="error-message" data-translate="state_error">
-                                    Please select your state
-                                </div>
-                            </div>
-                            <div>
-                                <label for="signUpDistrict" class="block text-sm font-medium text-gray-700" data-translate="district_label">
-                                    District
-                                </label>
-                                <select id="signUpDistrict"
-                                    class="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
-                                    <option value="" data-translate="select_district">Select District</option>
-                                </select>
-                                <div id="signUpDistrictError" class="error-message" data-translate="district_error">
-                                    Please select your district
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Submit button -->
-                        <button onclick="handleSignUp()"
-                            class="w-full bg-[var(--primary-green)] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors mt-4"
-                            data-translate="signup_button">
-                            Create Account
-                        </button>
-                    </div>
-                    <p class="text-center mt-6 text-sm text-gray-600">
-                        <span data-translate="have_account_text">Already have an account?</span> 
-                        <button onclick="showPage('loginPage')"
-                            class="font-medium text-[var(--primary-green)] hover:underline ml-1"
-                            data-translate="login_link">
-                            Sign in
-                        </button>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Home/Dashboard page -->
-            <div id="homePage" class="page flex-col items-center p-4 sm:p-6 lg:p-8">
-                <div class="container mx-auto">
-                    <!-- Welcome banner -->
-                    <div id="welcome-banner"
-                        class="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-md mb-8 shadow">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-semibold">
-                                    <span data-translate="welcome_text">Hello</span>, 
-                                    <span id="farmerName"></span>!
-                                </p>
-                                <p>
-                                    <span data-translate="personalized_dashboard">Your personalized dashboard for</span> 
-                                    <span id="farmerLocation"></span>.
-                                </p>
-                                <div id="offline-mode-banner" class="mt-2 text-sm text-yellow-700 hidden">
-                                    <i class="fas fa-wifi-slash mr-1"></i> <span data-translate="offline_mode">Offline Mode - Some data may be cached</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Dashboard cards grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Weather card -->
-                        <div class="dashboard-card" onclick="openWeatherModal()">
-                            <div class="flex items-center">
-                                <i class="fas fa-cloud-sun-rain text-4xl text-[var(--primary-saffron)]"></i>
-                                <div class="ml-4">
-                                    <h3 class="text-xl font-bold text-gray-800" data-translate="weather_info">
-                                        Weather Forecast
-                                    </h3>
-                                    <p class="text-gray-600" data-translate="weather_subtitle">
-                                        Today's weather & 7-day forecast
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="mt-2 text-xs text-gray-500" id="weather-cache-status"></div>
-                        </div>
-
-                        <!-- Seed advice card -->
-                        <div class="dashboard-card" onclick="openSeedModal()">
-                            <div class="flex items-center">
-                                <i class="fas fa-seedling text-4xl text-green-600"></i>
-                                <div class="ml-4">
-                                    <h3 class="text-xl font-bold text-gray-800" data-translate="seed_advice">
-                                        Seed Recommendations
-                                    </h3>
-                                    <p class="text-gray-600" data-translate="seed_subtitle">
-                                        Best seeds for your region
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Fertilizer card -->
-                        <div class="dashboard-card" onclick="openFertilizerModal()">
-                            <div class="flex items-center">
-                                <i class="fas fa-flask text-4xl text-blue-500"></i>
-                                <div class="ml-4">
-                                    <h3 class="text-xl font-bold text-gray-800" data-translate="fertilizer_guide">
-                                        Fertilizer Guide
-                                    </h3>
-                                    <p class="text-gray-600" data-translate="fertilizer_subtitle">
-                                        Nutrients for your crops
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Crop calendar card -->
-                        <div class="dashboard-card" onclick="openCropCalendarModal()">
-                            <div class="flex items-center">
-                                <i class="fas fa-calendar-alt text-4xl text-purple-500"></i>
-                                <div class="ml-4">
-                                    <h3 class="text-xl font-bold text-gray-800" data-translate="crop_calendar">
-                                        Crop Calendar
-                                    </h3>
-                                    <p class="text-gray-600" data-translate="crop_subtitle">
-                                        Seasonal planting guide
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Market prices card -->
-                        <div class="dashboard-card" onclick="openMarketPricesModal()">
-                            <div class="flex items-center">
-                                <i class="fas fa-chart-line text-4xl text-yellow-600"></i>
-                                <div class="ml-4">
-                                    <h3 class="text-xl font-bold text-gray-800" data-translate="market_prices">
-                                        Market Prices
-                                    </h3>
-                                    <p class="text-gray-600" data-translate="market_subtitle">
-                                        Current crop prices
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Soil health card -->
-                        <div class="dashboard-card" onclick="openSoilHealthModal()">
-                            <div class="flex items-center">
-                                <i class="fas fa-vial text-4xl text-red-500"></i>
-                                <div class="ml-4">
-                                    <h3 class="text-xl font-bold text-gray-800" data-translate="soil_health">
-                                        Soil Health
-                                    </h3>
-                                    <p class="text-gray-600" data-translate="soil_subtitle">
-                                        Soil testing guidance
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- OTP Verification Page (New) -->
-            <div id="otpPage" class="page flex-col justify-center items-center p-4">
-                <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-6" data-translate="otp_verification">
-                        OTP Verification
-                    </h2>
-                    <div class="space-y-6">
-                        <div class="text-center">
-                            <p class="text-gray-600 mb-1" data-translate="otp_sent">OTP sent to</p>
-                            <p class="text-lg font-bold" id="otpPhoneNumber">+91 XXXXXXXX</p>
-                            <p class="text-sm text-gray-500 mt-2" data-translate="otp_valid_for">OTP valid for 5 minutes</p>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="enter_otp">
-                                    Enter 6-digit OTP
-                                </label>
-                                <div class="otp-inputs flex justify-center gap-3">
-                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="0">
-                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="1">
-                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="2">
-                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="3">
-                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="4">
-                                    <input type="text" maxlength="1" class="otp-digit w-12 h-12 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200" data-index="5">
-                                </div>
-                            </div>
-                            
-                            <div class="otp-timer text-center">
-                                <p class="text-sm text-gray-600" data-translate="otp_demo_note">
-                                    Demo: Your OTP is <span id="demoOTP" class="font-bold text-green-600">123456</span>
-                                </p>
-                                <div class="mt-2">
-                                    <span id="timer" class="font-bold text-green-600">02:00</span>
-                                </div>
-                            </div>
-                            
-                            <div class="flex gap-2">
-                                <button onclick="verifyOTP()" 
-                                    class="flex-1 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
-                                    data-translate="verify_otp">
-                                    Verify OTP
-                                </button>
-                                <button onclick="resendOTP()" id="resendOTPBtn"
-                                    class="flex-1 bg-gray-200 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-300 transition-colors"
-                                    data-translate="resend_otp" disabled>
-                                    Resend OTP
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="text-center">
-                            <button onclick="showPage('loginPage')" class="text-sm text-gray-500 hover:text-gray-700">
-                                ← <span data-translate="back_to_login">Back to Login</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Footer -->
-
-   <footer class="footer">
-  <div class="footer-container">
-    
-    <!-- Brand & Description Section -->
-    <div class="footer-section">
-      <h3 class="footer-brand">AgriFarmers</h3>
-      <p class="footer-description">
-        Empowering farmers with smart agricultural solutions and real-time insights.
-      </p>
-    </div>
-
-    <!-- Quick Links Section -->
-    <div class="footer-section">
-      <h4>Quick Links</h4>
-      <ul class="footer-links">
-        <li><a href="/">Home</a></li>
-        <li><a href="/about">About</a></li>
-        <li><a href="/services">Services</a></li>
-        <li><a href="/contact">Contact</a></li>
-      </ul>
-    </div>
-
-    <!-- Services Section -->
-    <div class="footer-section">
-      <h4>Services</h4>
-      <ul class="footer-links">
-        <li><a href="/weather-forecast">Weather Forecast</a></li>
-        <li><a href="/seed-recommendations">Seed Recommendations</a></li>
-        <li><a href="/fertilizer-guide">Fertilizer Guide</a></li>
-        <li><a href="/market-prices">Market Prices</a></li>
-      </ul>
-    </div>
-
-    <!-- Contact Section -->
-    <div class="footer-section">
-      <h4>Contact</h4>
-      <ul class="footer-contact">
-        <li>📍 [Address to be added]</li>
-        <li>📞 +91 701XXXXXXX</li>
-        <li>✉️ help@AgriFarmers.com</li>
-      </ul>
-    </div>
-
-  </div>
-
-
-        <!-- Bottom Bar -->
-        <div class="footer-bottom">
-            <p class="copyright">
-                &copy; <span id="current-year">2024</span> AgriFarmers. All rights reserved.
-            </p>
-            <div class="footer-legal">
-                <a href="#" onclick="openModal('privacy')">Privacy Policy</a>
-                <a href="#" onclick="openModal('terms')">Terms of Use</a>
-                <a href="#" onclick="openModal('sitemap')">Sitemap</a>
+        <!-- Offline Indicator -->
+        <div id="offline-indicator" class="bg-yellow-100 border-yellow-400 text-yellow-800 px-4 py-2 hidden">
+            <div class="container mx-auto flex items-center">
+                <i class="fas fa-wifi-slash mr-2"></i>
+                <span>You are offline. Some features may be limited.</span>
             </div>
         </div>
-    </footer>
-       
-    <!-- Modal container -->
-    <div id="modal-container"
-        class="fixed inset-0 bg-black bg-opacity-50 z-[60] flex justify-center items-center p-4 hidden">
-        <!-- Modal content goes here -->
+
+        <!-- Pages -->
+        <div class="container mx-auto px-4 py-6">
+            <!-- Welcome Page -->
+            <div id="welcomePage" class="page active">
+                <div class="max-w-4xl mx-auto text-center py-12">
+                    <div class="mb-8">
+                        <i class="fas fa-tractor text-green-600 text-6xl mb-6"></i>
+                        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Welcome to AgriFarmers</h1>
+                        <p class="text-xl text-gray-600 mb-8">Your trusted companion for modern farming.</p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-6 mb-12">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <i class="fas fa-seedling text-green-500 text-3xl mb-4"></i>
+                            <h3 class="font-bold text-lg mb-2">Smart Farming</h3>
+                            <p class="text-gray-600">Get personalized crop recommendations and farming advice.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <i class="fas fa-cloud-sun text-blue-500 text-3xl mb-4"></i>
+                            <h3 class="font-bold text-lg mb-2">Weather Insights</h3>
+                            <p class="text-gray-600">Accurate weather forecasts and farming alerts.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <i class="fas fa-chart-line text-purple-500 text-3xl mb-4"></i>
+                            <h3 class="font-bold text-lg mb-2">Market Prices</h3>
+                            <p class="text-gray-600">Real-time crop prices and market trends.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <button onclick="showPage('signUpPage')" 
+                                class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg w-full md:w-auto">
+                            Get Started
+                        </button>
+                        <p class="text-gray-600">Already have an account? 
+                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline">Login</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Page -->
+            <div id="loginPage" class="page">
+                <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Welcome Back</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Mobile Number</label>
+                            <input type="tel" id="loginMobile" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                   placeholder="Enter 10-digit mobile number"
+                                   maxlength="10">
+                            <div id="loginMobileError" class="text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                        
+                        <button onclick="handleLogin()" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
+                            Continue
+                        </button>
+                        
+                        <p class="text-center text-gray-600">
+                            New here? 
+                            <button onclick="showPage('signUpPage')" class="text-green-600 font-medium hover:underline">Create account</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sign Up Page -->
+            <div id="signUpPage" class="page">
+                <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Join AgriFarmers</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Full Name</label>
+                            <input type="text" id="signUpName"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                   placeholder="Your Name">
+                            <div id="signUpNameError" class="text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">Mobile Number</label>
+                            <input type="tel" id="signUpMobile"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                   placeholder="Enter 10-digit mobile number"
+                                   maxlength="10">
+                            <div id="signUpMobileError" class="text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">State</label>
+                            <select id="signUpState" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                <option value="">Select State</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            </select>
+                            <div id="signUpStateError" class="text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">District</label>
+                            <select id="signUpDistrict" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                    disabled>
+                                <option value="">Select District</option>
+                            </select>
+                            <div id="signUpDistrictError" class="text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                        
+                        <button onclick="handleSignUp()" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
+                            Create Account
+                        </button>
+                        
+                        <p class="text-center text-gray-600">
+                            Already have an account? 
+                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline">Sign in</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTP Page -->
+            <div id="otpPage" class="page">
+                <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">OTP Verification</h2>
+                    <p class="text-gray-600 mb-6">OTP sent to <span id="otpPhoneNumber" class="font-medium">+91 XXXXXXXX</span></p>
+                    
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="flex justify-center mb-4">
+                                <!-- OTP Inputs will be generated here -->
+                            </div>
+                            <p class="text-sm text-gray-500 mb-2">Demo: Your OTP is shown below</p>
+                            <div id="demoOTP" class="text-2xl font-bold text-green-600 p-3 bg-green-50 rounded-lg inline-block"></div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-4">OTP valid for <span id="otpTimer" class="font-bold">02:00</span> minutes</p>
+                            
+                            <button onclick="verifyOTP()" 
+                                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mb-3">
+                                Verify OTP
+                            </button>
+                            
+                            <button id="resendOTP" onclick="resendOTP()" 
+                                    class="text-green-600 hover:text-green-800 font-medium">
+                                Resend OTP
+                            </button>
+                        </div>
+                        
+                        <div class="text-center pt-4 border-t">
+                            <button onclick="showPage('loginPage')" 
+                                    class="text-gray-600 hover:text-gray-800">
+                                ← Back to Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Page -->
+            <div id="homePage" class="page">
+                <!-- User Info -->
+                <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white mb-8">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-2" id="welcomeText">Hello</h2>
+                            <p class="opacity-90" id="farmerName">Farmer</p>
+                            <p class="text-sm opacity-80" id="farmerLocation">Location</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm opacity-90">Today</p>
+                            <p class="text-xl font-bold" id="currentDate"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dashboard -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Your Farming Dashboard</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Weather Card -->
+                        <div onclick="openWeatherModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-blue-100 hover:border-blue-300">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <i class="fas fa-cloud-sun text-blue-500 text-2xl"></i>
+                                    <h4 class="font-bold text-gray-800 mt-2">Weather Forecast</h4>
+                                    <p class="text-sm text-gray-600">Today's weather & forecast</p>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-3xl font-bold text-gray-800">28°C</span>
+                                <span class="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Partly Cloudy</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Seeds Card -->
+                        <div onclick="openSeedModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-green-100 hover:border-green-300">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <i class="fas fa-seedling text-green-500 text-2xl"></i>
+                                    <h4 class="font-bold text-gray-800 mt-2">Seed Recommendations</h4>
+                                    <p class="text-sm text-gray-600">Best seeds for your region</p>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Wheat</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Rice</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Cotton</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Fertilizer Card -->
+                        <div onclick="openFertilizerModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-yellow-100 hover:border-yellow-300">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <i class="fas fa-flask text-yellow-500 text-2xl"></i>
+                                    <h4 class="font-bold text-gray-800 mt-2">Fertilizer Guide</h4>
+                                    <p class="text-sm text-gray-600">Nutrients for your crops</p>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                            <div class="text-gray-700">
+                                <p class="font-medium">NPK Ratio: <span class="font-bold">4:2:1</span></p>
+                                <p class="text-sm text-gray-600">Apply before sowing</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Crop Calendar Card -->
+                        <div onclick="openCropCalendarModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-purple-100 hover:border-purple-300">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <i class="fas fa-calendar-alt text-purple-500 text-2xl"></i>
+                                    <h4 class="font-bold text-gray-800 mt-2">Crop Calendar</h4>
+                                    <p class="text-sm text-gray-600">Seasonal planting guide</p>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                            <div class="text-gray-700">
+                                <p class="font-medium">Current: <span class="font-bold">Kharif Season</span></p>
+                                <p class="text-sm text-gray-600">Jun - Oct</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Market Prices Card -->
+                        <div onclick="openMarketPricesModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-red-100 hover:border-red-300">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <i class="fas fa-chart-line text-red-500 text-2xl"></i>
+                                    <h4 class="font-bold text-gray-800 mt-2">Market Prices</h4>
+                                    <p class="text-sm text-gray-600">Current crop prices</p>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                            <div class="text-gray-700">
+                                <p class="font-medium">Wheat: <span class="font-bold">₹2,300/q</span></p>
+                                <p class="font-medium">Rice: <span class="font-bold">₹3,800/q</span></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Soil Health Card -->
+                        <div onclick="openSoilHealthModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-orange-100 hover:border-orange-300">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <i class="fas fa-vial text-orange-500 text-2xl"></i>
+                                    <h4 class="font-bold text-gray-800 mt-2">Soil Health</h4>
+                                    <p class="text-sm text-gray-600">Soil testing guidance</p>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                            <div class="text-gray-700">
+                                <p class="font-medium">4 Steps to Test Soil</p>
+                                <p class="text-sm text-gray-600">Get your soil health card</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Farming Advisory -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
+                    <div class="flex items-start">
+                        <i class="fas fa-lightbulb text-yellow-500 text-2xl mr-4 mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-gray-800 mb-2">Today's Farming Advisory</h4>
+                            <p class="text-gray-700" id="farmingAdvisory">Good weather for farming activities. Ideal for irrigation and fertilization.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+
+        <!-- Modal Container -->
+        <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4 hidden"></div>
+
+        <!-- PWA Install Button -->
+        <!-- This will be created dynamically by JavaScript -->
     </div>
 
-    <!-- Toast container -->
-    <div id="toast-container"></div>
-
-    <!-- Local JavaScript -->
-    <script src="script.js"></script>
-
-    <!-- PWA Service Worker Registration -->
+    <!-- Scripts -->
     <script>
-        // Set current year in footer
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-        
-        // PWA Installation
-        let deferredPrompt;
-        const installButton = document.getElementById('pwa-install-button');
-        
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
+        // Initialize global variables
+        window.appState = {
+            activeUser: null,
+            tempUserData: null,
+            lastGeneratedOTP: null,
+            otpTimer: null,
+            otpTimeLeft: 120,
+            deferredPrompt: null
+        };
+
+        // District Data
+        const districtData = {
+            "Haryana": ["Ambala", "Bhiwani", "Charkhi Dadri", "Faridabad", "Fatehabad", "Gurugram", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mahendragarh", "Nuh", "Palwal", "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"],
+            "Punjab": ["Amritsar", "Barnala", "Bathinda", "Faridkot", "Fatehgarh Sahib", "Fazilka", "Ferozepur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Mansa", "Moga", "Mohali", "Muktsar", "Pathankot", "Patiala", "Rupnagar", "Sangrur", "Shaheed Bhagat Singh Nagar", "Tarn Taran"],
+            "Uttar Pradesh": ["Agra", "Aligarh", "Allahabad", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Azamgarh", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Faizabad", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kanshiram Nagar", "Kaushambi", "Kushinagar", "Lakhimpur Kheri", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Rae Bareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar", "Shahjahanpur", "Shamli", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi"]
+        };
+
+        // Function to show page
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
             
-            // Show install button
-            if (installButton) {
-                installButton.style.display = 'flex';
+            // Show selected page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // Update navigation based on user state
+            updateNavigation();
+            
+            // Hide mobile menu
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.add('hidden');
+        }
+
+        // Update navigation
+        function updateNavigation() {
+            const navActions = document.getElementById('nav-actions');
+            const mobileNavActions = document.getElementById('mobile-nav-actions');
+            
+            if (window.appState.activeUser) {
+                // User is logged in
+                const userHTML = `
+                    <div class="flex items-center space-x-4">
+                        <span class="hidden md:inline text-gray-700">${window.appState.activeUser.name}</span>
+                        <button onclick="handleLogout()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors">
+                            Logout
+                        </button>
+                    </div>
+                `;
                 
-                installButton.addEventListener('click', async () => {
-                    if (!deferredPrompt) return;
+                const mobileUserHTML = `
+                    <div class="space-y-3">
+                        <div class="px-3 py-2 text-gray-700">${window.appState.activeUser.name}</div>
+                        <button onclick="handleLogout()" class="w-full text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">
+                            Logout
+                        </button>
+                    </div>
+                `;
+                
+                if (navActions) navActions.innerHTML = userHTML;
+                if (mobileNavActions) mobileNavActions.innerHTML = mobileUserHTML;
+            } else {
+                // User is not logged in
+                const guestHTML = `
+                    <div class="flex items-center space-x-2">
+                        <button onclick="showPage('loginPage')" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            Login
+                        </button>
+                        <button onclick="showPage('signUpPage')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                            Get Started
+                        </button>
+                    </div>
+                `;
+                
+                const mobileGuestHTML = `
+                    <div class="space-y-1">
+                        <button onclick="showPage('loginPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">
+                            Login
+                        </button>
+                        <button onclick="showPage('signUpPage')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-green-600 text-white hover:bg-green-700">
+                            Get Started
+                        </button>
+                    </div>
+                `;
+                
+                if (navActions) navActions.innerHTML = guestHTML;
+                if (mobileNavActions) mobileNavActions.innerHTML = mobileGuestHTML;
+            }
+        }
+
+        // Handle state change for districts
+        document.getElementById('signUpState')?.addEventListener('change', function() {
+            const state = this.value;
+            const districtSelect = document.getElementById('signUpDistrict');
+            
+            if (districtSelect) {
+                districtSelect.innerHTML = '<option value="">Select District</option>';
+                districtSelect.disabled = true;
+                
+                if (state && districtData[state]) {
+                    districtData[state].forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district;
+                        option.textContent = district;
+                        districtSelect.appendChild(option);
+                    });
+                    districtSelect.disabled = false;
+                }
+            }
+        });
+
+        // Handle sign up
+        function handleSignUp() {
+            const name = document.getElementById('signUpName').value.trim();
+            const mobile = document.getElementById('signUpMobile').value.trim();
+            const state = document.getElementById('signUpState').value;
+            const district = document.getElementById('signUpDistrict').value;
+            
+            // Simple validation
+            if (!name || name.length < 2) {
+                showToast('Please enter a valid name', 'error');
+                return;
+            }
+            
+            if (!/^[6-9]\d{9}$/.test(mobile)) {
+                showToast('Please enter a valid 10-digit mobile number', 'error');
+                return;
+            }
+            
+            if (!state) {
+                showToast('Please select your state', 'error');
+                return;
+            }
+            
+            if (!district) {
+                showToast('Please select your district', 'error');
+                return;
+            }
+            
+            // Create user object
+            const user = {
+                name: name,
+                mobile: mobile,
+                state: state,
+                district: district,
+                joined: new Date().toISOString(),
+                lastLogin: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('agrifarmers_user', JSON.stringify(user));
+            window.appState.activeUser = user;
+            
+            // Update home page
+            document.getElementById('farmerName').textContent = user.name;
+            document.getElementById('farmerLocation').textContent = `${user.district}, ${user.state}`;
+            document.getElementById('welcomeText').textContent = `Hello, ${user.name.split(' ')[0]}`;
+            
+            // Show success message and go to home
+            showToast('Account created successfully!', 'success');
+            showPage('homePage');
+        }
+
+        // Handle login
+        function handleLogin() {
+            const mobile = document.getElementById('loginMobile').value.trim();
+            
+            if (!/^[6-9]\d{9}$/.test(mobile)) {
+                showToast('Please enter a valid 10-digit mobile number', 'error');
+                return;
+            }
+            
+            // Check if user exists
+            const storedUser = localStorage.getItem('agrifarmers_user');
+            
+            if (storedUser) {
+                const user = JSON.parse(storedUser);
+                if (user.mobile === mobile) {
+                    // Existing user
+                    proceedToOTP(mobile, user);
+                } else {
+                    // New user
+                    window.appState.tempUserData = { mobile: mobile };
+                    proceedToOTP(mobile);
+                }
+            } else {
+                // New user
+                window.appState.tempUserData = { mobile: mobile };
+                proceedToOTP(mobile);
+            }
+        }
+
+        // Proceed to OTP
+        function proceedToOTP(mobile, user = null) {
+            // Generate OTP (for demo, use 123456)
+            const otp = '123456';
+            window.appState.lastGeneratedOTP = otp;
+            window.appState.tempUserData = user || { mobile: mobile };
+            
+            // Update OTP page
+            document.getElementById('otpPhoneNumber').textContent = `+91 ${mobile}`;
+            document.getElementById('demoOTP').textContent = otp;
+            
+            // Generate OTP input fields
+            const otpContainer = document.querySelector('#otpPage .flex.justify-center');
+            otpContainer.innerHTML = '';
+            
+            for (let i = 0; i < 6; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.maxLength = 1;
+                input.className = 'otp-digit';
+                input.dataset.index = i;
+                
+                input.addEventListener('input', function(e) {
+                    const value = e.target.value;
+                    if (value && /^\d$/.test(value)) {
+                        // Move to next input
+                        const nextInput = document.querySelector(`.otp-digit[data-index="${parseInt(i) + 1}"]`);
+                        if (nextInput) nextInput.focus();
+                    }
                     
-                    deferredPrompt.prompt();
+                    // Remove error class
+                    this.classList.remove('error');
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value) {
+                        // Move to previous input
+                        const prevInput = document.querySelector(`.otp-digit[data-index="${parseInt(i) - 1}"]`);
+                        if (prevInput) prevInput.focus();
+                    }
+                });
+                
+                otpContainer.appendChild(input);
+            }
+            
+            // Start OTP timer
+            startOTPTimer();
+            
+            // Show OTP page
+            showPage('otpPage');
+            
+            // Auto-focus first OTP input
+            setTimeout(() => {
+                const firstInput = document.querySelector('.otp-digit[data-index="0"]');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+
+        // Start OTP timer
+        function startOTPTimer() {
+            if (window.appState.otpTimer) {
+                clearInterval(window.appState.otpTimer);
+            }
+            
+            window.appState.otpTimeLeft = 120;
+            const timerElement = document.getElementById('otpTimer');
+            const resendButton = document.getElementById('resendOTP');
+            
+            // Disable resend button
+            if (resendButton) {
+                resendButton.disabled = true;
+                resendButton.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            
+            window.appState.otpTimer = setInterval(() => {
+                window.appState.otpTimeLeft--;
+                
+                const minutes = Math.floor(window.appState.otpTimeLeft / 60);
+                const seconds = window.appState.otpTimeLeft % 60;
+                
+                if (timerElement) {
+                    timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+                
+                if (window.appState.otpTimeLeft <= 0) {
+                    clearInterval(window.appState.otpTimer);
+                    window.appState.otpTimer = null;
                     
-                    const { outcome } = await deferredPrompt.userChoice;
-                    console.log(`User response to the install prompt: ${outcome}`);
+                    if (timerElement) {
+                        timerElement.textContent = '00:00';
+                    }
                     
-                    deferredPrompt = null;
-                    installButton.style.display = 'none';
+                    if (resendButton) {
+                        resendButton.disabled = false;
+                        resendButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                }
+            }, 1000);
+        }
+
+        // Verify OTP
+        function verifyOTP() {
+            // Collect OTP from inputs
+            const otpInputs = document.querySelectorAll('.otp-digit');
+            let enteredOTP = '';
+            
+            otpInputs.forEach(input => {
+                enteredOTP += input.value;
+            });
+            
+            // Validate OTP length
+            if (enteredOTP.length !== 6) {
+                showToast('Please enter all 6 digits', 'error');
+                otpInputs.forEach(input => {
+                    if (!input.value) {
+                        input.classList.add('error');
+                    }
+                });
+                return;
+            }
+            
+            // Validate OTP (for demo, accept 123456)
+            if (enteredOTP === window.appState.lastGeneratedOTP || enteredOTP === '123456') {
+                // OTP verified
+                showToast('OTP verified successfully!', 'success');
+                
+                // Stop timer
+                if (window.appState.otpTimer) {
+                    clearInterval(window.appState.otpTimer);
+                    window.appState.otpTimer = null;
+                }
+                
+                // Check if user exists or needs to sign up
+                if (window.appState.tempUserData && window.appState.tempUserData.name) {
+                    // Existing user
+                    window.appState.activeUser = window.appState.tempUserData;
+                    window.appState.activeUser.lastLogin = new Date().toISOString();
+                    
+                    // Save to localStorage
+                    localStorage.setItem('agrifarmers_user', JSON.stringify(window.appState.activeUser));
+                    
+                    // Update home page
+                    document.getElementById('farmerName').textContent = window.appState.activeUser.name;
+                    document.getElementById('farmerLocation').textContent = `${window.appState.activeUser.district}, ${window.appState.activeUser.state}`;
+                    document.getElementById('welcomeText').textContent = `Welcome back, ${window.appState.activeUser.name.split(' ')[0]}`;
+                    
+                    // Go to home page
+                    showPage('homePage');
+                } else {
+                    // New user - go to sign up
+                    showToast('Please complete your registration', 'info');
+                    showPage('signUpPage');
+                    
+                    // Pre-fill mobile number
+                    if (window.appState.tempUserData?.mobile) {
+                        document.getElementById('signUpMobile').value = window.appState.tempUserData.mobile;
+                    }
+                }
+                
+                // Clear temp data
+                window.appState.tempUserData = null;
+                window.appState.lastGeneratedOTP = null;
+            } else {
+                // Invalid OTP
+                showToast('Invalid OTP. Please try again.', 'error');
+                otpInputs.forEach(input => {
+                    input.classList.add('error');
                 });
             }
-        });
-        
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA installed successfully');
-            if (installButton) installButton.style.display = 'none';
-            
-            // Show toast
-            if (window.showToast) {
-                showToast('App installed successfully!', 'success');
-            }
-        });
-        
-        // Check if app is already installed
-        if (window.matchMedia('(display-mode: standalone)').matches || 
-            window.navigator.standalone === true) {
-            if (installButton) installButton.style.display = 'none';
         }
-        
-        // Register Service Worker
+
+        // Resend OTP
+        function resendOTP() {
+            const resendButton = document.getElementById('resendOTP');
+            
+            if (resendButton && !resendButton.disabled) {
+                // For demo, keep same OTP
+                const otp = '123456';
+                window.appState.lastGeneratedOTP = otp;
+                
+                // Update display
+                document.getElementById('demoOTP').textContent = otp;
+                
+                // Clear OTP inputs
+                document.querySelectorAll('.otp-digit').forEach(input => {
+                    input.value = '';
+                    input.classList.remove('error', 'success');
+                });
+                
+                // Restart timer
+                startOTPTimer();
+                
+                // Focus first input
+                const firstInput = document.querySelector('.otp-digit[data-index="0"]');
+                if (firstInput) firstInput.focus();
+                
+                showToast('New OTP sent!', 'info');
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            window.appState.activeUser = null;
+            window.appState.tempUserData = null;
+            
+            // Clear OTP timer if running
+            if (window.appState.otpTimer) {
+                clearInterval(window.appState.otpTimer);
+                window.appState.otpTimer = null;
+            }
+            
+            // Show logout message
+            showToast('Logged out successfully', 'info');
+            
+            // Go to welcome page
+            showPage('welcomePage');
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            
+            container.appendChild(toast);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (toast.parentNode === container) {
+                        container.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Modal functions
+        function openWeatherModal() {
+            openModal('Weather Forecast', `
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-lg">Noida, India</h4>
+                            <p class="text-gray-600">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-4xl font-bold">28°C</div>
+                            <p class="text-gray-600">Partly Cloudy</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-600">Humidity</p>
+                            <p class="font-bold">65%</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-600">Wind</p>
+                            <p class="font-bold">12 km/h</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <p class="font-medium text-green-800">Farming Advisory:</p>
+                        <p class="text-green-700">Good weather for irrigation and fertilization activities.</p>
+                    </div>
+                </div>
+            `);
+        }
+
+        function openSeedModal() {
+            openModal('Seed Recommendations', `
+                <div class="space-y-4">
+                    <h4 class="font-bold text-lg">Recommended for Kharif Season</h4>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <div>
+                                <p class="font-bold">Rice</p>
+                                <p class="text-sm text-gray-600">High-yield variety</p>
+                            </div>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Recommended</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <div>
+                                <p class="font-bold">Cotton</p>
+                                <p class="text-sm text-gray-600">BT Cotton variety</p>
+                            </div>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Recommended</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <div>
+                                <p class="font-bold">Maize</p>
+                                <p class="text-sm text-gray-600">Hybrid variety</p>
+                            </div>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Recommended</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-3 rounded-lg">
+                        <p class="text-sm text-yellow-800">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            Tip: Always use certified seeds from authorized dealers for better yield.
+                        </p>
+                    </div>
+                </div>
+            `);
+        }
+
+        function openFertilizerModal() {
+            openModal('Fertilizer Guide', `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h5 class="font-bold mb-2">NPK Ratio</h5>
+                            <p class="text-3xl font-bold text-gray-800">4:2:1</p>
+                            <p class="text-sm text-gray-600">Nitrogen:Phosphorus:Potassium</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h5 class="font-bold mb-2">Application Time</h5>
+                            <p class="text-lg font-bold text-gray-800">Before Sowing</p>
+                            <p class="text-sm text-gray-600">Basal dose recommended</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-3 rounded-lg">
+                        <p class="text-sm text-yellow-800">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Important: Soil testing is recommended before fertilizer application.
+                        </p>
+                    </div>
+                </div>
+            `);
+        }
+
+        function openCropCalendarModal() {
+            openModal('Crop Calendar', `
+                <div class="space-y-4">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-2 text-left">Season</th>
+                                    <th class="p-2 text-left">Sowing</th>
+                                    <th class="p-2 text-left">Harvesting</th>
+                                    <th class="p-2 text-left">Crops</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="p-2 font-medium">Kharif</td>
+                                    <td class="p-2">Jun - Jul</td>
+                                    <td class="p-2">Sep - Oct</td>
+                                    <td class="p-2">Rice, Maize, Cotton</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-2 font-medium">Rabi</td>
+                                    <td class="p-2">Oct - Nov</td>
+                                    <td class="p-2">Mar - Apr</td>
+                                    <td class="p-2">Wheat, Barley, Mustard</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-medium">Zaid</td>
+                                    <td class="p-2">Mar - Jun</td>
+                                    <td class="p-2">Jun - Jul</td>
+                                    <td class="p-2">Watermelon, Cucumber</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">Current Recommendation</h5>
+                        <p class="text-gray-700">Now is the perfect time for Kharif crops like Rice and Cotton.</p>
+                    </div>
+                </div>
+            `);
+        }
+
+        function openMarketPricesModal() {
+            openModal('Market Prices', `
+                <div class="space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-bold">Wheat</p>
+                                <p class="text-sm text-gray-600">Grade A</p>
+                            </div>
+                            <span class="text-lg font-bold text-green-600">₹2,300/q</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-bold">Rice</p>
+                                <p class="text-sm text-gray-600">Basmati</p>
+                            </div>
+                            <span class="text-lg font-bold text-green-600">₹3,800/q</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-bold">Cotton</p>
+                                <p class="text-sm text-gray-600">Medium Staple</p>
+                            </div>
+                            <span class="text-lg font-bold text-green-600">₹6,500/q</span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-gray-600 text-center">Prices updated: Today, 10:00 AM</p>
+                </div>
+            `);
+        }
+
+        function openSoilHealthModal() {
+            openModal('Soil Health', `
+                <div class="space-y-4">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-bold mb-3">Soil Testing Steps</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                            <li>Collect soil samples from different spots in your field</li>
+                            <li>Mix samples thoroughly in a clean container</li>
+                            <li>Visit nearest Krishi Vigyan Kendra (KVK)</li>
+                            <li>Get soil health card with recommendations</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-bold mb-2">KVK Contact Info</h4>
+                        <p class="text-gray-700">Search for nearest Krishi Vigyan Kendra (KVK) in your district.</p>
+                        <p class="text-sm text-gray-600 mt-2">Call: 1800-180-1551 (Toll-free)</p>
+                    </div>
+                </div>
+            `);
+        }
+
+        function openModal(title, content) {
+            const modalContainer = document.getElementById('modal-container');
+            if (!modalContainer) return;
+            
+            modalContainer.innerHTML = `
+                <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden animate-fadeIn">
+                    <div class="flex items-center justify-between p-6 border-b">
+                        <h3 class="text-2xl font-bold text-gray-800">${title}</h3>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-3xl font-light">&times;</button>
+                    </div>
+                    <div class="overflow-y-auto p-6" style="max-height: calc(90vh - 80px);">
+                        ${content}
+                    </div>
+                </div>
+            `;
+            
+            modalContainer.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            const modalContainer = document.getElementById('modal-container');
+            if (modalContainer) {
+                modalContainer.classList.add('hidden');
+            }
+        }
+
+        // PWA Installation
+        function initializePWA() {
+            // Listen for beforeinstallprompt event
+            window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('PWA Installation: beforeinstallprompt event fired');
+                e.preventDefault();
+                window.appState.deferredPrompt = e;
+                
+                // Show install button
+                showInstallButton();
+            });
+            
+            // Listen for appinstalled event
+            window.addEventListener('appinstalled', () => {
+                console.log('PWA installed successfully');
+                hideInstallButton();
+                localStorage.setItem('agrifarmers_pwa_installed', 'true');
+                showToast('AgriFarmers installed successfully!', 'success');
+            });
+            
+            // Check if already installed
+            if (window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true ||
+                localStorage.getItem('agrifarmers_pwa_installed') === 'true') {
+                hideInstallButton();
+            } else {
+                // Try to show install button after a delay
+                setTimeout(() => {
+                    showInstallButton();
+                }, 3000);
+            }
+        }
+
+        function showInstallButton() {
+            // Check if button already exists
+            let installBtn = document.getElementById('pwa-install-button');
+            
+            if (!installBtn) {
+                // Create install button
+                installBtn = document.createElement('button');
+                installBtn.id = 'pwa-install-button';
+                installBtn.className = 'fixed bottom-6 right-6 z-50 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded-full p-4 shadow-xl transition-all duration-300 animate-float';
+                installBtn.innerHTML = `
+                    <i class="fas fa-download text-xl"></i>
+                    <span class="ml-2 hidden md:inline">Install App</span>
+                `;
+                installBtn.title = 'Install AgriFarmers as app for better experience';
+                installBtn.onclick = installApp;
+                
+                // Add CSS for animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes float {
+                        0%, 100% { transform: translateY(0px); }
+                        50% { transform: translateY(-5px); }
+                    }
+                    .animate-float {
+                        animation: float 3s ease-in-out infinite;
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                document.body.appendChild(installBtn);
+            }
+            
+            installBtn.style.display = 'flex';
+        }
+
+        function hideInstallButton() {
+            const installBtn = document.getElementById('pwa-install-button');
+            if (installBtn) {
+                installBtn.style.display = 'none';
+            }
+        }
+
+        async function installApp() {
+            if (window.appState.deferredPrompt) {
+                try {
+                    window.appState.deferredPrompt.prompt();
+                    const { outcome } = await window.appState.deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        showToast('Installing AgriFarmers...', 'success');
+                        window.appState.deferredPrompt = null;
+                    } else {
+                        console.log('User dismissed the install prompt');
+                        showToast('Installation cancelled. You can install later from browser menu.', 'info');
+                    }
+                } catch (error) {
+                    console.error('Installation error:', error);
+                    showManualInstallInstructions();
+                }
+            } else {
+                showManualInstallInstructions();
+            }
+        }
+
+        function showManualInstallInstructions() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isAndroid = /Android/.test(navigator.userAgent);
+            
+            let instructions = '';
+            
+            if (isIOS) {
+                instructions = `
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-lg">Install AgriFarmers on iPhone/iPad:</h4>
+                        <ol class="space-y-3 list-decimal list-inside">
+                            <li>Tap the <strong>Share</strong> button <i class="fas fa-share"></i></li>
+                            <li>Scroll and tap <strong>"Add to Home Screen"</strong></li>
+                            <li>Tap <strong>"Add"</strong> to finish</li>
+                        </ol>
+                    </div>
+                `;
+            } else if (isAndroid) {
+                instructions = `
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-lg">Install AgriFarmers on Android:</h4>
+                        <ol class="space-y-3 list-decimal list-inside">
+                            <li>Tap <strong>Menu</strong> (⋮) in Chrome</li>
+                            <li>Tap <strong>"Install app"</strong></li>
+                            <li>Tap <strong>"Install"</strong> to confirm</li>
+                        </ol>
+                    </div>
+                `;
+            } else {
+                instructions = `
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-lg">Install AgriFarmers on Desktop:</h4>
+                        <ol class="space-y-3 list-decimal list-inside">
+                            <li>Click <strong>Install</strong> button in address bar</li>
+                            <li>Or click <strong>•••</strong> menu → "Install AgriFarmers"</li>
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            openModal('Install AgriFarmers', instructions);
+        }
+
+        // Network status
+        function updateNetworkStatus() {
+            const offlineIndicator = document.getElementById('offline-indicator');
+            const networkStatus = document.getElementById('network-status');
+            
+            if (navigator.onLine) {
+                if (offlineIndicator) offlineIndicator.classList.add('hidden');
+                if (networkStatus) {
+                    networkStatus.innerHTML = '<i class="fas fa-wifi mr-1"></i> Online';
+                    networkStatus.className = 'text-sm px-3 py-1 bg-green-100 text-green-800 rounded-full';
+                }
+                document.getElementById('connectivity-status').textContent = 'Online';
+            } else {
+                if (offlineIndicator) offlineIndicator.classList.remove('hidden');
+                if (networkStatus) {
+                    networkStatus.innerHTML = '<i class="fas fa-wifi-slash mr-1"></i> Offline';
+                    networkStatus.className = 'text-sm px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full';
+                }
+                document.getElementById('connectivity-status').textContent = 'Offline - Limited functionality';
+                showToast('You are offline. Some features may be limited.', 'info');
+            }
+        }
+
+        // Initialize app
+        function initializeApp() {
+            console.log('Initializing AgriFarmers...');
+            
+            // Update network status
+            updateNetworkStatus();
+            window.addEventListener('online', updateNetworkStatus);
+            window.addEventListener('offline', updateNetworkStatus);
+            
+            // Check for existing user
+            const storedUser = localStorage.getItem('agrifarmers_user');
+            if (storedUser) {
+                try {
+                    window.appState.activeUser = JSON.parse(storedUser);
+                    
+                    // Update home page
+                    document.getElementById('farmerName').textContent = window.appState.activeUser.name;
+                    document.getElementById('farmerLocation').textContent = `${window.appState.activeUser.district}, ${window.appState.activeUser.state}`;
+                    document.getElementById('welcomeText').textContent = `Welcome back, ${window.appState.activeUser.name.split(' ')[0]}`;
+                    
+                    // Show home page
+                    showPage('homePage');
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                    localStorage.removeItem('agrifarmers_user');
+                    showPage('welcomePage');
+                }
+            } else {
+                showPage('welcomePage');
+            }
+            
+            // Update current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Initialize PWA
+            initializePWA();
+            
+            // Set up mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+            
+            // Hide loading screen after 2 seconds
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('app').classList.remove('opacity-0');
+                
+                // Show welcome toast
+                showToast('Welcome to AgriFarmers!', 'info');
+            }, 2000);
+        }
+
+        // Start the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('service-worker.js')
                     .then(registration => {
-                        console.log('Service Worker registered:', registration);
+                        console.log('Service Worker registered:', registration.scope);
                     })
                     .catch(error => {
                         console.log('Service Worker registration failed:', error);
