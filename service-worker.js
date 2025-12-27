@@ -6,8 +6,8 @@ const urlsToCache = [
   './script.js',
   './manifest.json',
   './404.html',
-  './icon-192x192.png',
-  './icon-512x512.png',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://cdn.tailwindcss.com'
 ];
@@ -103,8 +103,8 @@ async function syncWeatherData() {
 self.addEventListener('push', event => {
   const options = {
     body: event.data ? event.data.text() : 'New farming update available!',
-    icon: './icon-192x192.png',
-    badge: './icon-192x192.png',
+    icon: './icons/icon-192x192.png',
+    badge: './icons/icon-192x192.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
