@@ -2,8 +2,7 @@
 const CONFIG = {
     DEMO_OTP: '123456',
     WEATHER_API_KEY: '44a55de0f2e0674cb9160f50459d51d4',
-    WEATHER_API_URL: 'https://api.openweathermap.org/data/2.5/weather',
-    MARKET_API_URL: 'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070'
+    WEATHER_API_URL: 'https://api.openweathermap.org/data/2.5/weather'
 };
 
 // App State
@@ -12,13 +11,198 @@ let currentUser = null;
 let otpTimer = null;
 let userLocation = null;
 let currentSlide = 0;
+let currentLanguage = 'en';
+
+// Translation Dictionary
+const translations = {
+    en: {
+        // Header
+        'app_name': 'AgriFarmers',
+        'logout': 'Logout',
+        
+        // Welcome Page
+        'welcome_title': 'Welcome to AgriFarmers',
+        'welcome_subtitle': 'Your trusted companion for modern farming',
+        'smart_location': 'Smart Location',
+        'location_desc': 'Get location-based weather and farming advice',
+        'live_weather': 'Live Weather',
+        'weather_desc': 'Accurate weather forecasts and farming alerts',
+        'market_prices': 'Market Prices',
+        'market_desc': 'Real-time crop prices and market trends',
+        'get_started': 'Get Started',
+        'no_account': "Don't have an account?",
+        'sign_up': 'Sign Up',
+        
+        // Login Page
+        'login_title': 'Login to AgriFarmers',
+        'mobile_number': 'Mobile Number',
+        'enter_mobile': 'Enter 10-digit mobile number',
+        'send_otp': 'Send OTP',
+        'have_account': 'Already have an account?',
+        'login': 'Login',
+        
+        // Sign Up Page
+        'signup_title': 'Create Account',
+        'full_name': 'Full Name',
+        'enter_name': 'Enter your full name',
+        'state': 'State',
+        'select_state': 'Select State',
+        'district': 'District',
+        'select_district': 'Select District',
+        
+        // OTP Page
+        'otp_title': 'OTP Verification',
+        'otp_sent': 'OTP sent to',
+        'demo_otp': 'Demo OTP:',
+        'otp_timer': 'OTP valid for',
+        'minutes': 'minutes',
+        'verify_otp': 'Verify OTP',
+        'resend_otp': 'Resend OTP',
+        'back_login': 'Back to Login',
+        
+        // Home Page
+        'hello': 'Hello',
+        'today': 'Today',
+        'dashboard': 'Your Farming Dashboard',
+        'weather_forecast': 'Weather Forecast',
+        'weather_details': 'Weather Details',
+        'seed_fertilizer': 'Seed & Fertilizer',
+        'seed_desc': 'Recommendations for your region',
+        'seed_recommendations': 'Seed Recommendations:',
+        'fertilizer_mix': 'Fertilizer Mix:',
+        'seed_guide': 'Seed & Fertilizer Guide',
+        'farming_tips': "Today's Farming Tips",
+        'default_tip': 'Good weather for farming activities. Ideal for irrigation and fertilization.',
+        'market_prices_title': 'Live Market Prices',
+        
+        // Modal Content
+        'loading_weather': 'Loading weather data...',
+        'loading_prices': 'Loading market prices...',
+        'loading_recommendations': 'Loading recommendations...',
+        
+        // Common
+        'rights_reserved': 'All rights reserved',
+        'install_app': 'Install App'
+    },
+    
+    hi: {
+        'app_name': 'एग्रीफार्मर्स',
+        'logout': 'लॉगआउट',
+        'welcome_title': 'एग्रीफार्मर्स में आपका स्वागत है',
+        'welcome_subtitle': 'आधुनिक खेती के लिए आपका विश्वसनीय साथी',
+        'smart_location': 'स्मार्ट लोकेशन',
+        'location_desc': 'स्थान-आधारित मौसम और खेती सलाह प्राप्त करें',
+        'live_weather': 'लाइव मौसम',
+        'weather_desc': 'सटीक मौसम पूर्वानुमान और खेती अलर्ट',
+        'market_prices': 'बाजार मूल्य',
+        'market_desc': 'रियल-टाइम फसल मूल्य और बाजार रुझान',
+        'get_started': 'शुरू करें',
+        'no_account': 'खाता नहीं है?',
+        'sign_up': 'साइन अप करें',
+        'login_title': 'एग्रीफार्मर्स में लॉगिन करें',
+        'mobile_number': 'मोबाइल नंबर',
+        'enter_mobile': '10 अंकों का मोबाइल नंबर दर्ज करें',
+        'send_otp': 'OTP भेजें',
+        'have_account': 'पहले से खाता है?',
+        'login': 'लॉगिन',
+        'signup_title': 'खाता बनाएं',
+        'full_name': 'पूरा नाम',
+        'enter_name': 'अपना पूरा नाम दर्ज करें',
+        'state': 'राज्य',
+        'select_state': 'राज्य चुनें',
+        'district': 'जिला',
+        'select_district': 'जिला चुनें',
+        'otp_title': 'OTP सत्यापन',
+        'otp_sent': 'OTP भेजा गया',
+        'demo_otp': 'डेमो OTP:',
+        'otp_timer': 'OTP वैध है',
+        'minutes': 'मिनट',
+        'verify_otp': 'OTP सत्यापित करें',
+        'resend_otp': 'OTP पुनः भेजें',
+        'back_login': 'लॉगिन पर वापस',
+        'hello': 'नमस्ते',
+        'today': 'आज',
+        'dashboard': 'आपका कृषि डैशबोर्ड',
+        'weather_forecast': 'मौसम पूर्वानुमान',
+        'weather_details': 'मौसम विवरण',
+        'seed_fertilizer': 'बीज और उर्वरक',
+        'seed_desc': 'आपके क्षेत्र के लिए सिफारिशें',
+        'seed_recommendations': 'बीज सिफारिशें:',
+        'fertilizer_mix': 'उर्वरक मिश्रण:',
+        'seed_guide': 'बीज और उर्वरक गाइड',
+        'farming_tips': 'आज की कृषि सलाह',
+        'default_tip': 'खेती की गतिविधियों के लिए अच्छा मौसम। सिंचाई और निषेचन के लिए आदर्श।',
+        'market_prices_title': 'लाइव बाजार मूल्य',
+        'loading_weather': 'मौसम डेटा लोड हो रहा है...',
+        'loading_prices': 'बाजार मूल्य लोड हो रहे हैं...',
+        'loading_recommendations': 'सिफारिशें लोड हो रही हैं...',
+        'rights_reserved': 'सर्वाधिकार सुरक्षित',
+        'install_app': 'ऐप इंस्टॉल करें'
+    },
+    
+    pa: {
+        'app_name': 'ਐਗਰੀਫਾਰਮਰਸ',
+        'logout': 'ਲਾੱਗ ਆਊਟ',
+        'welcome_title': 'ਐਗਰੀਫਾਰਮਰਸ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ',
+        'welcome_subtitle': 'ਆਧੁਨਿਕ ਖੇਤੀ ਲਈ ਤੁਹਾਡਾ ਭਰੋਸੇਮੰਦ ਸਾਥੀ',
+        'smart_location': 'ਸਮਾਰਟ ਲੋਕੇਸ਼ਨ',
+        'location_desc': 'ਲੋਕੇਸ਼ਨ-ਅਧਾਰਤ ਮੌਸਮ ਅਤੇ ਖੇਤੀ ਸਲਾਹ ਪ੍ਰਾਪਤ ਕਰੋ',
+        'live_weather': 'ਲਾਈਵ ਮੌਸਮ',
+        'weather_desc': 'ਸਟੀਕ ਮੌਸਮ ਪੂਰਵਾਨੁਮਾਨ ਅਤੇ ਖੇਤੀ ਅਲਰਟ',
+        'market_prices': 'ਮਾਰਕੀਟ ਮੁੱਲ',
+        'market_desc': 'ਰੀਅਲ-ਟਾਈਮ ਫਸਲ ਮੁੱਲ ਅਤੇ ਮਾਰਕੀਟ ਰੁਝਾਨ',
+        'get_started': 'ਸ਼ੁਰੂ ਕਰੋ',
+        'no_account': 'ਖਾਤਾ ਨਹੀਂ ਹੈ?',
+        'sign_up': 'ਸਾਈਨ ਅੱਪ ਕਰੋ',
+        'login_title': 'ਐਗਰੀਫਾਰਮਰਸ ਵਿੱਚ ਲਾਗਿਨ ਕਰੋ',
+        'mobile_number': 'ਮੋਬਾਈਲ ਨੰਬਰ',
+        'enter_mobile': '10 ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਾਖਲ ਕਰੋ',
+        'send_otp': 'OTP ਭੇਜੋ',
+        'have_account': 'ਪਹਿਲਾਂ ਤੋਂ ਖਾਤਾ ਹੈ?',
+        'login': 'ਲਾਗਿਨ',
+        'signup_title': 'ਖਾਤਾ ਬਣਾਓ',
+        'full_name': 'ਪੂਰਾ ਨਾਮ',
+        'enter_name': 'ਆਪਣਾ ਪੂਰਾ ਨਾਮ ਦਾਖਲ ਕਰੋ',
+        'state': 'ਰਾਜ',
+        'select_state': 'ਰਾਜ ਚੁਣੋ',
+        'district': 'ਜ਼ਿਲ੍ਹਾ',
+        'select_district': 'ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ',
+        'otp_title': 'OTP ਪੁਸ਼ਟੀਕਰਨ',
+        'otp_sent': 'OTP ਭੇਜਿਆ ਗਿਆ',
+        'demo_otp': 'ਡੈਮੋ OTP:',
+        'otp_timer': 'OTP ਵੈਧ ਹੈ',
+        'minutes': 'ਮਿੰਟ',
+        'verify_otp': 'OTP ਪੁਸ਼ਟੀ ਕਰੋ',
+        'resend_otp': 'OTP ਦੁਬਾਰਾ ਭੇਜੋ',
+        'back_login': 'ਲਾਗਿਨ ਤੇ ਵਾਪਸ',
+        'hello': 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ',
+        'today': 'ਅੱਜ',
+        'dashboard': 'ਤੁਹਾਡਾ ਖੇਤੀ ਡੈਸ਼ਬੋਰਡ',
+        'weather_forecast': 'ਮੌਸਮ ਪੂਰਵ-ਅਨੁਮਾਨ',
+        'weather_details': 'ਮੌਸਮ ਵੇਰਵੇ',
+        'seed_fertilizer': 'ਬੀਜ ਅਤੇ ਖਾਦ',
+        'seed_desc': 'ਤੁਹਾਡੇ ਖੇਤਰ ਲਈ ਸਿਫਾਰਿਸ਼ਾਂ',
+        'seed_recommendations': 'ਬੀਜ ਸਿਫਾਰਿਸ਼ਾਂ:',
+        'fertilizer_mix': 'ਖਾਦ ਮਿਸ਼ਰਣ:',
+        'seed_guide': 'ਬੀਜ ਅਤੇ ਖਾਦ ਗਾਈਡ',
+        'farming_tips': 'ਅੱਜ ਦੀ ਖੇਤੀ ਸਲਾਹ',
+        'default_tip': 'ਖੇਤੀ ਦੀਆਂ ਗਤੀਵਿਧੀਆਂ ਲਈ ਚੰਗਾ ਮੌਸਮ। ਸਿੰਚਾਈ ਅਤੇ ਖਾਦ ਪਾਉਣ ਲਈ ਆਦਰਸ਼।',
+        'market_prices_title': 'ਲਾਈਵ ਮਾਰਕੀਟ ਮੁੱਲ',
+        'loading_weather': 'ਮੌਸਮ ਡੇਟਾ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...',
+        'loading_prices': 'ਮਾਰਕੀਟ ਮੁੱਲ ਲੋਡ ਹੋ ਰਹੇ ਹਨ...',
+        'loading_recommendations': 'ਸਿਫਾਰਿਸ਼ਾਂ ਲੋਡ ਹੋ ਰਹੀਆਂ ਹਨ...',
+        'rights_reserved': 'ਸਾਰੇ ਅਧਿਕਾਰ ਸੁਰੱਖਿਅਤ',
+        'install_app': 'ਐਪ ਇੰਸਟਾਲ ਕਰੋ'
+    }
+};
 
 // District data
 const districtData = {
     'Haryana': ['Ambala', 'Bhiwani', 'Faridabad', 'Fatehabad', 'Gurugram', 'Hisar', 'Jhajjar', 'Jind', 'Kaithal', 'Karnal', 'Kurukshetra', 'Mahendragarh', 'Nuh', 'Palwal', 'Panchkula', 'Panipat', 'Rewari', 'Rohtak', 'Sirsa', 'Sonipat', 'Yamunanagar'],
     'Punjab': ['Amritsar', 'Barnala', 'Bathinda', 'Faridkot', 'Fatehgarh Sahib', 'Fazilka', 'Ferozepur', 'Gurdaspur', 'Hoshiarpur', 'Jalandhar', 'Kapurthala', 'Ludhiana', 'Mansa', 'Moga', 'Pathankot', 'Patiala', 'Rupnagar', 'Sangrur', 'SAS Nagar', 'Tarn Taran'],
     'Rajasthan': ['Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Ajmer', 'Bikaner', 'Alwar', 'Bhilwara', 'Chittorgarh'],
-    
+    'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Agra', 'Varanasi', 'Allahabad', 'Meerut', 'Ghaziabad', 'Aligarh'],
+    'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Thane', 'Nashik', 'Aurangabad', 'Solapur']
 };
 
 // Crop recommendations by state
@@ -26,7 +210,8 @@ const cropRecommendations = {
     'Haryana': ['Wheat', 'Rice', 'Cotton', 'Sugarcane', 'Mustard'],
     'Punjab': ['Wheat', 'Rice', 'Maize', 'Cotton', 'Sugarcane'],
     'Rajasthan': ['Wheat', 'Barley', 'Mustard', 'Cotton', 'Guar'],
-   
+    'Uttar Pradesh': ['Wheat', 'Rice', 'Sugarcane', 'Potato', 'Pulses'],
+    'Maharashtra': ['Sugarcane', 'Cotton', 'Soybean', 'Tur', 'Groundnut']
 };
 
 // Initialize App
@@ -35,10 +220,18 @@ function initApp() {
     
     // Load saved data
     const savedUser = localStorage.getItem('agrifarmers_user');
+    const savedLang = localStorage.getItem('agrifarmers_language');
     
     if (savedUser) {
         currentUser = JSON.parse(savedUser);
     }
+    
+    if (savedLang && translations[savedLang]) {
+        currentLanguage = savedLang;
+    }
+    
+    // Apply initial language
+    applyLanguage(currentLanguage);
     
     // Setup state-district mapping
     setupStateDistrict();
@@ -60,6 +253,63 @@ function initApp() {
     
     // Show app immediately (no delay)
     showApp();
+}
+
+// Apply language translations
+function applyLanguage(lang) {
+    if (!translations[lang]) return;
+    
+    // Update all elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                element.placeholder = translations[lang][key];
+            } else {
+                element.textContent = translations[lang][key];
+            }
+        }
+    });
+    
+    // Update placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-i18n-placeholder');
+        if (translations[lang][key]) {
+            element.placeholder = translations[lang][key];
+        }
+    });
+    
+    // Update select options
+    document.querySelectorAll('option[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            element.textContent = translations[lang][key];
+        }
+    });
+}
+
+// Change language
+function changeLanguage(lang) {
+    if (!translations[lang]) return;
+    
+    currentLanguage = lang;
+    localStorage.setItem('agrifarmers_language', lang);
+    
+    // Update language display
+    document.getElementById('currentLanguage').textContent = 
+        lang === 'en' ? 'English' : 
+        lang === 'hi' ? 'हिंदी' : 'ਪੰਜਾਬੀ';
+    
+    // Apply translations
+    applyLanguage(lang);
+    
+    // Update date format based on language
+    updateCurrentDate();
+    
+    // Close language dropdown
+    document.getElementById('languageDropdown').classList.remove('show');
+    
+    showToast(`Language changed to ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : 'Punjabi'}`);
 }
 
 // Show app immediately
@@ -219,7 +469,7 @@ function setupStateDistrict() {
     if (stateSelect && districtSelect) {
         stateSelect.addEventListener('change', function() {
             const state = this.value;
-            districtSelect.innerHTML = '<option value="">Select District</option>';
+            districtSelect.innerHTML = '<option value="" data-i18n="select_district">Select District</option>';
             
             if (state && districtData[state]) {
                 districtSelect.disabled = false;
@@ -232,6 +482,9 @@ function setupStateDistrict() {
             } else {
                 districtSelect.disabled = true;
             }
+            
+            // Re-apply language
+            applyLanguage(currentLanguage);
         });
     }
 }
@@ -454,13 +707,19 @@ function handleLogout() {
 function updateUserInfo() {
     if (currentUser) {
         document.getElementById('farmerName').textContent = currentUser.name;
-        document.getElementById('welcomeText').textContent = 'Hello';
+        document.getElementById('welcomeText').textContent = translations[currentLanguage]['hello'];
     }
 }
 
 // Update current date
 function updateCurrentDate() {
     const now = new Date();
+    let locale = 'en-IN';
+    
+    // Set locale based on language
+    if (currentLanguage === 'hi') locale = 'hi-IN';
+    if (currentLanguage === 'pa') locale = 'pa-IN';
+    
     const options = { 
         weekday: 'long', 
         year: 'numeric', 
@@ -469,7 +728,7 @@ function updateCurrentDate() {
     };
     
     document.getElementById('currentDate').textContent = 
-        now.toLocaleDateString('en-IN', options);
+        now.toLocaleDateString(locale, options);
 }
 
 // Load weather data
@@ -480,10 +739,6 @@ async function loadWeatherData() {
     }
     
     try {
-        // For demo, use mock data. Replace with real API call:
-        // const response = await fetch(`${CONFIG.WEATHER_API_URL}?lat=${userLocation.lat}&lon=${userLocation.lon}&appid=${CONFIG.WEATHER_API_KEY}&units=metric`);
-        // const data = await response.json();
-        
         // Mock data for demo
         const mockWeather = {
             temp: 28,
@@ -738,60 +993,100 @@ function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('active');
 }
 
-// PWA Installation
+// PWA Installation - FIXED VERSION
 function initPWA() {
-    // Handle beforeinstallprompt event
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        
-        // Show install button
-        const installButton = document.getElementById('pwaInstallButton');
-        if (installButton) {
-            installButton.classList.remove('hidden');
-        }
-    });
-    
-    // Register service worker
-    if ('serviceWorker' in navigator) {
+    // Check if browser supports PWA installation
+    if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
+        // Register Service Worker
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js')
                 .then(registration => {
-                    console.log('Service Worker registered:', registration);
+                    console.log('✅ Service Worker registered:', registration);
+                    
+                    // Check if app is already installed
+                    if (!window.matchMedia('(display-mode: standalone)').matches) {
+                        // Show install button after a short delay
+                        setTimeout(() => {
+                            const installButton = document.getElementById('pwaInstallButton');
+                            if (installButton) {
+                                installButton.classList.remove('hidden');
+                            }
+                        }, 2000);
+                    }
                 })
                 .catch(error => {
-                    console.log('Service Worker registration failed:', error);
+                    console.log('❌ Service Worker registration failed:', error);
                 });
         });
+        
+        // Handle beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('✅ beforeinstallprompt event fired');
+            
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            
+            // Update UI to notify the user they can install the PWA
+            const installButton = document.getElementById('pwaInstallButton');
+            if (installButton) {
+                installButton.classList.remove('hidden');
+                
+                // Add click event for install button
+                installButton.addEventListener('click', () => {
+                    // Show the install prompt
+                    deferredPrompt.prompt();
+                    
+                    // Wait for the user to respond to the prompt
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('✅ User accepted the install prompt');
+                            showToast('App installed successfully! You can now access it from your home screen.');
+                        } else {
+                            console.log('❌ User dismissed the install prompt');
+                        }
+                        
+                        // Clear the saved prompt since it can't be used again
+                        deferredPrompt = null;
+                        
+                        // Hide the install button
+                        installButton.classList.add('hidden');
+                    });
+                });
+            }
+        });
+        
+        // Listen for app installation
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('✅ PWA was installed');
+            const installButton = document.getElementById('pwaInstallButton');
+            if (installButton) {
+                installButton.classList.add('hidden');
+            }
+        });
     }
-    
-    // Handle install button click
-    const installButton = document.getElementById('pwaInstallButton');
-    if (installButton) {
-        installButton.addEventListener('click', handleInstall);
-    }
-}
-
-// Handle install button click
-function handleInstall() {
-    if (!deferredPrompt) {
-        showToast('App installation not available', 'error');
-        return;
-    }
-    
-    deferredPrompt.prompt();
-    
-    deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-            showToast('App installed successfully!');
-            document.getElementById('pwaInstallButton').classList.add('hidden');
-        }
-        deferredPrompt = null;
-    });
 }
 
 // Setup event listeners
 function setupEventListeners() {
+    // Language selector toggle
+    const languageButton = document.getElementById('languageButton');
+    const languageDropdown = document.getElementById('languageDropdown');
+    
+    if (languageButton && languageDropdown) {
+        languageButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            languageDropdown.classList.toggle('show');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            languageDropdown.classList.remove('show');
+        });
+    }
+    
     // Close modals when clicking outside
     document.querySelectorAll('.modal-overlay').forEach(modal => {
         modal.addEventListener('click', (e) => {
@@ -809,6 +1104,23 @@ function setupEventListeners() {
             });
         }
     });
+    
+    // PWA install button click
+    const installButton = document.getElementById('pwaInstallButton');
+    if (installButton) {
+        installButton.addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showToast('App installed successfully!');
+                    }
+                    deferredPrompt = null;
+                    installButton.classList.add('hidden');
+                });
+            }
+        });
+    }
 }
 
 // Show error
