@@ -1,14 +1,12 @@
 {
   "name": "agrifarmers-pwa",
-  "version": "3.0.0",
-  "description": "Lightweight farming assistant PWA",
+  "version": "1.0.0",
+  "description": "AgriFarmers Progressive Web App",
   "scripts": {
-    "build": "node build.js",
-    "start": "http-server -p 8080 -c-1"
+    "start": "echo 'Open index.html in browser'",
+    "deploy": "echo 'Deploy to GitHub Pages'"
   },
-  "devDependencies": {
-    "terser": "^5.0.0",
-    "clean-css": "^5.0.0",
-    "http-server": "^14.0.0"
-  }
+  "keywords": ["pwa", "agriculture", "farming", "weather", "market-prices"],
+  "author": "AgriFarmers Team",
+  "license": "MIT"
 }
