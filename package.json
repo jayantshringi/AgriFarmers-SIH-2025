@@ -1,12 +1,19 @@
 {
-  "name": "agrifarmers-pwa",
+  "name": "agrifarmers",
   "version": "1.0.0",
-  "description": "AgriFarmers Progressive Web App",
+  "description": "AgriFarmers PWA - Modern Farming Companion",
+  "main": "index.html",
   "scripts": {
-    "start": "echo 'Open index.html in browser'",
-    "deploy": "echo 'Deploy to GitHub Pages'"
+    "start": "echo 'Open index.html in browser or use live server'",
+    "test": "echo 'No tests specified'"
   },
-  "keywords": ["pwa", "agriculture", "farming", "weather", "market-prices"],
+  "keywords": [
+    "pwa",
+    "agriculture",
+    "farming",
+    "weather",
+    "market-prices"
+  ],
   "author": "AgriFarmers Team",
   "license": "MIT"
 }
