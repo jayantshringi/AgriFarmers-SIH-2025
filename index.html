@@ -10,12 +10,9 @@
     <meta name="description" content="Your trusted companion for modern farming">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="icons/icon-192x192.png">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    
-    <!-- Fix for GitHub Pages -->
-    <base href="/AgriFarmers-SIH-2025/">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,10 +26,37 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        .page { display: none; }
-        .page.active { display: block; }
+        /* Smooth page transitions */
+        .page {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            position: absolute;
+            width: 100%;
+            height: 0;
+            overflow: hidden;
+        }
         
-        /* Loading Screen - SIMPLIFIED */
+        .page.active {
+            opacity: 1;
+            transform: translateY(0);
+            height: auto;
+            position: relative;
+            overflow: visible;
+        }
+        
+        /* Horizontal scroll for features */
+        .features-scroll-container {
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .feature-slide {
+            scroll-snap-align: start;
+            flex: 0 0 100%;
+        }
+        
+        /* Loading Screen */
         #loadingScreen {
             position: fixed;
             top: 0;
@@ -45,15 +69,14 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s ease;
         }
         
-        .loading-hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .spinner {
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #138808;
+            border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         
@@ -62,53 +85,63 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        }
-        .toast-success { background: #138808; }
-        .toast-error { background: #e74c3c; }
-        .toast-info { background: #3498db; }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        /* OTP Input Styling */
+        /* OTP Inputs */
         .otp-digit {
-            width: 45px;
-            height: 55px;
+            width: 50px;
+            height: 60px;
             text-align: center;
-            font-size: 20px;
+            font-size: 24px;
             border: 2px solid #d1d5db;
-            border-radius: 8px;
-            margin: 0 3px;
+            border-radius: 10px;
+            margin: 0 5px;
         }
+        
         .otp-digit:focus {
             border-color: #138808;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(19, 136, 8, 0.1);
         }
         
-        /* Feature Cards */
-        .feature-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
         }
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         /* PWA Install Button */
-        #pwa-install-button {
+        #pwaInstallButton {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -124,118 +157,122 @@
             align-items: center;
             gap: 10px;
             box-shadow: 0 4px 20px rgba(19, 136, 8, 0.3);
-            z-index: 9999;
+            z-index: 999;
             transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
         }
         
-        #pwa-install-button:hover {
-            background: linear-gradient(135deg, #0d6006, #084c04);
+        #pwaInstallButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(19, 136, 8, 0.4);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        /* Weather Icon Colors */
+        .weather-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .sunny { color: #FFB347; }
+        .cloudy { color: #A9A9A9; }
+        .rainy { color: #4A90E2; }
+        
+        /* Market Price Item */
+        .price-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .price-item:hover {
             transform: translateY(-2px);
         }
         
-        /* Language Dropdown */
-        .language-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            min-width: 140px;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            z-index: 50;
-            margin-top: 5px;
-        }
-        
-        .language-option {
+        /* Scroll Indicators */
+        .scroll-indicator {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            width: 100%;
-            text-align: left;
-            background: white;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 14px;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
         }
         
-        .language-option:hover {
-            background: #f3f4f6;
+        .scroll-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #d1d5db;
+            transition: background 0.3s ease;
         }
         
-        .language-option.active {
-            background: #d1fae5;
-            color: #065f46;
+        .scroll-dot.active {
+            background: #138808;
+            transform: scale(1.2);
         }
         
-        /* Responsive */
-        @media (max-width: 768px) {
-            #pwa-install-button {
-                bottom: 70px;
-                right: 12px;
-                padding: 10px 18px;
-                font-size: 14px;
-            }
-            
+        /* Responsive Adjustments */
+        @media (max-width: 640px) {
             .otp-digit {
                 width: 40px;
                 height: 50px;
-                font-size: 18px;
-                margin: 0 2px;
+                font-size: 20px;
+                margin: 0 3px;
+            }
+            
+            #pwaInstallButton {
+                bottom: 80px;
+                right: 15px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .feature-card {
+                margin: 0 10px;
             }
         }
     </style>
-    
-    <!-- PRELOAD CRITICAL RESOURCES -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body class="bg-gray-50">
-    <!-- Loading Screen - MINIMAL -->
+    <!-- Loading Screen -->
     <div id="loadingScreen">
-        <div class="spinner rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4"></div>
-        <p class="text-gray-600 text-lg">Loading AgriFarmers...</p>
+        <div class="loader"></div>
+        <p class="mt-4 text-gray-600 text-lg">Loading AgriFarmers...</p>
     </div>
 
     <!-- App Container -->
     <div id="app" class="min-h-screen" style="display: none;">
-        <!-- Clean Header -->
+        <!-- Header -->
         <nav class="bg-white shadow-md">
             <div class="container mx-auto px-4 py-3">
                 <div class="flex justify-between items-center">
                     <!-- Logo -->
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-seedling text-green-600 text-2xl"></i>
-                        <span class="text-xl font-bold text-gray-800" data-i18n="app_name">AgriFarmers</span>
+                        <span class="text-xl font-bold text-gray-800">AgriFarmers</span>
                     </div>
                     
                     <!-- User Actions -->
-                    <div class="flex items-center space-x-4" id="headerActions">
+                    <div class="flex items-center space-x-4">
                         <!-- Language Selector -->
-                        <div class="relative" id="languageSelector">
-                            <button id="languageButton" class="flex items-center space-x-2 text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg hover:bg-gray-100">
+                        <div class="relative">
+                            <button id="languageButton" class="flex items-center space-x-2 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100">
                                 <i class="fas fa-globe"></i>
                                 <span id="currentLanguage">English</span>
-                                <i class="fas fa-chevron-down text-xs"></i>
                             </button>
-                            <div id="languageDropdown" class="language-dropdown hidden">
-                                <button class="language-option" onclick="changeLanguage('en')">
-                                    <span>🇺🇸 English</span>
-                                </button>
-                                <button class="language-option" onclick="changeLanguage('hi')">
-                                    <span>🇮🇳 हिंदी</span>
-                                </button>
-                                <button class="language-option" onclick="changeLanguage('pa')">
-                                    <span>🇮🇳 ਪੰਜਾਬੀ</span>
-                                </button>
-                            </div>
                         </div>
                         
                         <!-- Logout Button -->
                         <button id="logoutButton" onclick="handleLogout()" class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg text-sm hidden">
-                            <i class="fas fa-sign-out-alt mr-2"></i><span data-i18n="logout">Logout</span>
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
                         </button>
                     </div>
                 </div>
@@ -246,37 +283,48 @@
         <div class="container mx-auto px-4 py-6">
             <!-- Welcome Page -->
             <div id="welcomePage" class="page active">
-                <div class="max-w-4xl mx-auto text-center py-12">
-                    <i class="fas fa-seedling text-green-600 text-6xl mb-6"></i>
-                    <h1 class="text-4xl font-bold text-gray-800 mb-4" data-i18n="welcome_title">Welcome to AgriFarmers</h1>
-                    <p class="text-xl text-gray-600 mb-8" data-i18n="welcome_subtitle">Your trusted companion for modern farming.</p>
+                <div class="max-w-4xl mx-auto text-center py-8">
+                    <i class="fas fa-seedling text-green-600 text-5xl mb-6"></i>
+                    <h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome to AgriFarmers</h1>
+                    <p class="text-xl text-gray-600 mb-8">Your trusted companion for modern farming.</p>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                        <div class="bg-white p-6 rounded-xl shadow-md">
-                            <i class="fas fa-location-dot text-green-500 text-3xl mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2" data-i18n="smart_location">Smart Location</h3>
-                            <p class="text-gray-600" data-i18n="location_desc">Get location-based weather and farming advice.</p>
+                    <!-- Horizontal Scroll Features -->
+                    <div class="mb-8">
+                        <div class="features-scroll-container flex overflow-x-auto pb-4 scrollbar-hide" id="featuresSlider">
+                            <div class="feature-slide flex flex-col items-center p-6 bg-white rounded-xl shadow-md mx-2">
+                                <i class="fas fa-location-dot text-green-500 text-4xl mb-4"></i>
+                                <h3 class="font-bold text-xl mb-2">Smart Location</h3>
+                                <p class="text-gray-600">Get location-based weather and farming advice</p>
+                            </div>
+                            <div class="feature-slide flex flex-col items-center p-6 bg-white rounded-xl shadow-md mx-2">
+                                <i class="fas fa-cloud-sun text-blue-500 text-4xl mb-4"></i>
+                                <h3 class="font-bold text-xl mb-2">Live Weather</h3>
+                                <p class="text-gray-600">Accurate weather forecasts and farming alerts</p>
+                            </div>
+                            <div class="feature-slide flex flex-col items-center p-6 bg-white rounded-xl shadow-md mx-2">
+                                <i class="fas fa-chart-line text-purple-500 text-4xl mb-4"></i>
+                                <h3 class="font-bold text-xl mb-2">Market Prices</h3>
+                                <p class="text-gray-600">Real-time crop prices and market trends</p>
+                            </div>
                         </div>
-                        <div class="bg-white p-6 rounded-xl shadow-md">
-                            <i class="fas fa-cloud-sun text-blue-500 text-3xl mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2" data-i18n="live_weather">Live Weather</h3>
-                            <p class="text-gray-600" data-i18n="weather_desc">Accurate weather forecasts and farming alerts.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-md">
-                            <i class="fas fa-chart-line text-purple-500 text-3xl mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2" data-i18n="market_prices">Market Prices</h3>
-                            <p class="text-gray-600" data-i18n="market_desc">Real-time crop prices and market trends.</p>
+                        
+                        <!-- Scroll Indicators -->
+                        <div class="scroll-indicator">
+                            <div class="scroll-dot active" data-slide="0"></div>
+                            <div class="scroll-dot" data-slide="1"></div>
+                            <div class="scroll-dot" data-slide="2"></div>
                         </div>
                     </div>
                     
+                    <!-- Action Buttons -->
                     <div class="space-y-4">
                         <button onclick="showPage('loginPage')" 
                                 class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg">
-                            <i class="fas fa-sign-in-alt mr-2"></i><span data-i18n="get_started">Get Started</span>
+                            <i class="fas fa-sign-in-alt mr-2"></i>Get Started
                         </button>
                         <p class="text-gray-600">
-                            <span data-i18n="no_account">Don't have an account?</span> 
-                            <button onclick="showPage('signUpPage')" class="text-green-600 font-medium hover:underline ml-1" data-i18n="sign_up">Sign Up</button>
+                            Don't have an account?
+                            <button onclick="showPage('signUpPage')" class="text-green-600 font-medium hover:underline ml-1">Sign Up</button>
                         </p>
                     </div>
                 </div>
@@ -285,27 +333,26 @@
             <!-- Login Page -->
             <div id="loginPage" class="page">
                 <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6" data-i18n="login_title">Login to AgriFarmers</h2>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Login to AgriFarmers</h2>
                     
                     <div class="space-y-6">
                         <div>
-                            <label class="block text-gray-700 mb-2" data-i18n="mobile_number">Mobile Number</label>
+                            <label class="block text-gray-700 mb-2">Mobile Number</label>
                             <input type="tel" id="loginMobile" 
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                    placeholder="Enter 10-digit mobile number"
-                                   maxlength="10"
-                                   data-i18n-placeholder="enter_mobile">
+                                   maxlength="10">
                             <div id="loginMobileError" class="text-red-500 text-sm mt-1 hidden"></div>
                         </div>
                         
                         <button onclick="handleLogin()" 
                                 class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
-                            <i class="fas fa-sign-in-alt mr-2"></i><span data-i18n="send_otp">Send OTP</span>
+                            <i class="fas fa-sign-in-alt mr-2"></i>Send OTP
                         </button>
                         
                         <p class="text-center text-gray-600">
-                            <span data-i18n="no_account">Don't have an account?</span> 
-                            <button onclick="showPage('signUpPage')" class="text-green-600 font-medium hover:underline ml-1" data-i18n="sign_up">Sign Up</button>
+                            Don't have an account?
+                            <button onclick="showPage('signUpPage')" class="text-green-600 font-medium hover:underline ml-1">Sign Up</button>
                         </p>
                     </div>
                 </div>
@@ -314,33 +361,31 @@
             <!-- Sign Up Page -->
             <div id="signUpPage" class="page">
                 <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6" data-i18n="signup_title">Create Account</h2>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Create Account</h2>
                     
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-gray-700 mb-2" data-i18n="full_name">Full Name</label>
+                            <label class="block text-gray-700 mb-2">Full Name</label>
                             <input type="text" id="signUpName"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                   placeholder="Enter your full name"
-                                   data-i18n-placeholder="enter_name">
+                                   placeholder="Enter your full name">
                             <div id="signUpNameError" class="text-red-500 text-sm mt-1 hidden"></div>
                         </div>
                         
                         <div>
-                            <label class="block text-gray-700 mb-2" data-i18n="mobile_number">Mobile Number</label>
+                            <label class="block text-gray-700 mb-2">Mobile Number</label>
                             <input type="tel" id="signUpMobile"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                    placeholder="Enter 10-digit mobile number"
-                                   maxlength="10"
-                                   data-i18n-placeholder="enter_mobile">
+                                   maxlength="10">
                             <div id="signUpMobileError" class="text-red-500 text-sm mt-1 hidden"></div>
                         </div>
                         
                         <div>
-                            <label class="block text-gray-700 mb-2" data-i18n="state">State</label>
+                            <label class="block text-gray-700 mb-2">State</label>
                             <select id="signUpState" 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="" data-i18n="select_state">Select State</option>
+                                <option value="">Select State</option>
                                 <option value="Haryana">Haryana</option>
                                 <option value="Punjab">Punjab</option>
                                 <option value="Rajasthan">Rajasthan</option>
@@ -351,23 +396,23 @@
                         </div>
                         
                         <div>
-                            <label class="block text-gray-700 mb-2" data-i18n="district">District</label>
+                            <label class="block text-gray-700 mb-2">District</label>
                             <select id="signUpDistrict" 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                     disabled>
-                                <option value="" data-i18n="select_district">Select District</option>
+                                <option value="">Select District</option>
                             </select>
                             <div id="signUpDistrictError" class="text-red-500 text-sm mt-1 hidden"></div>
                         </div>
                         
                         <button onclick="handleSignUp()" 
                                 class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mt-4">
-                            <i class="fas fa-user-plus mr-2"></i><span data-i18n="sign_up">Sign Up</span>
+                            <i class="fas fa-user-plus mr-2"></i>Sign Up
                         </button>
                         
                         <p class="text-center text-gray-600">
-                            <span data-i18n="have_account">Already have an account?</span> 
-                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline ml-1" data-i18n="login">Login</button>
+                            Already have an account?
+                            <button onclick="showPage('loginPage')" class="text-green-600 font-medium hover:underline ml-1">Login</button>
                         </p>
                     </div>
                 </div>
@@ -376,38 +421,36 @@
             <!-- OTP Page -->
             <div id="otpPage" class="page">
                 <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-2" data-i18n="otp_title">OTP Verification</h2>
-                    <p class="text-gray-600 mb-1" data-i18n="otp_sent">OTP sent to</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">OTP Verification</h2>
+                    <p class="text-gray-600 mb-1">OTP sent to</p>
                     <p class="text-lg font-medium text-green-600 mb-6" id="otpPhoneNumber">+91 XXXXXXXX</p>
                     
                     <div class="space-y-6">
                         <div class="text-center">
                             <div class="flex justify-center mb-4" id="otpContainer"></div>
-                            <p class="text-sm text-gray-500 mb-2" data-i18n="demo_otp">Demo OTP: <span id="demoOTP" class="font-bold text-green-600">123456</span></p>
+                            <p class="text-sm text-gray-500 mb-2">Demo OTP: <span id="demoOTP" class="font-bold text-green-600">123456</span></p>
                         </div>
                         
                         <div class="text-center">
                             <p class="text-sm text-gray-600 mb-4">
-                                <span data-i18n="otp_timer">OTP valid for</span> 
-                                <span id="otpTimer" class="font-bold text-red-600">02:00</span> 
-                                <span data-i18n="minutes">minutes</span>
+                                OTP valid for <span id="otpTimer" class="font-bold text-red-600">02:00</span> minutes
                             </p>
                             
                             <button onclick="verifyOTP()" 
                                     class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mb-3">
-                                <i class="fas fa-check-circle mr-2"></i><span data-i18n="verify_otp">Verify OTP</span>
+                                <i class="fas fa-check-circle mr-2"></i>Verify OTP
                             </button>
                             
                             <button id="resendOTP" onclick="resendOTP()" 
                                     class="text-green-600 hover:text-green-800 font-medium text-sm">
-                                <i class="fas fa-redo mr-1"></i><span data-i18n="resend_otp">Resend OTP</span>
+                                <i class="fas fa-redo mr-1"></i>Resend OTP
                             </button>
                         </div>
                         
                         <div class="text-center pt-4 border-t">
                             <button onclick="showPage('loginPage')" 
                                     class="text-gray-600 hover:text-gray-800 text-sm">
-                                <i class="fas fa-arrow-left mr-1"></i><span data-i18n="back_login">Back to Login</span>
+                                <i class="fas fa-arrow-left mr-1"></i>Back to Login
                             </button>
                         </div>
                     </div>
@@ -420,7 +463,7 @@
                 <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white mb-8">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h2 class="text-2xl font-bold mb-2" data-i18n="hello">Hello</h2>
+                            <h2 class="text-2xl font-bold mb-2" id="welcomeText">Hello</h2>
                             <p class="opacity-90" id="farmerName">Farmer</p>
                             <div class="flex items-center mt-1">
                                 <i class="fas fa-location-dot text-xs mr-1"></i>
@@ -428,7 +471,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm opacity-90" data-i18n="today">Today</p>
+                            <p class="text-sm opacity-90">Today</p>
                             <p class="text-xl font-bold" id="currentDate"></p>
                         </div>
                     </div>
@@ -436,16 +479,16 @@
                 
                 <!-- Dashboard -->
                 <div class="mb-8">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4" data-i18n="dashboard">Your Farming Dashboard</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Your Farming Dashboard</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- Weather Card -->
-                        <div onclick="openWeatherModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-blue-100">
+                        <div onclick="openWeatherModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-blue-100 cursor-pointer hover:border-blue-300 transition-colors">
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-cloud-sun text-blue-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-lg" data-i18n="weather_forecast">Weather Forecast</h4>
-                                    <p class="text-sm text-gray-600" data-i18n="weather_desc">Today's weather & forecast</p>
+                                    <h4 class="font-bold text-gray-800 mt-2 text-lg">Weather Forecast</h4>
+                                    <p class="text-sm text-gray-600">Live weather for your location</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -458,12 +501,12 @@
                         </div>
                         
                         <!-- Market Prices Card -->
-                        <div onclick="openMarketPricesModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-red-100">
+                        <div onclick="openMarketPricesModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-red-100 cursor-pointer hover:border-red-300 transition-colors">
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-chart-line text-red-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-lg" data-i18n="market_prices">Market Prices</h4>
-                                    <p class="text-sm text-gray-600" data-i18n="market_desc">Current crop prices</p>
+                                    <h4 class="font-bold text-gray-800 mt-2 text-lg">Market Prices</h4>
+                                    <p class="text-sm text-gray-600">Live India crop prices</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
@@ -474,20 +517,32 @@
                             </div>
                         </div>
                         
-                        <!-- Seeds Card -->
-                        <div onclick="openSeedModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-green-100">
+                        <!-- Seeds & Fertilizer Card -->
+                        <div onclick="openSeedModal()" class="feature-card bg-white p-6 rounded-xl shadow-md border border-green-100 cursor-pointer hover:border-green-300 transition-colors">
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <i class="fas fa-seedling text-green-500 text-2xl"></i>
-                                    <h4 class="font-bold text-gray-800 mt-2 text-lg" data-i18n="seed_recommendations">Seed Recommendations</h4>
-                                    <p class="text-sm text-gray-600" data-i18n="seed_desc">Best seeds for your region</p>
+                                    <h4 class="font-bold text-gray-800 mt-2 text-lg">Seed & Fertilizer</h4>
+                                    <p class="text-sm text-gray-600">Recommendations for your region</p>
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-400"></i>
                             </div>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Wheat</span>
-                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Rice</span>
-                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Cotton</span>
+                            <div>
+                                <div class="mb-3">
+                                    <p class="font-medium text-sm text-gray-600 mb-1">Seed Recommendations:</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Wheat</span>
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Rice</span>
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Cotton</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm text-gray-600 mb-1">Fertilizer Mix:</p>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div class="bg-green-600 h-2.5 rounded-full" style="width: 50%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">50% Organic | 25% NPK | 25% Urea</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -498,8 +553,8 @@
                     <div class="flex items-start">
                         <i class="fas fa-lightbulb text-yellow-500 text-2xl mr-4 mt-1"></i>
                         <div>
-                            <h4 class="font-bold text-gray-800 mb-2 text-lg" data-i18n="farming_tips">Today's Farming Tips</h4>
-                            <p class="text-gray-700" id="farmingAdvisory" data-i18n="default_tip">Good weather for farming activities. Ideal for irrigation and fertilization.</p>
+                            <h4 class="font-bold text-gray-800 mb-2 text-lg">Today's Farming Tips</h4>
+                            <p class="text-gray-700" id="farmingAdvisory">Good weather for farming activities. Ideal for irrigation and fertilization.</p>
                         </div>
                     </div>
                 </div>
@@ -509,20 +564,80 @@
         <!-- Footer -->
         <footer class="bg-green-800 text-white py-8 mt-8">
             <div class="container mx-auto px-4 text-center">
-                <p>&copy; 2024 AgriFarmers. <span data-i18n="rights_reserved">All rights reserved.</span></p>
+                <p>&copy; 2024 AgriFarmers. All rights reserved.</p>
             </div>
         </footer>
         
         <!-- PWA Install Button -->
-        <button id="pwa-install-button" class="hidden">
-            <i class="fas fa-download"></i> <span data-i18n="install_app">Install App</span>
+        <button id="pwaInstallButton" class="hidden">
+            <i class="fas fa-download"></i> Install App
         </button>
         
         <!-- Toast Container -->
-        <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+        <div id="toastContainer" class="fixed top-4 right-4 z-50"></div>
+        
+        <!-- Weather Modal -->
+        <div id="weatherModal" class="modal-overlay">
+            <div class="modal-content w-full max-w-md mx-4">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Weather Details</h3>
+                        <button onclick="closeModal('weatherModal')" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div id="weatherModalContent">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-spin text-blue-500 text-4xl mb-4"></i>
+                            <p>Loading weather data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Market Prices Modal -->
+        <div id="marketPricesModal" class="modal-overlay">
+            <div class="modal-content w-full max-w-2xl mx-4">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Live Market Prices</h3>
+                        <button onclick="closeModal('marketPricesModal')" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div id="marketPricesModalContent">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-spin text-green-500 text-4xl mb-4"></i>
+                            <p>Loading market prices...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seed & Fertilizer Modal -->
+        <div id="seedModal" class="modal-overlay">
+            <div class="modal-content w-full max-w-md mx-4">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Seed & Fertilizer Guide</h3>
+                        <button onclick="closeModal('seedModal')" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div id="seedModalContent">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-spin text-green-500 text-4xl mb-4"></i>
+                            <p>Loading recommendations...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Main Script - LOAD LAST -->
-    <script src="script.js" defer></script>
+    <!-- Main Script -->
+    <script src="./script.js"></script>
 </body>
 </html>
