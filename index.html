@@ -223,6 +223,47 @@
             transform: scale(1.2);
         }
         
+        /* PWA Install Button */
+        #pwa-install-button {
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            z-index: 9999 !important;
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: white !important;
+            border-radius: 50px !important;
+            padding: 12px 20px !important;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3) !important;
+            border: none !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.3s ease !important;
+            animation: float 3s ease-in-out infinite !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+        }
+        
+        #pwa-install-button:hover {
+            transform: translateY(-3px) scale(1.05) !important;
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.4) !important;
+            background: linear-gradient(135deg, #059669, #047857) !important;
+        }
+        
+        #pwa-install-button i {
+            font-size: 18px !important;
+        }
+        
+        #pwa-install-button span {
+            margin-left: 8px !important;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
         /* Responsive Adjustments */
         @media (max-width: 640px) {
             .otp-digit {
@@ -232,13 +273,6 @@
                 margin: 0 3px;
             }
             
-            #pwaInstallButton {
-                bottom: 80px;
-                right: 15px;
-                padding: 10px 20px;
-                font-size: 14px;
-            }
-            
             .language-dropdown {
                 position: fixed;
                 top: 60px;
@@ -246,11 +280,38 @@
                 left: 10px;
                 min-width: auto;
             }
+            
+            #pwa-install-button {
+                bottom: 70px !important;
+                right: 15px !important;
+                padding: 14px 16px !important;
+            }
+            
+            #pwa-install-button span {
+                display: none !important;
+            }
+            
+            #pwa-install-button i {
+                font-size: 20px !important;
+            }
         }
         
         @media (max-width: 768px) {
             .feature-card {
                 margin: 0 10px;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            #pwa-install-button {
+                bottom: 30px !important;
+                right: 30px !important;
+            }
+        }
+        
+        @media (display-mode: standalone) {
+            #pwa-install-button {
+                display: none !important;
             }
         }
     </style>
@@ -608,7 +669,7 @@
         </footer>
         
         <!-- PWA Install Button -->
-        <button id="pwaInstallButton" class="hidden">
+        <button id="pwa-install-button" class="hidden">
             <i class="fas fa-download"></i>
             <span data-i18n="install_app">Install App</span>
         </button>
