@@ -1,21 +1,73 @@
 {
   "name": "AgriFarmers",
   "short_name": "AgriFarmers",
-  "description": "Your farming companion",
+  "description": "Your trusted farming companion with live weather and market prices",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#138808",
+  "background_color": "#FFFFFF",
   "theme_color": "#138808",
+  "orientation": "portrait",
+  "scope": "./",
   "icons": [
+    {
+      "src": "./icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
     {
       "src": "./icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
+      "src": "./icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
       "src": "./icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "categories": ["business", "education", "productivity"],
+  "screenshots": [
+    {
+      "src": "./screenshots/screen1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Weather Forecast",
+      "short_name": "Weather",
+      "description": "Check weather for farming",
+      "url": "./?source=weather",
+      "icons": [{ "src": "./icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Crop Prices",
+      "short_name": "Prices",
+      "description": "Check market prices",
+      "url": "./?source=prices",
+      "icons": [{ "src": "./icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ]
 }
