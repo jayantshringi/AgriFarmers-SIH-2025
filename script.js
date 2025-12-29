@@ -1,163 +1,32 @@
 // App Configuration
 const CONFIG = {
     DEMO_OTP: '123456',
-    REPO_NAME: 'AgriFarmers-SIH-2025'
+    WEATHER_API_KEY: '44a55de0f2e0674cb9160f50459d51d4',
+    WEATHER_API_URL: 'https://api.openweathermap.org/data/2.5/weather',
+    MARKET_API_URL: 'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070'
 };
 
 // App State
 let deferredPrompt = null;
 let currentUser = null;
 let otpTimer = null;
-let currentLanguage = 'en';
-
-// Translations
-const translations = {
-    en: {
-        // Header
-        'app_name': 'AgriFarmers',
-        'logout': 'Logout',
-        
-        // Welcome Page
-        'welcome_title': 'Welcome to AgriFarmers',
-        'welcome_subtitle': 'Your trusted companion for modern farming',
-        'smart_location': 'Smart Location',
-        'location_desc': 'Get location-based weather and farming advice',
-        'live_weather': 'Live Weather',
-        'weather_desc': 'Accurate weather forecasts and farming alerts',
-        'market_prices': 'Market Prices',
-        'market_desc': 'Real-time crop prices and market trends',
-        'get_started': 'Get Started',
-        'no_account': "Don't have an account?",
-        'sign_up': 'Sign Up',
-        
-        // Login Page
-        'login_title': 'Login to AgriFarmers',
-        'mobile_number': 'Mobile Number',
-        'enter_mobile': 'Enter 10-digit mobile number',
-        'send_otp': 'Send OTP',
-        'have_account': 'Already have an account?',
-        'login': 'Login',
-        
-        // Sign Up Page
-        'signup_title': 'Create Account',
-        'full_name': 'Full Name',
-        'enter_name': 'Enter your full name',
-        'state': 'State',
-        'select_state': 'Select State',
-        'district': 'District',
-        'select_district': 'Select District',
-        
-        // OTP Page
-        'otp_title': 'OTP Verification',
-        'otp_sent': 'OTP sent to',
-        'demo_otp': 'Demo OTP:',
-        'otp_timer': 'OTP valid for',
-        'minutes': 'minutes',
-        'verify_otp': 'Verify OTP',
-        'resend_otp': 'Resend OTP',
-        'back_login': 'Back to Login',
-        
-        // Home Page
-        'hello': 'Hello',
-        'today': 'Today',
-        'dashboard': 'Your Farming Dashboard',
-        'weather_forecast': 'Weather Forecast',
-        'seed_recommendations': 'Seed Recommendations',
-        'seed_desc': 'Best seeds for your region',
-        'farming_tips': "Today's Farming Tips",
-        'default_tip': 'Good weather for farming activities. Ideal for irrigation and fertilization.',
-        
-        // Common
-        'rights_reserved': 'All rights reserved',
-        'install_app': 'Install App'
-    },
-    
-    hi: {
-        'app_name': 'एग्रीफार्मर्स',
-        'logout': 'लॉगआउट',
-        'welcome_title': 'एग्रीफार्मर्स में आपका स्वागत है',
-        'welcome_subtitle': 'आधुनिक खेती के लिए आपका विश्वसनीय साथी',
-        'get_started': 'शुरू करें',
-        'no_account': 'खाता नहीं है?',
-        'sign_up': 'साइन अप करें',
-        'login_title': 'एग्रीफार्मर्स में लॉगिन करें',
-        'mobile_number': 'मोबाइल नंबर',
-        'enter_mobile': '10 अंकों का मोबाइल नंबर दर्ज करें',
-        'send_otp': 'OTP भेजें',
-        'have_account': 'पहले से खाता है?',
-        'login': 'लॉगिन',
-        'signup_title': 'खाता बनाएं',
-        'full_name': 'पूरा नाम',
-        'enter_name': 'अपना पूरा नाम दर्ज करें',
-        'state': 'राज्य',
-        'select_state': 'राज्य चुनें',
-        'district': 'जिला',
-        'select_district': 'जिला चुनें',
-        'otp_title': 'OTP सत्यापन',
-        'otp_sent': 'OTP भेजा गया',
-        'demo_otp': 'डेमो OTP:',
-        'otp_timer': 'OTP वैध है',
-        'minutes': 'मिनट',
-        'verify_otp': 'OTP सत्यापित करें',
-        'resend_otp': 'OTP पुनः भेजें',
-        'back_login': 'लॉगिन पर वापस',
-        'hello': 'नमस्ते',
-        'today': 'आज',
-        'dashboard': 'आपका कृषि डैशबोर्ड',
-        'weather_forecast': 'मौसम पूर्वानुमान',
-        'seed_recommendations': 'बीज सिफारिशें',
-        'farming_tips': 'आज की कृषि सलाह',
-        'rights_reserved': 'सर्वाधिकार सुरक्षित',
-        'install_app': 'ऐप इंस्टॉल करें'
-    },
-    
-    pa: {
-        'app_name': 'ਐਗਰੀਫਾਰਮਰਸ',
-        'logout': 'ਲਾੱਗ ਆਊਟ',
-        'welcome_title': 'ਐਗਰੀਫਾਰਮਰਸ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ',
-        'welcome_subtitle': 'ਆਧੁਨਿਕ ਖੇਤੀ ਲਈ ਤੁਹਾਡਾ ਭਰੋਸੇਮੰਦ ਸਾਥੀ',
-        'get_started': 'ਸ਼ੁਰੂ ਕਰੋ',
-        'no_account': 'ਖਾਤਾ ਨਹੀਂ ਹੈ?',
-        'sign_up': 'ਸਾਈਨ ਅੱਪ ਕਰੋ',
-        'login_title': 'ਐਗਰੀਫਾਰਮਰਸ ਵਿੱਚ ਲਾਗਿਨ ਕਰੋ',
-        'mobile_number': 'ਮੋਬਾਈਲ ਨੰਬਰ',
-        'enter_mobile': '10 ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਾਖਲ ਕਰੋ',
-        'send_otp': 'OTP ਭੇਜੋ',
-        'have_account': 'ਪਹਿਲਾਂ ਤੋਂ ਖਾਤਾ ਹੈ?',
-        'login': 'ਲਾਗਿਨ',
-        'signup_title': 'ਖਾਤਾ ਬਣਾਓ',
-        'full_name': 'ਪੂਰਾ ਨਾਮ',
-        'enter_name': 'ਆਪਣਾ ਪੂਰਾ ਨਾਮ ਦਾਖਲ ਕਰੋ',
-        'state': 'ਰਾਜ',
-        'select_state': 'ਰਾਜ ਚੁਣੋ',
-        'district': 'ਜ਼ਿਲ੍ਹਾ',
-        'select_district': 'ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ',
-        'otp_title': 'OTP ਪੁਸ਼ਟੀਕਰਨ',
-        'otp_sent': 'OTP ਭੇਜਿਆ ਗਿਆ',
-        'demo_otp': 'ਡੈਮੋ OTP:',
-        'otp_timer': 'OTP ਵੈਧ ਹੈ',
-        'minutes': 'ਮਿੰਟ',
-        'verify_otp': 'OTP ਪੁਸ਼ਟੀ ਕਰੋ',
-        'resend_otp': 'OTP ਦੁਬਾਰਾ ਭੇਜੋ',
-        'back_login': 'ਲਾਗਿਨ ਤੇ ਵਾਪਸ',
-        'hello': 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ',
-        'today': 'ਅੱਜ',
-        'dashboard': 'ਤੁਹਾਡਾ ਖੇਤੀ ਡੈਸ਼ਬੋਰਡ',
-        'weather_forecast': 'ਮੌਸਮ ਪੂਰਵ-ਅਨੁਮਾਨ',
-        'seed_recommendations': 'ਬੀਜ ਸਿਫਾਰਿਸ਼ਾਂ',
-        'farming_tips': 'ਅੱਜ ਦੀ ਖੇਤੀ ਸਲਾਹ',
-        'rights_reserved': 'ਸਾਰੇ ਅਧਿਕਾਰ ਸੁਰੱਖਿਅਤ',
-        'install_app': 'ਐਪ ਇੰਸਟਾਲ ਕਰੋ'
-    }
-};
+let userLocation = null;
+let currentSlide = 0;
 
 // District data
 const districtData = {
     'Haryana': ['Ambala', 'Bhiwani', 'Faridabad', 'Fatehabad', 'Gurugram', 'Hisar', 'Jhajjar', 'Jind', 'Kaithal', 'Karnal', 'Kurukshetra', 'Mahendragarh', 'Nuh', 'Palwal', 'Panchkula', 'Panipat', 'Rewari', 'Rohtak', 'Sirsa', 'Sonipat', 'Yamunanagar'],
     'Punjab': ['Amritsar', 'Barnala', 'Bathinda', 'Faridkot', 'Fatehgarh Sahib', 'Fazilka', 'Ferozepur', 'Gurdaspur', 'Hoshiarpur', 'Jalandhar', 'Kapurthala', 'Ludhiana', 'Mansa', 'Moga', 'Pathankot', 'Patiala', 'Rupnagar', 'Sangrur', 'SAS Nagar', 'Tarn Taran'],
     'Rajasthan': ['Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Ajmer', 'Bikaner', 'Alwar', 'Bhilwara', 'Chittorgarh'],
-    'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Agra', 'Varanasi', 'Allahabad', 'Meerut', 'Ghaziabad', 'Aligarh'],
-    'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Thane', 'Nashik', 'Aurangabad', 'Solapur']
+    
+};
+
+// Crop recommendations by state
+const cropRecommendations = {
+    'Haryana': ['Wheat', 'Rice', 'Cotton', 'Sugarcane', 'Mustard'],
+    'Punjab': ['Wheat', 'Rice', 'Maize', 'Cotton', 'Sugarcane'],
+    'Rajasthan': ['Wheat', 'Barley', 'Mustard', 'Cotton', 'Guar'],
+   
 };
 
 // Initialize App
@@ -166,20 +35,12 @@ function initApp() {
     
     // Load saved data
     const savedUser = localStorage.getItem('agrifarmers_user');
-    const savedLang = localStorage.getItem('agrifarmers_language');
     
     if (savedUser) {
         currentUser = JSON.parse(savedUser);
     }
     
-    if (savedLang && translations[savedLang]) {
-        currentLanguage = savedLang;
-    }
-    
-    // Apply language
-    changeLanguage(currentLanguage, false);
-    
-    // Set up state-district mapping
+    // Setup state-district mapping
     setupStateDistrict();
     
     // Initialize PWA
@@ -188,36 +49,129 @@ function initApp() {
     // Set current date
     updateCurrentDate();
     
+    // Get user location
+    getUserLocation();
+    
     // Setup event listeners
     setupEventListeners();
     
-    // Show app after short delay
-    setTimeout(() => {
-        showApp();
-    }, 800); // Reduced from 1500ms to 800ms
+    // Initialize horizontal scroll
+    initHorizontalScroll();
+    
+    // Show app immediately (no delay)
+    showApp();
 }
 
-// Show app
+// Show app immediately
 function showApp() {
     const loadingScreen = document.getElementById('loadingScreen');
     const app = document.getElementById('app');
     
-    // Fade out loading screen
-    loadingScreen.classList.add('loading-hidden');
+    loadingScreen.style.display = 'none';
+    app.style.display = 'block';
     
-    // Show app after fade
-    setTimeout(() => {
-        loadingScreen.style.display = 'none';
-        app.style.display = 'block';
-        
-        // Show appropriate page
-        if (currentUser) {
-            showPage('homePage');
-            updateUserInfo();
-        } else {
-            showPage('welcomePage');
+    // Show appropriate page
+    if (currentUser) {
+        showPage('homePage');
+        updateUserInfo();
+        loadWeatherData();
+        loadMarketPrices();
+    } else {
+        showPage('welcomePage');
+    }
+}
+
+// Initialize horizontal scroll for features
+function initHorizontalScroll() {
+    const slider = document.getElementById('featuresSlider');
+    const dots = document.querySelectorAll('.scroll-dot');
+    
+    if (!slider) return;
+    
+    // Auto slide every 3 seconds
+    setInterval(() => {
+        currentSlide = (currentSlide + 1) % 3;
+        slider.scrollTo({
+            left: currentSlide * slider.offsetWidth,
+            behavior: 'smooth'
+        });
+        updateScrollDots();
+    }, 3000);
+    
+    // Update dots on scroll
+    slider.addEventListener('scroll', () => {
+        const slideIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
+        if (slideIndex !== currentSlide) {
+            currentSlide = slideIndex;
+            updateScrollDots();
         }
-    }, 500);
+    });
+    
+    function updateScrollDots() {
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+}
+
+// Get user location
+function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                userLocation = {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude
+                };
+                reverseGeocode(userLocation.lat, userLocation.lon);
+                loadWeatherData();
+            },
+            (error) => {
+                console.log('Location error:', error);
+                // Fallback to IP-based location
+                fetchIPLocation();
+            }
+        );
+    } else {
+        fetchIPLocation();
+    }
+}
+
+// Reverse geocode to get location name
+async function reverseGeocode(lat, lon) {
+    try {
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+        );
+        const data = await response.json();
+        
+        if (data.address) {
+            const city = data.address.city || data.address.town || data.address.village || 'Unknown';
+            const state = data.address.state || 'Unknown';
+            
+            document.getElementById('farmerLocation').textContent = `${city}, ${state}`;
+        }
+    } catch (error) {
+        console.log('Geocoding error:', error);
+    }
+}
+
+// Fallback to IP location
+async function fetchIPLocation() {
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        
+        userLocation = {
+            lat: data.latitude,
+            lon: data.longitude
+        };
+        
+        document.getElementById('farmerLocation').textContent = `${data.city}, ${data.region}`;
+    } catch (error) {
+        console.log('IP location error:', error);
+        document.getElementById('farmerLocation').textContent = 'Location unavailable';
+    }
 }
 
 // Show Page
@@ -249,83 +203,11 @@ function showPage(pageId) {
 // Update header
 function updateHeader() {
     const logoutButton = document.getElementById('logoutButton');
-    const currentLanguageSpan = document.getElementById('currentLanguage');
     
     if (currentUser) {
         logoutButton.classList.remove('hidden');
-        logoutButton.innerHTML = `<i class="fas fa-sign-out-alt mr-2"></i>${translations[currentLanguage]['logout']}`;
     } else {
         logoutButton.classList.add('hidden');
-    }
-    
-    // Update language display
-    currentLanguageSpan.textContent = 
-        currentLanguage === 'en' ? 'English' : 
-        currentLanguage === 'hi' ? 'हिंदी' : 'ਪੰਜਾਬੀ';
-}
-
-// Change language
-function changeLanguage(lang, showToast = true) {
-    if (!translations[lang]) return;
-    
-    currentLanguage = lang;
-    localStorage.setItem('agrifarmers_language', lang);
-    
-    // Update all translatable elements
-    document.querySelectorAll('[data-i18n]').forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        if (translations[lang][key]) {
-            element.textContent = translations[lang][key];
-        }
-    });
-    
-    // Update placeholders
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-        const key = element.getAttribute('data-i18n-placeholder');
-        if (translations[lang][key]) {
-            element.placeholder = translations[lang][key];
-        }
-    });
-    
-    // Update header
-    updateHeader();
-    
-    // Update date
-    updateCurrentDate();
-    
-    if (showToast) {
-        showToast(`Language changed to ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : 'Punjabi'}`);
-    }
-}
-
-// Setup event listeners
-function setupEventListeners() {
-    // Language dropdown
-    const languageButton = document.getElementById('languageButton');
-    const languageDropdown = document.getElementById('languageDropdown');
-    
-    if (languageButton && languageDropdown) {
-        languageButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            languageDropdown.classList.toggle('hidden');
-        });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', () => {
-            languageDropdown.classList.add('hidden');
-        });
-    }
-    
-    // Logout button
-    const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', handleLogout);
-    }
-    
-    // PWA install button
-    const installButton = document.getElementById('pwa-install-button');
-    if (installButton) {
-        installButton.addEventListener('click', handleInstall);
     }
 }
 
@@ -337,7 +219,7 @@ function setupStateDistrict() {
     if (stateSelect && districtSelect) {
         stateSelect.addEventListener('change', function() {
             const state = this.value;
-            districtSelect.innerHTML = '<option value="" data-i18n="select_district">Select District</option>';
+            districtSelect.innerHTML = '<option value="">Select District</option>';
             
             if (state && districtData[state]) {
                 districtSelect.disabled = false;
@@ -350,9 +232,6 @@ function setupStateDistrict() {
             } else {
                 districtSelect.disabled = true;
             }
-            
-            // Re-translate
-            changeLanguage(currentLanguage, false);
         });
     }
 }
@@ -481,8 +360,11 @@ function handleOTPKeyDown(e) {
 function startOTPTimer() {
     let timeLeft = 120;
     const timerElement = document.getElementById('otpTimer');
+    const resendButton = document.getElementById('resendOTP');
     
     if (otpTimer) clearInterval(otpTimer);
+    
+    resendButton.disabled = true;
     
     otpTimer = setInterval(() => {
         const minutes = Math.floor(timeLeft / 60);
@@ -491,7 +373,7 @@ function startOTPTimer() {
         
         if (timeLeft <= 0) {
             clearInterval(otpTimer);
-            document.getElementById('resendOTP').disabled = false;
+            resendButton.disabled = false;
         }
         
         timeLeft--;
@@ -546,9 +428,9 @@ function verifyOTP() {
     } else {
         showToast('Invalid OTP. Please try again.', 'error');
         inputs.forEach(input => {
-            input.style.borderColor = '#e74c3c';
+            input.classList.add('error');
             setTimeout(() => {
-                input.style.borderColor = '';
+                input.classList.remove('error');
             }, 1000);
         });
     }
@@ -572,7 +454,7 @@ function handleLogout() {
 function updateUserInfo() {
     if (currentUser) {
         document.getElementById('farmerName').textContent = currentUser.name;
-        document.querySelector('#welcomeText').textContent = translations[currentLanguage]['hello'];
+        document.getElementById('welcomeText').textContent = 'Hello';
     }
 }
 
@@ -586,64 +468,274 @@ function updateCurrentDate() {
         day: 'numeric' 
     };
     
-    let locale = 'en-IN';
-    if (currentLanguage === 'hi') locale = 'hi-IN';
-    if (currentLanguage === 'pa') locale = 'pa-IN';
-    
     document.getElementById('currentDate').textContent = 
-        now.toLocaleDateString(locale, options);
+        now.toLocaleDateString('en-IN', options);
 }
 
 // Load weather data
-function loadWeatherData() {
-    // Mock weather data for demo
-    setTimeout(() => {
+async function loadWeatherData() {
+    if (!userLocation) {
+        getUserLocation();
+        return;
+    }
+    
+    try {
+        // For demo, use mock data. Replace with real API call:
+        // const response = await fetch(`${CONFIG.WEATHER_API_URL}?lat=${userLocation.lat}&lon=${userLocation.lon}&appid=${CONFIG.WEATHER_API_KEY}&units=metric`);
+        // const data = await response.json();
+        
+        // Mock data for demo
+        const mockWeather = {
+            temp: 28,
+            feels_like: 30,
+            humidity: 65,
+            wind_speed: 12,
+            description: 'Partly Cloudy',
+            icon: 'cloud-sun'
+        };
+        
+        // Update card
         document.getElementById('weatherCardContent').innerHTML = `
             <div class="flex items-center">
-                <span class="text-3xl font-bold text-gray-800">28°C</span>
+                <span class="text-3xl font-bold text-gray-800">${mockWeather.temp}°C</span>
                 <span class="ml-3 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                    Partly Cloudy
+                    ${mockWeather.description}
                 </span>
             </div>
             <div class="mt-3 text-sm text-gray-600">
                 <div class="flex items-center">
                     <i class="fas fa-temperature-low mr-2"></i>
-                    <span>Feels like 30°C</span>
+                    <span>Feels like ${mockWeather.feels_like}°C</span>
                 </div>
                 <div class="flex items-center mt-1">
                     <i class="fas fa-tint mr-2"></i>
-                    <span>Humidity: 65%</span>
+                    <span>Humidity: ${mockWeather.humidity}%</span>
                 </div>
             </div>
         `;
-    }, 1000);
+        
+        // Update modal content
+        updateWeatherModal();
+        
+    } catch (error) {
+        console.log('Weather error:', error);
+        showToast('Could not fetch weather data', 'error');
+    }
+}
+
+// Update weather modal
+function updateWeatherModal() {
+    const content = `
+        <div class="text-center mb-6">
+            <i class="fas fa-cloud-sun weather-icon sunny"></i>
+            <h4 class="text-3xl font-bold text-gray-800 mb-2">28°C</h4>
+            <p class="text-gray-600">Partly Cloudy</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <i class="fas fa-temperature-low text-blue-500 mb-2"></i>
+                <p class="text-sm text-gray-600">Feels Like</p>
+                <p class="font-bold text-lg">30°C</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg">
+                <i class="fas fa-tint text-green-500 mb-2"></i>
+                <p class="text-sm text-gray-600">Humidity</p>
+                <p class="font-bold text-lg">65%</p>
+            </div>
+            <div class="bg-yellow-50 p-4 rounded-lg">
+                <i class="fas fa-wind text-yellow-500 mb-2"></i>
+                <p class="text-sm text-gray-600">Wind Speed</p>
+                <p class="font-bold text-lg">12 km/h</p>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <i class="fas fa-compress-arrows-alt text-purple-500 mb-2"></i>
+                <p class="text-sm text-gray-600">Pressure</p>
+                <p class="font-bold text-lg">1013 hPa</p>
+            </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h5 class="font-bold text-gray-800 mb-2">Today's Forecast</h5>
+            <p class="text-gray-600 text-sm">Perfect weather for farming activities. Ideal temperature for crop growth.</p>
+        </div>
+    `;
+    
+    document.getElementById('weatherModalContent').innerHTML = content;
 }
 
 // Load market prices
 function loadMarketPrices() {
-    // Mock market data for demo
-    setTimeout(() => {
-        document.getElementById('marketPricesCard').innerHTML = `
-            <div class="mb-2">
-                <div class="flex justify-between items-center">
-                    <span class="font-medium">Wheat</span>
-                    <span class="font-bold">₹2,300/Quintal</span>
-                </div>
-                <div class="text-sm text-green-600">
-                    +2% from yesterday
-                </div>
+    // Mock market data for India
+    const mockPrices = [
+        { commodity: 'Wheat', price: '₹2,300/quintal', change: '+2%', market: 'Delhi Mandi' },
+        { commodity: 'Rice', price: '₹3,800/quintal', change: '+1.5%', market: 'Punjab Mandi' },
+        { commodity: 'Cotton', price: '₹6,500/quintal', change: '+3%', market: 'Gujarat Mandi' },
+        { commodity: 'Sugarcane', price: '₹350/quintal', change: '+1%', market: 'UP Mandi' },
+        { commodity: 'Potato', price: '₹1,200/quintal', change: '-0.5%', market: 'West Bengal Mandi' },
+        { commodity: 'Tomato', price: '₹800/quintal', change: '+5%', market: 'Maharashtra Mandi' }
+    ];
+    
+    // Update card
+    document.getElementById('marketPricesCard').innerHTML = `
+        <div class="mb-2">
+            <div class="flex justify-between items-center">
+                <span class="font-medium">Wheat</span>
+                <span class="font-bold">₹2,300/quintal</span>
             </div>
-            <div>
-                <div class="flex justify-between items-center">
-                    <span class="font-medium">Rice</span>
-                    <span class="font-bold">₹3,800/Quintal</span>
-                </div>
-                <div class="text-sm text-green-600">
-                    +1.5% from yesterday
+            <div class="text-sm text-green-600">
+                +2% from yesterday
+            </div>
+        </div>
+        <div>
+            <div class="flex justify-between items-center">
+                <span class="font-medium">Rice</span>
+                <span class="font-bold">₹3,800/quintal</span>
+            </div>
+            <div class="text-sm text-green-600">
+                +1.5% from yesterday
+            </div>
+        </div>
+    `;
+    
+    // Update modal
+    updateMarketPricesModal(mockPrices);
+}
+
+// Update market prices modal
+function updateMarketPricesModal(prices) {
+    let content = `
+        <div class="mb-4">
+            <div class="flex items-center mb-2">
+                <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                <p class="text-sm text-gray-600">Live prices from Indian mandis (updated today)</p>
+            </div>
+        </div>
+    `;
+    
+    prices.forEach(item => {
+        const changeColor = item.change.startsWith('+') ? 'text-green-600' : 'text-red-600';
+        content += `
+            <div class="price-item">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <h5 class="font-bold text-gray-800">${item.commodity}</h5>
+                        <p class="text-sm text-gray-500">${item.market}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-lg">${item.price}</p>
+                        <p class="text-sm ${changeColor}">${item.change} from yesterday</p>
+                    </div>
                 </div>
             </div>
         `;
-    }, 1000);
+    });
+    
+    content += `
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+            <div class="flex items-center">
+                <i class="fas fa-chart-line text-blue-500 mr-3"></i>
+                <div>
+                    <p class="font-bold text-blue-800">Market Trend</p>
+                    <p class="text-sm text-blue-600">Most commodities showing positive trend this week</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('marketPricesModalContent').innerHTML = content;
+}
+
+// Update seed modal
+function updateSeedModal() {
+    const state = currentUser?.state || 'Haryana';
+    const crops = cropRecommendations[state] || ['Wheat', 'Rice', 'Cotton'];
+    
+    let content = `
+        <div class="mb-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-map-marker-alt text-green-500 mr-3"></i>
+                <div>
+                    <p class="font-bold text-gray-800">Location Based Recommendations</p>
+                    <p class="text-sm text-gray-600">For ${state} region</p>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h4 class="font-bold text-gray-800 mb-3">Recommended Seeds</h4>
+                <div class="flex flex-wrap gap-2">
+    `;
+    
+    crops.forEach(crop => {
+        content += `<span class="px-4 py-2 bg-green-100 text-green-800 rounded-full">${crop}</span>`;
+    });
+    
+    content += `
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h4 class="font-bold text-gray-800 mb-3">Fertilizer Recommendation</h4>
+                <div class="bg-gray-100 p-4 rounded-lg">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-600">Organic Fertilizer</span>
+                        <span class="font-bold">50%</span>
+                    </div>
+                    <div class="w-full bg-gray-300 rounded-full h-4">
+                        <div class="bg-green-500 h-4 rounded-full" style="width: 50%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-4 mb-2">
+                        <span class="text-sm text-gray-600">NPK (Chemical)</span>
+                        <span class="font-bold">25%</span>
+                    </div>
+                    <div class="w-full bg-gray-300 rounded-full h-4">
+                        <div class="bg-blue-500 h-4 rounded-full" style="width: 25%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-4 mb-2">
+                        <span class="text-sm text-gray-600">Urea</span>
+                        <span class="font-bold">25%</span>
+                    </div>
+                    <div class="w-full bg-gray-300 rounded-full h-4">
+                        <div class="bg-yellow-500 h-4 rounded-full" style="width: 25%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-yellow-50 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-3"></i>
+                    <div>
+                        <p class="font-bold text-yellow-800">Tip</p>
+                        <p class="text-sm text-yellow-700">Apply organic fertilizer first, then chemical fertilizers for best results</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('seedModalContent').innerHTML = content;
+}
+
+// Modal functions
+function openWeatherModal() {
+    document.getElementById('weatherModal').classList.add('active');
+    updateWeatherModal();
+}
+
+function openMarketPricesModal() {
+    document.getElementById('marketPricesModal').classList.add('active');
+    loadMarketPrices();
+}
+
+function openSeedModal() {
+    document.getElementById('seedModal').classList.add('active');
+    updateSeedModal();
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
 }
 
 // PWA Installation
@@ -654,7 +746,7 @@ function initPWA() {
         deferredPrompt = e;
         
         // Show install button
-        const installButton = document.getElementById('pwa-install-button');
+        const installButton = document.getElementById('pwaInstallButton');
         if (installButton) {
             installButton.classList.remove('hidden');
         }
@@ -662,30 +754,60 @@ function initPWA() {
     
     // Register service worker
     if ('serviceWorker' in navigator) {
-        const swPath = `/${CONFIG.REPO_NAME}/service-worker.js`;
-        
-        navigator.serviceWorker.register(swPath)
-            .then(registration => {
-                console.log('Service Worker registered:', registration);
-            })
-            .catch(error => {
-                console.log('Service Worker registration failed:', error);
-            });
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered:', registration);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        });
+    }
+    
+    // Handle install button click
+    const installButton = document.getElementById('pwaInstallButton');
+    if (installButton) {
+        installButton.addEventListener('click', handleInstall);
     }
 }
 
 // Handle install button click
 function handleInstall() {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+        showToast('App installation not available', 'error');
+        return;
+    }
     
     deferredPrompt.prompt();
     
     deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
             showToast('App installed successfully!');
-            document.getElementById('pwa-install-button').classList.add('hidden');
+            document.getElementById('pwaInstallButton').classList.add('hidden');
         }
         deferredPrompt = null;
+    });
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Close modals when clicking outside
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+    });
+    
+    // Close modals with escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
     });
 }
 
@@ -704,52 +826,35 @@ function showError(elementId, message) {
 
 // Show toast
 function showToast(message, type = 'success') {
-    const toastContainer = document.getElementById('toast-container');
+    const toastContainer = document.getElementById('toastContainer');
     if (!toastContainer) return;
     
     const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
+    toast.className = `mb-3 px-6 py-3 rounded-lg shadow-lg text-white ${
+        type === 'success' ? 'bg-green-500' :
+        type === 'error' ? 'bg-red-500' :
+        type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+    }`;
     toast.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
+        <i class="fas fa-${
+            type === 'success' ? 'check-circle' :
+            type === 'error' ? 'exclamation-circle' :
+            type === 'warning' ? 'exclamation-triangle' : 'info-circle'
+        } mr-2"></i>
         ${message}
     `;
     
     toastContainer.appendChild(toast);
     
+    // Remove toast after 3 seconds
     setTimeout(() => {
-        toast.style.animation = 'slideIn 0.3s ease reverse';
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s ease';
         setTimeout(() => {
             toast.remove();
-        }, 300);
+        }, 500);
     }, 3000);
-}
-
-// Modal functions
-function openWeatherModal() {
-    showToast('Weather details opened');
-}
-
-function openMarketPricesModal() {
-    showToast('Market prices opened');
-}
-
-function openSeedModal() {
-    showToast('Seed recommendations opened');
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', initApp);
-
-// Add style for toast animation
-document.head.insertAdjacentHTML('beforeend', `
-    <style>
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-    </style>
-`);
