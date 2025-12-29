@@ -1,33 +1,31 @@
-// service-worker.js
+// Simple service worker that won't cause errors
 const CACHE_NAME = 'agrifarmers-v1';
-const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json'
-  // Add other important files
-];
 
-// Install event
 self.addEventListener('install', event => {
-  console.log('🔄 Service Worker installing...');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('✅ Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
+  console.log('✅ Service Worker installing');
+  self.skipWaiting();
 });
 
-// Fetch event - Serve from cache, fallback to network
+self.addEventListener('activate', event => {
+  console.log('✅ Service Worker activated');
+  event.waitUntil(clients.claim());
+});
+
 self.addEventListener('fetch', event => {
+  // Skip non-GET requests and chrome-extension
+  if (event.request.method !== 'GET' || 
+      event.request.url.startsWith('chrome-extension://') ||
+      event.request.url.includes('extension')) {
+    return;
+  }
+  
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
+    fetch(event.request)
+      .catch(() => {
+        return new Response('Network error', { 
+          status: 408, 
+          statusText: 'Network error' 
+        });
       })
   );
 });
