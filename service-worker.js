@@ -1,14 +1,10 @@
-// AgriFarmers Service Worker
-const CACHE_NAME = 'agrifarmers-v4';
+// AgriFarmers Service Worker - Optimized for PWA Installation
+const CACHE_NAME = 'agrifarmers-v5';
 const urlsToCache = [
     './',
     './index.html',
     './script.js',
-    './manifest.json',
-    './icons/icon-192x192.png',
-    './icons/icon-512x512.png',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-    'https://cdn.tailwindcss.com'
+    './manifest.json'
 ];
 
 // Install Service Worker
@@ -56,63 +52,77 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch Strategy: Cache First, Network Fallback
+// Fetch Strategy: Network First, Cache Fallback
 self.addEventListener('fetch', (event) => {
-    // Skip non-GET requests and external API requests
+    // Skip non-GET requests
     if (event.request.method !== 'GET') return;
     
     // Skip API requests (they should always go to network)
-    if (event.request.url.includes('api.openweathermap.org') ||
-        event.request.url.includes('nominatim.openstreetmap.org') ||
-        event.request.url.includes('ipapi.co')) {
+    const url = new URL(event.request.url);
+    if (url.hostname.includes('api.openweathermap.org') ||
+        url.hostname.includes('nominatim.openstreetmap.org') ||
+        url.hostname.includes('ipapi.co') ||
+        url.hostname.includes('data.gov.in') ||
+        url.hostname.includes('api.allorigins.win')) {
+        
+        // Network only for API requests
         event.respondWith(fetch(event.request));
         return;
     }
     
+    // For app resources, try network first, then cache
     event.respondWith(
-        caches.match(event.request)
-            .then((cachedResponse) => {
-                // Return cached response if found
-                if (cachedResponse) {
-                    return cachedResponse;
+        fetch(event.request)
+            .then((response) => {
+                // Check if we received a valid response
+                if (!response || response.status !== 200 || response.type !== 'basic') {
+                    return response;
                 }
                 
-                // Otherwise fetch from network
-                return fetch(event.request)
-                    .then((response) => {
-                        // Check if we received a valid response
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
+                // Clone the response
+                const responseToCache = response.clone();
+                
+                // Cache the new response for future offline use
+                caches.open(CACHE_NAME)
+                    .then((cache) => {
+                        cache.put(event.request, responseToCache);
+                    });
+                
+                return response;
+            })
+            .catch(() => {
+                // If network fails, try cache
+                return caches.match(event.request)
+                    .then((cachedResponse) => {
+                        if (cachedResponse) {
+                            return cachedResponse;
                         }
                         
-                        // Clone the response
-                        const responseToCache = response.clone();
-                        
-                        // Cache the new response
-                        caches.open(CACHE_NAME)
-                            .then((cache) => {
-                                cache.put(event.request, responseToCache);
-                            });
-                        
-                        return response;
-                    })
-                    .catch(() => {
-                        // If both cache and network fail, return offline fallback
+                        // If not in cache, return offline page for HTML requests
                         if (event.request.headers.get('accept').includes('text/html')) {
                             return caches.match('./index.html');
                         }
-                        // For other file types, return null
+                        
                         return null;
                     });
             })
     );
 });
 
-// Handle Push Notifications (Optional)
+// Handle Push Notifications
 self.addEventListener('push', (event) => {
     if (!event.data) return;
     
-    const data = event.data.json();
+    let data = {};
+    try {
+        data = event.data.json();
+    } catch (e) {
+        data = {
+            title: 'AgriFarmers',
+            body: event.data.text() || 'New update from AgriFarmers'
+        };
+    }
+    
     const options = {
         body: data.body || 'New update from AgriFarmers',
         icon: './icons/icon-192x192.png',
@@ -121,17 +131,7 @@ self.addEventListener('push', (event) => {
         data: {
             dateOfArrival: Date.now(),
             primaryKey: '1'
-        },
-        actions: [
-            {
-                action: 'explore',
-                title: 'Open App'
-            },
-            {
-                action: 'close',
-                title: 'Close'
-            }
-        ]
+        }
     };
     
     event.waitUntil(
@@ -143,14 +143,10 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     
-    if (event.action === 'close') {
-        return;
-    }
-    
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true })
             .then((clientList) => {
-                // Check if there's already a window/tab open with the target URL
+                // Check if there's already a window/tab open
                 for (const client of clientList) {
                     if (client.url.includes('./') && 'focus' in client) {
                         return client.focus();
@@ -164,31 +160,23 @@ self.addEventListener('notificationclick', (event) => {
     );
 });
 
+// Handle Sync Events
+self.addEventListener('sync', (event) => {
+    if (event.tag === 'sync-data') {
+        event.waitUntil(syncAppData());
+    }
+});
+
+// Sync app data in background
+async function syncAppData() {
+    // This function can be extended to sync data when online
+    console.log('Syncing app data...');
+    return Promise.resolve();
+}
+
 // Listen for messages from the main thread
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
     }
 });
-
-// Periodic background sync (if supported)
-if (self.registration.periodicSync) {
-    self.registration.periodicSync.register('update-content', {
-        minInterval: 24 * 60 * 60 * 1000 // 1 day
-    }).catch(error => {
-        console.log('Periodic background sync failed:', error);
-    });
-}
-
-// Background sync for offline data
-self.addEventListener('sync', (event) => {
-    if (event.tag === 'sync-weather-data') {
-        event.waitUntil(syncWeatherData());
-    }
-});
-
-// Sync weather data in background
-function syncWeatherData() {
-    // Implement background sync logic here
-    return Promise.resolve();
-}
