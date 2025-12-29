@@ -1,3 +1,13 @@
+self.addEventListener('fetch', event => {
+  // Skip chrome-extension requests
+  if (event.request.url.startsWith('chrome-extension://')) {
+    return;
+  }
+  
+  // Rest of your fetch code...
+});
+
+
 // AgriFarmers Service Worker - Optimized for PWA Installation
 const CACHE_NAME = 'agrifarmers-v7';
 const urlsToCache = [
