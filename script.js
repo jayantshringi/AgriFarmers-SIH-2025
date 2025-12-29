@@ -2,7 +2,9 @@
 const CONFIG = {
     DEMO_OTP: '123456',
     WEATHER_API_KEY: '44a55de0f2e0674cb9160f50459d51d4',
-    WEATHER_API_URL: 'https://api.openweathermap.org/data/2.5/weather'
+    WEATHER_API_URL: 'https://api.openweathermap.org/data/2.5/weather',
+    MARKET_API_KEY: '579b464db66ec23bdd0000014c14eef4939b46976774dbe7e9c84f8c',
+    MARKET_API_URL: 'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070'
 };
 
 // App State
@@ -731,7 +733,49 @@ function updateCurrentDate() {
         now.toLocaleDateString(locale, options);
 }
 
-// Load weather data
+// Get weather icon based on condition
+function getWeatherIcon(condition) {
+    const conditionLower = condition.toLowerCase();
+    
+    if (conditionLower.includes('clear') || conditionLower.includes('sunny')) {
+        return 'fas fa-sun sunny';
+    } else if (conditionLower.includes('cloud')) {
+        return 'fas fa-cloud cloudy';
+    } else if (conditionLower.includes('rain') || conditionLower.includes('drizzle')) {
+        return 'fas fa-cloud-rain rainy';
+    } else if (conditionLower.includes('thunder') || conditionLower.includes('storm')) {
+        return 'fas fa-bolt';
+    } else if (conditionLower.includes('snow')) {
+        return 'fas fa-snowflake';
+    } else if (conditionLower.includes('mist') || conditionLower.includes('fog')) {
+        return 'fas fa-smog';
+    } else {
+        return 'fas fa-cloud cloudy';
+    }
+}
+
+// Get weather advice based on condition
+function getWeatherAdvice(condition, temp) {
+    const conditionLower = condition.toLowerCase();
+    
+    if (conditionLower.includes('rain') || conditionLower.includes('drizzle')) {
+        return 'Rainy weather. Avoid irrigation and harvesting. Good for planting rain-fed crops.';
+    } else if (conditionLower.includes('clear') || conditionLower.includes('sunny')) {
+        if (temp > 30) {
+            return 'Hot and sunny. Water crops early morning or late evening to reduce evaporation.';
+        } else {
+            return 'Perfect weather for farming activities. Ideal for irrigation and fertilization.';
+        }
+    } else if (conditionLower.includes('cloud')) {
+        return 'Cloudy weather. Good for transplanting and applying pesticides.';
+    } else if (conditionLower.includes('wind')) {
+        return 'Windy conditions. Secure crops and avoid spraying pesticides.';
+    } else {
+        return 'Good weather for farming activities. Ideal for irrigation and fertilization.';
+    }
+}
+
+// Load REAL weather data from API
 async function loadWeatherData() {
     if (!userLocation) {
         getUserLocation();
@@ -739,22 +783,79 @@ async function loadWeatherData() {
     }
     
     try {
-        // Mock data for demo
+        document.getElementById('weatherCardContent').innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-spinner fa-spin text-blue-500 mr-2"></i>
+                <span class="text-gray-600">Fetching live weather...</span>
+            </div>
+        `;
+        
+        // Fetch real weather data from OpenWeatherMap
+        const response = await fetch(
+            `${CONFIG.WEATHER_API_URL}?lat=${userLocation.lat}&lon=${userLocation.lon}&appid=${CONFIG.WEATHER_API_KEY}&units=metric`
+        );
+        
+        if (!response.ok) {
+            throw new Error(`Weather API error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Extract weather information
+        const temp = Math.round(data.main.temp);
+        const feelsLike = Math.round(data.main.feels_like);
+        const humidity = data.main.humidity;
+        const windSpeed = data.wind.speed;
+        const condition = data.weather[0].description;
+        const icon = getWeatherIcon(condition);
+        
+        // Update weather card
+        document.getElementById('weatherCardContent').innerHTML = `
+            <div class="flex items-center">
+                <span class="text-3xl font-bold text-gray-800">${temp}°C</span>
+                <span class="ml-3 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                    ${condition}
+                </span>
+            </div>
+            <div class="mt-3 text-sm text-gray-600">
+                <div class="flex items-center">
+                    <i class="fas fa-temperature-low mr-2"></i>
+                    <span>Feels like ${feelsLike}°C</span>
+                </div>
+                <div class="flex items-center mt-1">
+                    <i class="fas fa-tint mr-2"></i>
+                    <span>Humidity: ${humidity}%</span>
+                </div>
+            </div>
+        `;
+        
+        // Update farming advisory based on weather
+        const weatherAdvice = getWeatherAdvice(condition, temp);
+        document.getElementById('farmingAdvisory').textContent = weatherAdvice;
+        
+        // Update weather modal
+        updateWeatherModal(data);
+        
+        showToast('Weather data updated successfully!');
+        
+    } catch (error) {
+        console.error('Weather API error:', error);
+        
+        // Fallback to mock data if API fails
         const mockWeather = {
             temp: 28,
             feels_like: 30,
             humidity: 65,
             wind_speed: 12,
-            description: 'Partly Cloudy',
-            icon: 'cloud-sun'
+            condition: 'Partly Cloudy',
+            description: 'Partly cloudy'
         };
         
-        // Update card
         document.getElementById('weatherCardContent').innerHTML = `
             <div class="flex items-center">
                 <span class="text-3xl font-bold text-gray-800">${mockWeather.temp}°C</span>
                 <span class="ml-3 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                    ${mockWeather.description}
+                    ${mockWeather.condition}
                 </span>
             </div>
             <div class="mt-3 text-sm text-gray-600">
@@ -769,92 +870,184 @@ async function loadWeatherData() {
             </div>
         `;
         
-        // Update modal content
-        updateWeatherModal();
-        
-    } catch (error) {
-        console.log('Weather error:', error);
-        showToast('Could not fetch weather data', 'error');
+        updateWeatherModal(mockWeather);
+        showToast('Using demo weather data', 'info');
     }
 }
 
-// Update weather modal
-function updateWeatherModal() {
+// Update weather modal with real data
+function updateWeatherModal(weatherData) {
+    const isMock = !weatherData.weather; // Check if it's mock data
+    
+    let temp, feelsLike, humidity, windSpeed, condition, pressure, visibility, icon;
+    
+    if (isMock) {
+        temp = weatherData.temp;
+        feelsLike = weatherData.feels_like;
+        humidity = weatherData.humidity;
+        windSpeed = weatherData.wind_speed;
+        condition = weatherData.description;
+        pressure = 1013;
+        visibility = 10;
+        icon = getWeatherIcon(condition);
+    } else {
+        temp = Math.round(weatherData.main.temp);
+        feelsLike = Math.round(weatherData.main.feels_like);
+        humidity = weatherData.main.humidity;
+        windSpeed = weatherData.wind.speed;
+        condition = weatherData.weather[0].description;
+        pressure = weatherData.main.pressure;
+        visibility = weatherData.visibility / 1000; // Convert to km
+        icon = getWeatherIcon(condition);
+    }
+    
+    const weatherAdvice = getWeatherAdvice(condition, temp);
+    
     const content = `
         <div class="text-center mb-6">
-            <i class="fas fa-cloud-sun weather-icon sunny"></i>
-            <h4 class="text-3xl font-bold text-gray-800 mb-2">28°C</h4>
-            <p class="text-gray-600">Partly Cloudy</p>
+            <i class="${icon} weather-icon ${icon.includes('sun') ? 'sunny' : icon.includes('cloud') ? 'cloudy' : icon.includes('rain') ? 'rainy' : ''}"></i>
+            <h4 class="text-3xl font-bold text-gray-800 mb-2">${temp}°C</h4>
+            <p class="text-gray-600 capitalize">${condition}</p>
         </div>
         
         <div class="grid grid-cols-2 gap-4">
             <div class="bg-blue-50 p-4 rounded-lg">
                 <i class="fas fa-temperature-low text-blue-500 mb-2"></i>
                 <p class="text-sm text-gray-600">Feels Like</p>
-                <p class="font-bold text-lg">30°C</p>
+                <p class="font-bold text-lg">${feelsLike}°C</p>
             </div>
             <div class="bg-green-50 p-4 rounded-lg">
                 <i class="fas fa-tint text-green-500 mb-2"></i>
                 <p class="text-sm text-gray-600">Humidity</p>
-                <p class="font-bold text-lg">65%</p>
+                <p class="font-bold text-lg">${humidity}%</p>
             </div>
             <div class="bg-yellow-50 p-4 rounded-lg">
                 <i class="fas fa-wind text-yellow-500 mb-2"></i>
                 <p class="text-sm text-gray-600">Wind Speed</p>
-                <p class="font-bold text-lg">12 km/h</p>
+                <p class="font-bold text-lg">${windSpeed} m/s</p>
             </div>
             <div class="bg-purple-50 p-4 rounded-lg">
                 <i class="fas fa-compress-arrows-alt text-purple-500 mb-2"></i>
                 <p class="text-sm text-gray-600">Pressure</p>
-                <p class="font-bold text-lg">1013 hPa</p>
+                <p class="font-bold text-lg">${pressure} hPa</p>
             </div>
         </div>
         
         <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h5 class="font-bold text-gray-800 mb-2">Today's Forecast</h5>
-            <p class="text-gray-600 text-sm">Perfect weather for farming activities. Ideal temperature for crop growth.</p>
+            <h5 class="font-bold text-gray-800 mb-2">Farming Advisory</h5>
+            <p class="text-gray-600 text-sm">${weatherAdvice}</p>
         </div>
+        
+        ${isMock ? `
+        <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p class="text-xs text-yellow-700 text-center">
+                <i class="fas fa-info-circle mr-1"></i>
+                Using demo weather data. Real API data would show here.
+            </p>
+        </div>
+        ` : ''}
     `;
     
     document.getElementById('weatherModalContent').innerHTML = content;
 }
 
-// Load market prices
-function loadMarketPrices() {
-    // Mock market data for India
-    const mockPrices = [
-        { commodity: 'Wheat', price: '₹2,300/quintal', change: '+2%', market: 'Delhi Mandi' },
-        { commodity: 'Rice', price: '₹3,800/quintal', change: '+1.5%', market: 'Punjab Mandi' },
-        { commodity: 'Cotton', price: '₹6,500/quintal', change: '+3%', market: 'Gujarat Mandi' },
-        { commodity: 'Sugarcane', price: '₹350/quintal', change: '+1%', market: 'UP Mandi' },
-        { commodity: 'Potato', price: '₹1,200/quintal', change: '-0.5%', market: 'West Bengal Mandi' },
-        { commodity: 'Tomato', price: '₹800/quintal', change: '+5%', market: 'Maharashtra Mandi' }
-    ];
-    
-    // Update card
-    document.getElementById('marketPricesCard').innerHTML = `
-        <div class="mb-2">
-            <div class="flex justify-between items-center">
-                <span class="font-medium">Wheat</span>
-                <span class="font-bold">₹2,300/quintal</span>
+// Load REAL market prices from API
+async function loadMarketPrices() {
+    try {
+        document.getElementById('marketPricesCard').innerHTML = `
+            <div class="text-gray-700">
+                <p class="font-medium">Fetching live market prices...</p>
             </div>
-            <div class="text-sm text-green-600">
-                +2% from yesterday
+        `;
+        
+        // Fetch market prices from data.gov.in API
+        // Using a CORS proxy to avoid CORS issues
+        const corsProxy = 'https://api.allorigins.win/raw?url=';
+        const apiUrl = `${CONFIG.MARKET_API_URL}?api-key=${CONFIG.MARKET_API_KEY}&format=json&limit=10&filters[state]=Haryana`;
+        
+        const response = await fetch(corsProxy + encodeURIComponent(apiUrl));
+        
+        if (!response.ok) {
+            throw new Error(`Market API error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.records && data.records.length > 0) {
+            // Take first 3 records for the card
+            const prices = data.records.slice(0, 3);
+            
+            // Update market prices card
+            let cardContent = '';
+            prices.forEach(item => {
+                const commodity = item.commodity || 'Crop';
+                const modalPrice = item.modal_price || 'N/A';
+                const minPrice = item.min_price || 'N/A';
+                const maxPrice = item.max_price || 'N/A';
+                
+                cardContent += `
+                    <div class="mb-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">${commodity}</span>
+                            <span class="font-bold">₹${modalPrice}/Quintal</span>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            Min: ₹${minPrice} | Max: ₹${maxPrice}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('marketPricesCard').innerHTML = cardContent;
+            
+            // Update market prices modal
+            updateMarketPricesModal(data.records.slice(0, 10));
+            
+            showToast('Market prices updated successfully!');
+        } else {
+            throw new Error('No market data available');
+        }
+        
+    } catch (error) {
+        console.error('Market API error:', error);
+        
+        // Fallback to mock market data
+        const mockPrices = [
+            { commodity: 'Wheat', modal_price: '2300', min_price: '2200', max_price: '2400', state: 'Haryana', district: 'Ambala' },
+            { commodity: 'Rice', modal_price: '3800', min_price: '3500', max_price: '4000', state: 'Punjab', district: 'Amritsar' },
+            { commodity: 'Cotton', modal_price: '6500', min_price: '6000', max_price: '7000', state: 'Gujarat', district: 'Ahmedabad' },
+            { commodity: 'Sugarcane', modal_price: '350', min_price: '320', max_price: '380', state: 'Uttar Pradesh', district: 'Meerut' },
+            { commodity: 'Potato', modal_price: '1200', min_price: '1000', max_price: '1400', state: 'West Bengal', district: 'Hooghly' },
+            { commodity: 'Tomato', modal_price: '800', min_price: '600', max_price: '1000', state: 'Maharashtra', district: 'Pune' }
+        ];
+        
+        // Update market prices card with mock data
+        document.getElementById('marketPricesCard').innerHTML = `
+            <div class="mb-2">
+                <div class="flex justify-between items-center">
+                    <span class="font-medium">Wheat</span>
+                    <span class="font-bold">₹2,300/quintal</span>
+                </div>
+                <div class="text-sm text-green-600">
+                    +2% from yesterday
+                </div>
             </div>
-        </div>
-        <div>
-            <div class="flex justify-between items-center">
-                <span class="font-medium">Rice</span>
-                <span class="font-bold">₹3,800/quintal</span>
+            <div>
+                <div class="flex justify-between items-center">
+                    <span class="font-medium">Rice</span>
+                    <span class="font-bold">₹3,800/quintal</span>
+                </div>
+                <div class="text-sm text-green-600">
+                    +1.5% from yesterday
+                </div>
             </div>
-            <div class="text-sm text-green-600">
-                +1.5% from yesterday
-            </div>
-        </div>
-    `;
-    
-    // Update modal
-    updateMarketPricesModal(mockPrices);
+        `;
+        
+        // Update market prices modal with mock data
+        updateMarketPricesModal(mockPrices);
+        
+        showToast('Using demo market data', 'info');
+    }
 }
 
 // Update market prices modal
@@ -863,28 +1056,45 @@ function updateMarketPricesModal(prices) {
         <div class="mb-4">
             <div class="flex items-center mb-2">
                 <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                <p class="text-sm text-gray-600">Live prices from Indian mandis (updated today)</p>
+                <p class="text-sm text-gray-600">Live prices from Indian mandis (updated daily)</p>
             </div>
         </div>
     `;
     
-    prices.forEach(item => {
-        const changeColor = item.change.startsWith('+') ? 'text-green-600' : 'text-red-600';
+    if (prices.length === 0) {
         content += `
-            <div class="price-item">
-                <div class="flex justify-between items-center mb-2">
-                    <div>
-                        <h5 class="font-bold text-gray-800">${item.commodity}</h5>
-                        <p class="text-sm text-gray-500">${item.market}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold text-lg">${item.price}</p>
-                        <p class="text-sm ${changeColor}">${item.change} from yesterday</p>
-                    </div>
-                </div>
+            <div class="text-center py-8">
+                <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-3"></i>
+                <p class="text-gray-600">No market data available at the moment.</p>
             </div>
         `;
-    });
+    } else {
+        prices.forEach(item => {
+            const commodity = item.commodity || 'Unknown Crop';
+            const state = item.state || 'Unknown';
+            const district = item.district || 'Unknown';
+            const modalPrice = item.modal_price || 'N/A';
+            const minPrice = item.min_price || 'N/A';
+            const maxPrice = item.max_price || 'N/A';
+            
+            content += `
+                <div class="price-item">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h5 class="font-bold text-gray-800">${commodity}</h5>
+                            <p class="text-sm text-gray-500">${district}, ${state}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-lg">₹${modalPrice}/quintal</p>
+                            <p class="text-sm text-gray-600">
+                                Min: ₹${minPrice} | Max: ₹${maxPrice}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
     
     content += `
         <div class="mt-6 p-4 bg-blue-50 rounded-lg">
@@ -892,9 +1102,16 @@ function updateMarketPricesModal(prices) {
                 <i class="fas fa-chart-line text-blue-500 mr-3"></i>
                 <div>
                     <p class="font-bold text-blue-800">Market Trend</p>
-                    <p class="text-sm text-blue-600">Most commodities showing positive trend this week</p>
+                    <p class="text-sm text-blue-600">Prices updated daily from government sources</p>
                 </div>
             </div>
+        </div>
+        
+        <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p class="text-xs text-yellow-700 text-center">
+                <i class="fas fa-info-circle mr-1"></i>
+                Data source: data.gov.in - Government of India
+            </p>
         </div>
     `;
     
@@ -976,7 +1193,7 @@ function updateSeedModal() {
 // Modal functions
 function openWeatherModal() {
     document.getElementById('weatherModal').classList.add('active');
-    updateWeatherModal();
+    updateWeatherModal({});
 }
 
 function openMarketPricesModal() {
@@ -993,25 +1210,34 @@ function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('active');
 }
 
-// PWA Installation - FIXED VERSION
+// PWA Installation - COMPLETELY FIXED
 function initPWA() {
-    // Check if browser supports PWA installation
+    // Check if the browser supports service workers and PWA installation
     if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
+        
         // Register Service Worker
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./service-worker.js')
+            // Use absolute path for service worker
+            const swPath = window.location.pathname.includes('/AgriFarmers-SIH-2025/') 
+                ? '/AgriFarmers-SIH-2025/service-worker.js' 
+                : './service-worker.js';
+            
+            navigator.serviceWorker.register(swPath)
                 .then(registration => {
                     console.log('✅ Service Worker registered:', registration);
                     
                     // Check if app is already installed
-                    if (!window.matchMedia('(display-mode: standalone)').matches) {
-                        // Show install button after a short delay
+                    if (!window.matchMedia('(display-mode: standalone)').matches && 
+                        !window.navigator.standalone &&
+                        !document.referrer.includes('android-app://')) {
+                        
+                        // Show install button after delay
                         setTimeout(() => {
                             const installButton = document.getElementById('pwaInstallButton');
-                            if (installButton) {
+                            if (installButton && deferredPrompt) {
                                 installButton.classList.remove('hidden');
                             }
-                        }, 2000);
+                        }, 3000);
                     }
                 })
                 .catch(error => {
@@ -1034,38 +1260,32 @@ function initPWA() {
             if (installButton) {
                 installButton.classList.remove('hidden');
                 
-                // Add click event for install button
-                installButton.addEventListener('click', () => {
-                    // Show the install prompt
-                    deferredPrompt.prompt();
-                    
-                    // Wait for the user to respond to the prompt
-                    deferredPrompt.userChoice.then((choiceResult) => {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('✅ User accepted the install prompt');
-                            showToast('App installed successfully! You can now access it from your home screen.');
-                        } else {
-                            console.log('❌ User dismissed the install prompt');
-                        }
-                        
-                        // Clear the saved prompt since it can't be used again
-                        deferredPrompt = null;
-                        
-                        // Hide the install button
-                        installButton.classList.add('hidden');
-                    });
-                });
+                // Show toast notification
+                showToast('App can be installed! Click the install button.', 'info');
             }
+            
+            // Log for debugging
+            console.log('Deferred prompt saved:', !!deferredPrompt);
         });
         
         // Listen for app installation
         window.addEventListener('appinstalled', (evt) => {
             console.log('✅ PWA was installed');
+            
+            // Hide the install button
             const installButton = document.getElementById('pwaInstallButton');
             if (installButton) {
                 installButton.classList.add('hidden');
             }
+            
+            // Clear the deferredPrompt variable
+            deferredPrompt = null;
+            
+            // Show success message
+            showToast('App installed successfully! You can now access it from your home screen.');
         });
+    } else {
+        console.log('❌ PWA features not supported in this browser');
     }
 }
 
@@ -1105,22 +1325,50 @@ function setupEventListeners() {
         }
     });
     
-    // PWA install button click
+    // PWA install button click handler
     const installButton = document.getElementById('pwaInstallButton');
     if (installButton) {
-        installButton.addEventListener('click', () => {
+        installButton.addEventListener('click', async () => {
+            console.log('Install button clicked');
+            
             if (deferredPrompt) {
+                console.log('Showing install prompt');
+                
+                // Show the install prompt
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        showToast('App installed successfully!');
-                    }
-                    deferredPrompt = null;
-                    installButton.classList.add('hidden');
-                });
+                
+                // Wait for the user to respond to the prompt
+                const choiceResult = await deferredPrompt.userChoice;
+                
+                console.log('User choice:', choiceResult.outcome);
+                
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                    showToast('App installation started!');
+                } else {
+                    console.log('User dismissed the install prompt');
+                    showToast('Installation cancelled.', 'info');
+                }
+                
+                // Clear the saved prompt since it can't be used again
+                deferredPrompt = null;
+                
+                // Hide the install button
+                installButton.classList.add('hidden');
+            } else {
+                console.log('No deferred prompt available');
+                showToast('App installation not available in this browser.', 'error');
             }
         });
     }
+    
+    // Refresh weather data every 30 minutes
+    setInterval(() => {
+        if (currentUser && userLocation) {
+            loadWeatherData();
+            loadMarketPrices();
+        }
+    }, 30 * 60 * 1000); // 30 minutes
 }
 
 // Show error
@@ -1141,6 +1389,11 @@ function showToast(message, type = 'success') {
     const toastContainer = document.getElementById('toastContainer');
     if (!toastContainer) return;
     
+    // Remove existing toasts
+    while (toastContainer.firstChild) {
+        toastContainer.removeChild(toastContainer.firstChild);
+    }
+    
     const toast = document.createElement('div');
     toast.className = `mb-3 px-6 py-3 rounded-lg shadow-lg text-white ${
         type === 'success' ? 'bg-green-500' :
@@ -1158,14 +1411,14 @@ function showToast(message, type = 'success') {
     
     toastContainer.appendChild(toast);
     
-    // Remove toast after 3 seconds
+    // Remove toast after 5 seconds
     setTimeout(() => {
         toast.style.opacity = '0';
         toast.style.transition = 'opacity 0.5s ease';
         setTimeout(() => {
             toast.remove();
         }, 500);
-    }, 3000);
+    }, 5000);
 }
 
 // Initialize when DOM is loaded
