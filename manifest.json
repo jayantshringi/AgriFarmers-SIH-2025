@@ -1,7 +1,7 @@
 {
   "name": "Agrifarmers",
   "short_name": "Agrifarmers",
-  "description": "Your trusted farming companion with five weather and market prices",
+  "description": "Your trusted farming companion with live weather and market prices",
   "start_url": ".",
   "id": "/Agrifarmers-SIH-2025/",
   "scope": "/Agrifarmers-SIH-2025/",
