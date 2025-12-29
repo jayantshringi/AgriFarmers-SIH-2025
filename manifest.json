@@ -8,6 +8,7 @@
   "theme_color": "#138808",
   "orientation": "portrait",
   "scope": "./",
+  "categories": ["business", "education", "productivity"],
   "icons": [
     {
       "src": "./icons/icon-72x72.png",
@@ -45,28 +46,12 @@
       "type": "image/png"
     }
   ],
-  "categories": ["business", "education", "productivity"],
-  "screenshots": [
-    {
-      "src": "./screenshots/screen1.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Weather Forecast",
       "short_name": "Weather",
       "description": "Check weather for farming",
-      "url": "./?source=weather",
-      "icons": [{ "src": "./icons/icon-96x96.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Crop Prices",
-      "short_name": "Prices",
-      "description": "Check market prices",
-      "url": "./?source=prices",
+      "url": "./",
       "icons": [{ "src": "./icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ]
