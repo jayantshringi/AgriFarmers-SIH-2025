@@ -140,38 +140,6 @@
             }
         }
         
-        /* PWA Install Button */
-        #pwaInstallButton {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #138808, #0d6006);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 20px rgba(19, 136, 8, 0.3);
-            z-index: 999;
-            transition: all 0.3s ease;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        #pwaInstallButton:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(19, 136, 8, 0.4);
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-        
         /* Language Selector */
         .language-selector {
             position: relative;
