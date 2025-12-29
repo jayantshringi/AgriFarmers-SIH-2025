@@ -187,7 +187,7 @@ const translations = {
         'seed_recommendations': 'ਬੀਜ ਸਿਫਾਰਿਸ਼ਾਂ:',
         'fertilizer_mix': 'ਖਾਦ ਮਿਸ਼ਰਣ:',
         'seed_guide': 'ਬੀਜ ਅਤੇ ਖਾਦ ਗਾਈਡ',
-        'farming_tips': 'ਅੱਜ ਦੀ ਖੇਤੀ ਸਲਾਹ',
+        'farming_tips': 'ਅੱਜ ਦੀ ਖੇਤी ਸਲਾਹ',
         'default_tip': 'ਖੇਤੀ ਦੀਆਂ ਗਤੀਵਿਧੀਆਂ ਲਈ ਚੰਗਾ ਮੌਸਮ। ਸਿੰਚਾਈ ਅਤੇ ਖਾਦ ਪਾਉਣ ਲਈ ਆਦਰਸ਼।',
         'market_prices_title': 'ਲਾਈਵ ਮਾਰਕੀਟ ਮੁੱਲ',
         'loading_weather': 'ਮੌਸਮ ਡੇਟਾ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...',
@@ -1190,59 +1190,38 @@ function updateSeedModal() {
     document.getElementById('seedModalContent').innerHTML = content;
 }
 
-// Modal functions
-function openWeatherModal() {
-    document.getElementById('weatherModal').classList.add('active');
-    updateWeatherModal({});
-}
-
-function openMarketPricesModal() {
-    document.getElementById('marketPricesModal').classList.add('active');
-    loadMarketPrices();
-}
-
-function openSeedModal() {
-    document.getElementById('seedModal').classList.add('active');
-    updateSeedModal();
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.remove('active');
-}
-
-// PWA Installation - COMPLETELY FIXED
+// PWA Installation - FIXED VERSION
 function initPWA() {
+    console.log('🔄 Initializing PWA features...');
+    
     // Check if the browser supports service workers and PWA installation
     if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
         
-        // Register Service Worker
-        window.addEventListener('load', () => {
-            // Use absolute path for service worker
-            const swPath = window.location.pathname.includes('/AgriFarmers-SIH-2025/') 
-                ? '/AgriFarmers-SIH-2025/service-worker.js' 
-                : './service-worker.js';
-            
-            navigator.serviceWorker.register(swPath)
-                .then(registration => {
-                    console.log('✅ Service Worker registered:', registration);
-                    
-                    // Check if app is already installed
-                    if (!window.matchMedia('(display-mode: standalone)').matches && 
-                        !window.navigator.standalone &&
-                        !document.referrer.includes('android-app://')) {
-                        
-                        // Show install button after delay
-                        setTimeout(() => {
-                            const installButton = document.getElementById('pwaInstallButton');
-                            if (installButton && deferredPrompt) {
-                                installButton.classList.remove('hidden');
-                            }
-                        }, 3000);
-                    }
-                })
-                .catch(error => {
-                    console.log('❌ Service Worker registration failed:', error);
-                });
+        // Register Service Worker with proper path
+        window.addEventListener('load', async () => {
+            try {
+                // Use correct path based on current location
+                const swPath = window.location.pathname.includes('/AgriFarmers-SIH-2025/') 
+                    ? '/AgriFarmers-SIH-2025/service-worker.js' 
+                    : './service-worker.js';
+                
+                const registration = await navigator.serviceWorker.register(swPath);
+                console.log('✅ Service Worker registered:', registration);
+                
+                // Check if app is already installed
+                if (!isAppInstalled()) {
+                    // Show install button after delay
+                    setTimeout(() => {
+                        const installButton = document.getElementById('pwa-install-button');
+                        if (installButton && deferredPrompt) {
+                            installButton.classList.remove('hidden');
+                            console.log('📱 PWA install button shown');
+                        }
+                    }, 2000);
+                }
+            } catch (error) {
+                console.log('❌ Service Worker registration failed:', error);
+            }
         });
         
         // Handle beforeinstallprompt event
@@ -1256,12 +1235,11 @@ function initPWA() {
             deferredPrompt = e;
             
             // Update UI to notify the user they can install the PWA
-            const installButton = document.getElementById('pwaInstallButton');
+            const installButton = document.getElementById('pwa-install-button');
             if (installButton) {
                 installButton.classList.remove('hidden');
-                
-                // Show toast notification
-                showToast('App can be installed! Click the install button.', 'info');
+                showToast('App can be installed!', 'info');
+                console.log('📱 Showing install button');
             }
             
             // Log for debugging
@@ -1273,7 +1251,7 @@ function initPWA() {
             console.log('✅ PWA was installed');
             
             // Hide the install button
-            const installButton = document.getElementById('pwaInstallButton');
+            const installButton = document.getElementById('pwa-install-button');
             if (installButton) {
                 installButton.classList.add('hidden');
             }
@@ -1282,11 +1260,55 @@ function initPWA() {
             deferredPrompt = null;
             
             // Show success message
-            showToast('App installed successfully! You can now access it from your home screen.');
+            showToast('App installed successfully! You can now access it from your home screen.', 'success');
         });
     } else {
         console.log('❌ PWA features not supported in this browser');
     }
+    
+    // Setup install button click handler
+    const installButton = document.getElementById('pwa-install-button');
+    if (installButton) {
+        installButton.addEventListener('click', async () => {
+            console.log('🔘 Install button clicked');
+            
+            if (deferredPrompt) {
+                console.log('📱 Showing install prompt');
+                
+                // Show the install prompt
+                deferredPrompt.prompt();
+                
+                // Wait for the user to respond to the prompt
+                const choiceResult = await deferredPrompt.userChoice;
+                
+                console.log('User choice:', choiceResult.outcome);
+                
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                    showToast('App installation started!', 'success');
+                } else {
+                    console.log('User dismissed the install prompt');
+                    showToast('Installation cancelled.', 'info');
+                }
+                
+                // Clear the saved prompt since it can't be used again
+                deferredPrompt = null;
+                
+                // Hide the install button
+                installButton.classList.add('hidden');
+            } else {
+                console.log('No deferred prompt available');
+                showToast('App installation not available in this browser.', 'error');
+            }
+        });
+    }
+}
+
+// Check if app is already installed
+function isAppInstalled() {
+    return window.matchMedia('(display-mode: standalone)').matches || 
+           window.navigator.standalone ||
+           document.referrer.includes('android-app://');
 }
 
 // Setup event listeners
@@ -1325,43 +1347,6 @@ function setupEventListeners() {
         }
     });
     
-    // PWA install button click handler
-    const installButton = document.getElementById('pwaInstallButton');
-    if (installButton) {
-        installButton.addEventListener('click', async () => {
-            console.log('Install button clicked');
-            
-            if (deferredPrompt) {
-                console.log('Showing install prompt');
-                
-                // Show the install prompt
-                deferredPrompt.prompt();
-                
-                // Wait for the user to respond to the prompt
-                const choiceResult = await deferredPrompt.userChoice;
-                
-                console.log('User choice:', choiceResult.outcome);
-                
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                    showToast('App installation started!');
-                } else {
-                    console.log('User dismissed the install prompt');
-                    showToast('Installation cancelled.', 'info');
-                }
-                
-                // Clear the saved prompt since it can't be used again
-                deferredPrompt = null;
-                
-                // Hide the install button
-                installButton.classList.add('hidden');
-            } else {
-                console.log('No deferred prompt available');
-                showToast('App installation not available in this browser.', 'error');
-            }
-        });
-    }
-    
     // Refresh weather data every 30 minutes
     setInterval(() => {
         if (currentUser && userLocation) {
@@ -1369,6 +1354,26 @@ function setupEventListeners() {
             loadMarketPrices();
         }
     }, 30 * 60 * 1000); // 30 minutes
+}
+
+// Modal functions
+function openWeatherModal() {
+    document.getElementById('weatherModal').classList.add('active');
+    updateWeatherModal({});
+}
+
+function openMarketPricesModal() {
+    document.getElementById('marketPricesModal').classList.add('active');
+    loadMarketPrices();
+}
+
+function openSeedModal() {
+    document.getElementById('seedModal').classList.add('active');
+    updateSeedModal();
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
 }
 
 // Show error
