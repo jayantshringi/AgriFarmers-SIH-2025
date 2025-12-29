@@ -4,9 +4,9 @@
   "description": "Your trusted farming companion with live weather and market prices",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#FFFFFF",
+  "background_color": "#138808",
   "theme_color": "#138808",
-  "orientation": "portrait",
+  "orientation": "any",
   "scope": "./",
   "categories": ["business", "education", "productivity"],
   "icons": [
@@ -48,10 +48,17 @@
   ],
   "shortcuts": [
     {
-      "name": "Weather Forecast",
+      "name": "Weather",
       "short_name": "Weather",
-      "description": "Check weather for farming",
-      "url": "./",
+      "description": "Check live weather",
+      "url": "./#weather",
+      "icons": [{ "src": "./icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Market Prices",
+      "short_name": "Prices",
+      "description": "Check crop prices",
+      "url": "./#prices",
       "icons": [{ "src": "./icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ]
