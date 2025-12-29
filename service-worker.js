@@ -1,10 +1,17 @@
 // AgriFarmers Service Worker - Optimized for PWA Installation
-const CACHE_NAME = 'agrifarmers-v5';
+const CACHE_NAME = 'agrifarmers-v7';
 const urlsToCache = [
     './',
     './index.html',
     './script.js',
-    './manifest.json'
+    './manifest.json',
+    './icons/icon-72x72.png',
+    './icons/icon-96x96.png',
+    './icons/icon-128x128.png',
+    './icons/icon-144x144.png',
+    './icons/icon-192x192.png',
+    './icons/icon-384x384.png',
+    './icons/icon-512x512.png'
 ];
 
 // Install Service Worker
@@ -15,7 +22,13 @@ self.addEventListener('install', (event) => {
         caches.open(CACHE_NAME)
             .then((cache) => {
                 console.log('✅ Service Worker: Caching app shell');
-                return cache.addAll(urlsToCache);
+                return cache.addAll(urlsToCache)
+                    .then(() => {
+                        console.log('✅ All resources cached successfully');
+                    })
+                    .catch((error) => {
+                        console.error('❌ Failed to cache some resources:', error);
+                    });
             })
             .then(() => {
                 console.log('✅ Service Worker: Installation complete');
@@ -52,7 +65,7 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch Strategy: Network First, Cache Fallback
+// Fetch Strategy: Cache First, Network Fallback
 self.addEventListener('fetch', (event) => {
     // Skip non-GET requests
     if (event.request.method !== 'GET') return;
@@ -65,44 +78,48 @@ self.addEventListener('fetch', (event) => {
         url.hostname.includes('data.gov.in') ||
         url.hostname.includes('api.allorigins.win')) {
         
-        // Network only for API requests
-        event.respondWith(fetch(event.request));
+        // Network first for API requests
+        event.respondWith(
+            fetch(event.request)
+                .catch(() => {
+                    // If network fails, try cache
+                    return caches.match(event.request);
+                })
+        );
         return;
     }
     
-    // For app resources, try network first, then cache
+    // For app resources, use Cache First
     event.respondWith(
-        fetch(event.request)
-            .then((response) => {
-                // Check if we received a valid response
-                if (!response || response.status !== 200 || response.type !== 'basic') {
-                    return response;
+        caches.match(event.request)
+            .then((cachedResponse) => {
+                if (cachedResponse) {
+                    return cachedResponse;
                 }
                 
-                // Clone the response
-                const responseToCache = response.clone();
-                
-                // Cache the new response for future offline use
-                caches.open(CACHE_NAME)
-                    .then((cache) => {
-                        cache.put(event.request, responseToCache);
-                    });
-                
-                return response;
-            })
-            .catch(() => {
-                // If network fails, try cache
-                return caches.match(event.request)
-                    .then((cachedResponse) => {
-                        if (cachedResponse) {
-                            return cachedResponse;
+                return fetch(event.request)
+                    .then((response) => {
+                        // Don't cache if not a successful response
+                        if (!response || response.status !== 200 || response.type !== 'basic') {
+                            return response;
                         }
                         
-                        // If not in cache, return offline page for HTML requests
+                        // Clone the response
+                        const responseToCache = response.clone();
+                        
+                        // Cache the new response for future offline use
+                        caches.open(CACHE_NAME)
+                            .then((cache) => {
+                                cache.put(event.request, responseToCache);
+                            });
+                        
+                        return response;
+                    })
+                    .catch(() => {
+                        // If network fails and no cache, return offline page for HTML requests
                         if (event.request.headers.get('accept').includes('text/html')) {
                             return caches.match('./index.html');
                         }
-                        
                         return null;
                     });
             })
@@ -169,8 +186,8 @@ self.addEventListener('sync', (event) => {
 
 // Sync app data in background
 async function syncAppData() {
+    console.log('🔄 Syncing app data...');
     // This function can be extended to sync data when online
-    console.log('Syncing app data...');
     return Promise.resolve();
 }
 
