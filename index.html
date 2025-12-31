@@ -11,15 +11,24 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AgriFarmers">
     <meta name="msapplication-TileColor" content="#138808">
+    <meta name="msapplication-TileImage" content="https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-144x144.png">
     <meta name="msapplication-navbutton-color" content="#138808">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="AgriFarmers">
     
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <!-- CRITICAL: PWA Manifest with ABSOLUTE URL -->
+    <link rel="manifest" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/manifest.json?v=3.0" crossorigin="use-credentials">
     
-    <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <!-- Apple Touch Icon with ABSOLUTE URL -->
+    <link rel="apple-touch-icon" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-152x152.png">
+    
+    <!-- Favicon with ABSOLUTE URL -->
+    <link rel="icon" type="image/png" sizes="192x192" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-16x16.png">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -292,7 +301,7 @@
     </div>
 
     <!-- PWA Install Button -->
-    <button id="installButton" class="hidden" title="Install AgriFarmers" onclick="installPWA()">
+    <button id="installButton" class="hidden" title="Install AgriFarmers">
         <i class="fas fa-download text-xl"></i>
     </button>
 
@@ -645,10 +654,25 @@
             </div>
         </div>
        
-        <!-- Footer -->
+        <!-- Footer with PWA Tools -->
         <footer class="bg-green-800 text-white py-8 mt-8">
             <div class="container mx-auto px-4 text-center">
                 <p>&copy; 2024 AgriFarmers. <span id="rightsText">All rights reserved.</span></p>
+                <div class="mt-4 flex flex-wrap justify-center gap-4">
+                    <button onclick="diagnosePWA()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm">
+                        <i class="fas fa-stethoscope mr-2"></i>Diagnose PWA
+                    </button>
+                    <button onclick="forcePWAInstall()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm">
+                        <i class="fas fa-magic mr-2"></i>Force Install
+                    </button>
+                    <button onclick="window.location.reload()" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg text-sm">
+                        <i class="fas fa-sync-alt mr-2"></i>Reload Page
+                    </button>
+                </div>
+                <p class="mt-4 text-sm opacity-75">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    PWA Status: <span id="pwaStatus">Checking...</span>
+                </p>
             </div>
         </footer>
         
@@ -1009,15 +1033,25 @@ const translations = {
     }
 };
 
-// Initialize the application - SIMPLIFIED VERSION
+// ==============================================
+// PWA FIXES - CRITICAL FOR GITHUB PAGES
+// ==============================================
+
+// Initialize the application
 window.onload = function() {
-    console.log('🌱 AgriFarmers Initializing...');
+    console.log('🌱 AgriFarmers PWA Edition Initializing...');
+    
+    // Show PWA diagnostic info
+    console.log('🔧 PWA Environment:');
+    console.log('📍 URL:', window.location.href);
+    console.log('🌐 Origin:', window.location.origin);
+    console.log('📱 Display Mode:', window.matchMedia('(display-mode: standalone)').matches ? 'Standalone PWA' : 'Browser');
     
     // Immediately hide loading screen and show app
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     
-    // Simple initialization - no complex setup that could fail
+    // Simple initialization
     initApp();
     
     // Load saved language preference
@@ -1027,7 +1061,7 @@ window.onload = function() {
     // Check if user has already dismissed install banner
     hasSeenInstallPrompt = localStorage.getItem('hasSeenInstallPrompt') === 'true';
     
-    // Register Service Worker
+    // Register Service Worker with ABSOLUTE URL for GitHub Pages
     registerServiceWorker();
     
     // Check online status
@@ -1044,15 +1078,37 @@ window.onload = function() {
         showInstallBannerIfEligible();
     }, 5000);
     
-    console.log('✅ AgriFarmers Loaded Successfully');
+    console.log('✅ AgriFarmers PWA Edition Loaded Successfully');
+    
+    // Add click event listener to install button
+    const installButton = document.getElementById('installButton');
+    if (installButton) {
+        installButton.addEventListener('click', installPWA);
+    }
+    
+    // Force PWA detection after 2 seconds
+    setTimeout(forcePWADetection, 2000);
 };
 
-// Register Service Worker
+// Register Service Worker with ABSOLUTE URL for GitHub Pages
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js')
+        console.log('🛠️ Registering Service Worker...');
+        
+        // Use absolute URL for GitHub Pages
+        const swUrl = 'https://jayantshringi.github.io/AgriFarmers-SIH-2025/service-worker.js';
+        
+        navigator.serviceWorker.register(swUrl, { 
+            scope: 'https://jayantshringi.github.io/AgriFarmers-SIH-2025/'
+        })
             .then(registration => {
                 console.log('✅ Service Worker registered:', registration);
+                console.log('📡 Scope:', registration.scope);
+                
+                // Check if service worker is controlling the page
+                if (registration.active) {
+                    console.log('🎯 Service Worker is active and controlling the page');
+                }
                 
                 // Check for updates
                 registration.addEventListener('updatefound', () => {
@@ -1060,16 +1116,58 @@ function registerServiceWorker() {
                     console.log('🔄 New service worker found!');
                     
                     newWorker.addEventListener('statechange', () => {
+                        console.log('🔧 Service Worker state:', newWorker.state);
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                             showUpdateAlert();
                         }
                     });
                 });
+                
+                // Force update if needed
+                registration.update();
             })
             .catch(error => {
                 console.error('❌ Service Worker registration failed:', error);
+                console.error('❌ Error details:', error.message);
             });
+    } else {
+        console.log('❌ Service Worker not supported in this browser');
     }
+}
+
+// Force PWA Detection
+function forcePWADetection() {
+    console.log('🔧 Forcing PWA detection...');
+    
+    // Force manifest re-load
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    if (manifestLink) {
+        const newHref = manifestLink.href.split('?')[0] + '?force=' + Date.now();
+        manifestLink.href = newHref;
+        console.log('🔄 Manifest href updated:', newHref);
+    }
+    
+    // Test manifest accessibility
+    fetch('https://jayantshringi.github.io/AgriFarmers-SIH-2025/manifest.json')
+        .then(response => {
+            console.log('📄 Manifest HTTP Status:', response.status);
+            console.log('📄 Manifest Content-Type:', response.headers.get('content-type'));
+            return response.json();
+        })
+        .then(manifest => {
+            console.log('✅ Manifest loaded successfully:', manifest.name);
+            console.log('🎨 Theme Color:', manifest.theme_color);
+            console.log('🏠 Start URL:', manifest.start_url);
+            
+            // Update theme color meta tag
+            const themeMeta = document.querySelector('meta[name="theme-color"]');
+            if (themeMeta && manifest.theme_color) {
+                themeMeta.content = manifest.theme_color;
+            }
+        })
+        .catch(error => {
+            console.error('❌ Manifest fetch failed:', error);
+        });
 }
 
 // Show update alert
@@ -1240,6 +1338,95 @@ function installPWA() {
         deferredPrompt = null;
     });
 }
+
+// ==============================================
+// MANUAL PWA INSTALLATION FUNCTION
+// ==============================================
+
+function forcePWAInstall() {
+    console.log('🔧 Manual PWA installation triggered');
+    
+    // 1. Check if we can install
+    if (!window.deferredPrompt) {
+        showToast('Installation not available. Try using Chrome/Edge browser.', 'info');
+        return;
+    }
+    
+    // 2. Show the prompt
+    window.deferredPrompt.prompt();
+    
+    // 3. Wait for the user's response
+    window.deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('✅ User accepted PWA install');
+            showToast('AgriFarmers is being installed...', 'success');
+        } else {
+            console.log('❌ User dismissed PWA install');
+            showToast('Installation cancelled', 'info');
+        }
+        window.deferredPrompt = null;
+    });
+}
+
+// ==============================================
+// PWA DIAGNOSTIC FUNCTION
+// ==============================================
+
+function diagnosePWA() {
+    console.clear();
+    console.log('🔍 PWA DIAGNOSTIC REPORT');
+    console.log('========================');
+    
+    // 1. Check manifest
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    console.log('📄 Manifest Link:', manifestLink ? manifestLink.href : '❌ NOT FOUND');
+    
+    // 2. Check service worker
+    console.log('🛠️ Service Worker Support:', 'serviceWorker' in navigator ? '✅ YES' : '❌ NO');
+    
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then(reg => {
+            console.log('📡 Service Worker Registered:', reg ? '✅ YES' : '❌ NO');
+            if (reg) {
+                console.log('🎯 Scope:', reg.scope);
+                console.log('⚡ State:', reg.active ? 'Active' : 'Inactive');
+            }
+        });
+    }
+    
+    // 3. Check display mode
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    const isIOSStandalone = window.navigator.standalone;
+    console.log('📱 Display Mode:', isStandalone ? 'Standalone' : isIOSStandalone ? 'iOS Standalone' : 'Browser');
+    
+    // 4. Check install capability
+    console.log('🎯 BeforeInstallPrompt:', window.deferredPrompt ? '✅ Available' : '❌ Not Available');
+    
+    // 5. Check cache
+    if ('caches' in window) {
+        caches.keys().then(cacheNames => {
+            console.log('💾 Cache Names:', cacheNames);
+        });
+    }
+    
+    // 6. Show results in alert
+    const results = [
+        `✅ Manifest: ${manifestLink ? 'FOUND' : 'NOT FOUND'}`,
+        `✅ Service Worker: ${'serviceWorker' in navigator ? 'SUPPORTED' : 'NOT SUPPORTED'}`,
+        `✅ Display Mode: ${isStandalone ? 'PWA' : 'Browser'}`,
+        `✅ Install Prompt: ${window.deferredPrompt ? 'AVAILABLE' : 'NOT AVAILABLE'}`
+    ];
+    
+    alert('PWA Diagnostic Results:\n\n' + results.join('\n'));
+}
+
+// Make diagnostic available
+window.diagnosePWA = diagnosePWA;
+window.forcePWAInstall = forcePWAInstall;
+
+// ==============================================
+// ORIGINAL APP FUNCTIONALITY
+// ==============================================
 
 // Simple initialization
 function initApp() {
@@ -1728,8 +1915,8 @@ function loadDashboardData() {
 // Load weather data using REAL API
 async function loadWeatherData(lat, lon) {
     try {
-        // Real OpenWeatherMap API key - Replace with your own if needed
-        const apiKey = '5a4b2d457ecbef9eb2a71e480b947604'; // This is a valid free tier API key
+        // Real OpenWeatherMap API key
+        const apiKey = '5a4b2d457ecbef9eb2a71e480b947604';
         
         const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
         
@@ -1776,9 +1963,9 @@ async function loadWeatherData(lat, lon) {
 // Helper functions for realistic fallback data
 function getRandomTemp(lat, lon) {
     // Generate temperatures based on approximate latitude
-    if (lat > 30) return Math.floor(Math.random() * 10) + 15; // North India: 15-25°C
-    if (lat > 20) return Math.floor(Math.random() * 15) + 20; // Central India: 20-35°C
-    return Math.floor(Math.random() * 10) + 25; // South India: 25-35°C
+    if (lat > 30) return Math.floor(Math.random() * 10) + 15;
+    if (lat > 20) return Math.floor(Math.random() * 15) + 20;
+    return Math.floor(Math.random() * 10) + 25;
 }
 
 function getWeatherDescription(lat, lon) {
@@ -2199,6 +2386,36 @@ document.addEventListener('keydown', function(event) {
         });
     }
 });
+    </script>
+    
+    <!-- PWA Status Updater -->
+    <script>
+    // Update PWA status in footer
+    function updatePWAStatus() {
+        const statusEl = document.getElementById('pwaStatus');
+        if (!statusEl) return;
+        
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            statusEl.textContent = '✅ Installed as PWA';
+            statusEl.className = 'text-green-300';
+        } else if (window.deferredPrompt) {
+            statusEl.textContent = '⚠️ Can be installed';
+            statusEl.className = 'text-yellow-300';
+        } else {
+            statusEl.textContent = '❌ Not installable';
+            statusEl.className = 'text-red-300';
+        }
+    }
+    
+    // Update status every 3 seconds
+    setInterval(updatePWAStatus, 3000);
+    updatePWAStatus();
+    
+    // Auto-run diagnostic on page load
+    setTimeout(() => {
+        console.log('🔍 Running PWA auto-diagnostic...');
+        diagnosePWA();
+    }, 5000);
     </script>
 </body>
 </html>
