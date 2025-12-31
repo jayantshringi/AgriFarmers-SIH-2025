@@ -2,8 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AgriFarmers - Farming Companion</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#138808">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AgriFarmers">
+    <meta name="msapplication-TileColor" content="#138808">
+    <meta name="msapplication-navbutton-color" content="#138808">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="AgriFarmers">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -121,14 +137,117 @@
         #featuresSlider::-webkit-scrollbar {
             display: none; /* Chrome, Safari, Opera */
         }
+        
+        /* Install button styles */
+        #installButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            background: #138808;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(19, 136, 8, 0.3);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        #installButton:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(19, 136, 8, 0.4);
+        }
+        
+        #installButton.hidden {
+            display: none;
+        }
+        
+        /* Offline indicator */
+        #offlineIndicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #dc2626;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            display: none;
+        }
+        
+        #offlineIndicator.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        
+        /* Update alert */
+        .update-alert {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 10px;
+            padding: 16px;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Toast styles */
+        .custom-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: fadeInUp 0.3s ease;
+            max-width: 300px;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Offline Indicator -->
+    <div id="offlineIndicator">
+        <i class="fas fa-wifi mr-2"></i>
+        <span>You are offline. Some features may be limited.</span>
+    </div>
+
     <!-- Loading Screen -->
     <div id="loadingScreen">
         <div class="loader"></div>
         <p class="mt-4 text-gray-600 text-lg">Loading AgriFarmers...</p>
     </div>
+
+    <!-- PWA Install Button -->
+    <button id="installButton" class="hidden" title="Install AgriFarmers">
+        <i class="fas fa-download text-xl"></i>
+    </button>
 
     <!-- App Container -->
     <div id="app" class="min-h-screen" style="display: none;">
@@ -433,37 +552,38 @@
                         
                         <!-- Seeds & Fertilizer Card -->
                         <div onclick="openSeedModal()" class="dashboard-card bg-white p-6 rounded-xl shadow-md border border-green-100">
-  <div class="flex items-start justify-between mb-4">
-    <div>
-      <i class="fas fa-seedling text-green-500 text-2xl"></i>
-      <h4 class="font-bold text-gray-800 mt-2 text-lg" id="seedTitle">Seed & Fertilizer</h4>
-      <p class="text-sm text-gray-600" id="seedDesc">Recommendations for your region</p>
-    </div>
-    <i class="fas fa-chevron-right text-gray-400"></i>
-  </div>
-
-  <div class="mb-3">
-    <p class="font-medium text-sm text-gray-600 mb-1" id="seedRecText">Seed Recommendations:</p>
-    <div class="flex flex-wrap gap-2">
-      <span class="seed-chip px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Wheat</span>
-<span class="seed-chip px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Rice</span>
-<span class="seed-chip px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Cotton</span>
-    </div>
-  </div>
-
-  <div>
-    <p class="font-medium text-sm text-gray-600 mb-1" id="fertilizerText">Fertilizer Mix:</p>
-    <div class="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
-      <div class="h-full flex">
-        <div class="bg-green-500 w-1/2"></div>
-        <div class="bg-blue-500 w-1/4"></div>
-        <div class="bg-purple-500 w-1/4"></div>
-      </div>
-    </div>
-    <p class="text-xs text-gray-500 mt-1">50% Organic | 25% NPK | 25% Urea</p>
-  </div>
-</div>
-
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <i class="fas fa-seedling text-green-500 text-2xl"></i>
+                                    <h4 class="font-bold text-gray-800 mt-2 text-lg" id="seedTitle">Seed & Fertilizer</h4>
+                                    <p class="text-sm text-gray-600" id="seedDesc">Recommendations for your region</p>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                            <div>
+                                <div class="mb-3">
+                                    <p class="font-medium text-sm text-gray-600 mb-1" id="seedRecText">Seed Recommendations:</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Wheat</span>
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Rice</span>
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Cotton</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm text-gray-600 mb-1" id="fertilizerText">Fertilizer Mix:</p>
+                                    <div class="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+                                        <div class="h-full flex">
+                                            <div class="bg-green-500 w-1/2"></div>
+                                            <div class="bg-blue-500 w-1/4"></div>
+                                            <div class="bg-purple-500 w-1/4"></div>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">50% Organic | 25% NPK | 25% Urea</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Farming Advisory -->
                 <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
@@ -481,7 +601,7 @@
         <!-- Footer -->
         <footer class="bg-green-800 text-white py-8 mt-8">
             <div class="container mx-auto px-4 text-center">
-                <p>&copy; 2025 AgriFarmers. <span id="rightsText">All rights reserved.</span></p>
+                <p>&copy; 2024 AgriFarmers. <span id="rightsText">All rights reserved.</span></p>
             </div>
         </footer>
         
@@ -569,6 +689,8 @@ let currentLanguage = 'en';
 let userLocation = null;
 let otpTimer = null;
 let otpTimeLeft = 120;
+let deferredPrompt = null;
+let isOnline = navigator.onLine;
 
 // Language Data
 const translations = {
@@ -854,8 +976,77 @@ window.onload = function() {
     const savedLang = localStorage.getItem('agrifarmers_language') || 'en';
     changeLanguage(savedLang);
     
+    // Register Service Worker
+    registerServiceWorker();
+    
+    // Check online status
+    updateOnlineStatus();
+    
     console.log('✅ AgriFarmers Loaded Successfully');
 };
+
+// Register Service Worker
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(registration => {
+                console.log('✅ Service Worker registered:', registration);
+                
+                // Check for updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    console.log('🔄 New service worker found!');
+                    
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showUpdateAlert();
+                        }
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('❌ Service Worker registration failed:', error);
+            });
+    }
+}
+
+// Show update alert
+function showUpdateAlert() {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'update-alert';
+    alertDiv.innerHTML = `
+        <div class="flex justify-between items-center">
+            <div class="flex-1">
+                <p class="font-bold text-gray-800">Update Available!</p>
+                <p class="text-sm text-gray-600">A new version of AgriFarmers is available.</p>
+            </div>
+            <button onclick="window.location.reload()" class="ml-4 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
+                Update
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 10000);
+}
+
+// Update online status
+function updateOnlineStatus() {
+    const offlineIndicator = document.getElementById('offlineIndicator');
+    if (!navigator.onLine) {
+        offlineIndicator.classList.add('show');
+        showToast('You are offline. Some features may be limited.', 'info');
+    } else {
+        offlineIndicator.classList.remove('show');
+        showToast('You are back online!', 'success');
+    }
+    isOnline = navigator.onLine;
+}
 
 // Simple initialization
 function initApp() {
@@ -1607,12 +1798,12 @@ function loadSeedRecommendations() {
     const crops = translations[currentLanguage].states[state] || ['Wheat', 'Rice', 'Cotton'];
     
     // Update home page seed tags
-    const seedTags = document.querySelectorAll('#homePage .seed-chip');
-seedTags.forEach((tag, index) => {
-    if (crops[index]) {
-        tag.textContent = crops[index];
-    }
-});;
+    const seedTags = document.querySelectorAll('#homePage .rounded-full');
+    seedTags.forEach((tag, index) => {
+        if (crops[index]) {
+            tag.textContent = crops[index];
+        }
+    });
     
     // Update seed modal
     updateSeedModal(crops);
@@ -1777,6 +1968,65 @@ function changeLanguage(lang) {
     showToast(`Language changed to ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : 'Punjabi'}`, 'success');
 }
 
+// PWA Install Functions
+// Listen for beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later
+    deferredPrompt = e;
+    // Show install button
+    showInstallButton();
+});
+
+// Show install button
+function showInstallButton() {
+    const installButton = document.getElementById('installButton');
+    if (installButton && deferredPrompt) {
+        installButton.classList.remove('hidden');
+        installButton.addEventListener('click', installPWA);
+    }
+}
+
+// Install PWA
+function installPWA() {
+    if (!deferredPrompt) return;
+    
+    // Show the install prompt
+    deferredPrompt.prompt();
+    
+    // Wait for the user to respond to the prompt
+    deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('✅ User accepted the install prompt');
+            showToast('AgriFarmers installed successfully!', 'success');
+        } else {
+            console.log('❌ User dismissed the install prompt');
+        }
+        // Clear the saved prompt since it can't be used again
+        deferredPrompt = null;
+        // Hide the install button
+        const installButton = document.getElementById('installButton');
+        if (installButton) {
+            installButton.classList.add('hidden');
+        }
+    });
+}
+
+// Check if app is already installed
+window.addEventListener('appinstalled', () => {
+    console.log('✅ AgriFarmers installed successfully');
+    // Hide install button
+    const installButton = document.getElementById('installButton');
+    if (installButton) {
+        installButton.classList.add('hidden');
+    }
+});
+
+// Online/offline event listeners
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
 // Make functions globally available
 window.showPage = showPage;
 window.handleLogin = handleLogin;
@@ -1789,6 +2039,7 @@ window.openSeedModal = openSeedModal;
 window.closeModal = closeModal;
 window.handleLogout = handleLogout;
 window.changeLanguage = changeLanguage;
+window.installPWA = installPWA;
 
 // Close modals when clicking outside
 document.addEventListener('click', function(event) {
