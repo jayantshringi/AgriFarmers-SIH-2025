@@ -445,9 +445,9 @@
   <div class="mb-3">
     <p class="font-medium text-sm text-gray-600 mb-1" id="seedRecText">Seed Recommendations:</p>
     <div class="flex flex-wrap gap-2">
-      <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Wheat</span>
-      <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Rice</span>
-      <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Cotton</span>
+      <span class="seed-chip px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Wheat</span>
+<span class="seed-chip px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Rice</span>
+<span class="seed-chip px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Cotton</span>
     </div>
   </div>
 
@@ -1607,12 +1607,12 @@ function loadSeedRecommendations() {
     const crops = translations[currentLanguage].states[state] || ['Wheat', 'Rice', 'Cotton'];
     
     // Update home page seed tags
-    const seedTags = document.querySelectorAll('#homePage .rounded-full');
-    seedTags.forEach((tag, index) => {
-        if (crops[index]) {
-            tag.textContent = crops[index];
-        }
-    });
+    const seedTags = document.querySelectorAll('#homePage .seed-chip');
+seedTags.forEach((tag, index) => {
+    if (crops[index]) {
+        tag.textContent = crops[index];
+    }
+});;
     
     // Update seed modal
     updateSeedModal(crops);
