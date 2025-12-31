@@ -156,6 +156,7 @@
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            animation: pulse 2s infinite;
         }
         
         #installButton:hover {
@@ -165,6 +166,38 @@
         
         #installButton.hidden {
             display: none;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(19, 136, 8, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(19, 136, 8, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(19, 136, 8, 0); }
+        }
+        
+        /* Install notification banner */
+        #installBanner {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 16px;
+            z-index: 99;
+            display: none;
+            align-items: center;
+            border: 2px solid #138808;
+            animation: slideUp 0.5s ease;
+        }
+        
+        #installBanner.show {
+            display: flex;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         /* Offline indicator */
@@ -207,11 +240,6 @@
             animation: slideUp 0.3s ease;
         }
         
-        @keyframes slideUp {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
         /* Toast styles */
         .custom-toast {
             position: fixed;
@@ -238,6 +266,25 @@
         <span>You are offline. Some features may be limited.</span>
     </div>
 
+    <!-- Install Banner -->
+    <div id="installBanner">
+        <div class="flex items-center mr-4">
+            <i class="fas fa-seedling text-green-600 text-2xl mr-3"></i>
+            <div>
+                <p class="font-bold text-gray-800">Install AgriFarmers</p>
+                <p class="text-sm text-gray-600">Get quick access to farming tools</p>
+            </div>
+        </div>
+        <div class="ml-auto flex space-x-2">
+            <button onclick="hideInstallBanner()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                Later
+            </button>
+            <button onclick="installPWA()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                Install
+            </button>
+        </div>
+    </div>
+
     <!-- Loading Screen -->
     <div id="loadingScreen">
         <div class="loader"></div>
@@ -245,7 +292,7 @@
     </div>
 
     <!-- PWA Install Button -->
-    <button id="installButton" class="hidden" title="Install AgriFarmers">
+    <button id="installButton" class="hidden" title="Install AgriFarmers" onclick="installPWA()">
         <i class="fas fa-download text-xl"></i>
     </button>
 
@@ -691,6 +738,7 @@ let otpTimer = null;
 let otpTimeLeft = 120;
 let deferredPrompt = null;
 let isOnline = navigator.onLine;
+let hasSeenInstallPrompt = false;
 
 // Language Data
 const translations = {
@@ -946,7 +994,7 @@ const translations = {
         sunrise: 'ਸੂਰਜ ਚੜ੍ਹਨਾ',
         sunset: 'ਸੂਰਜ ਡੁੱਬਣਾ',
         
-        crop: 'ਫਸल',
+        crop: 'ਫਸਲ',
         price: 'ਕੀਮਤ',
         market: 'ਬਾਜ਼ਾਰ',
         unit: 'ਇਕਾਈ',
@@ -976,11 +1024,25 @@ window.onload = function() {
     const savedLang = localStorage.getItem('agrifarmers_language') || 'en';
     changeLanguage(savedLang);
     
+    // Check if user has already dismissed install banner
+    hasSeenInstallPrompt = localStorage.getItem('hasSeenInstallPrompt') === 'true';
+    
     // Register Service Worker
     registerServiceWorker();
     
     // Check online status
     updateOnlineStatus();
+    
+    // Check if app is already installed
+    checkIfAppIsInstalled();
+    
+    // Set up beforeinstallprompt event listener
+    setupInstallPrompt();
+    
+    // Check if we should show install banner (after 5 seconds)
+    setTimeout(() => {
+        showInstallBannerIfEligible();
+    }, 5000);
     
     console.log('✅ AgriFarmers Loaded Successfully');
 };
@@ -1043,9 +1105,140 @@ function updateOnlineStatus() {
         showToast('You are offline. Some features may be limited.', 'info');
     } else {
         offlineIndicator.classList.remove('show');
-        showToast('You are back online!', 'success');
+        if (isOnline === false) {
+            showToast('You are back online!', 'success');
+        }
     }
     isOnline = navigator.onLine;
+}
+
+// Check if app is already installed
+function checkIfAppIsInstalled() {
+    // Check if running in standalone mode (installed PWA)
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('📱 App is running in standalone mode (installed)');
+        hideInstallUI();
+        return true;
+    }
+    
+    // Check for iOS standalone mode
+    if (window.navigator.standalone === true) {
+        console.log('📱 App is running in iOS standalone mode (installed)');
+        hideInstallUI();
+        return true;
+    }
+    
+    return false;
+}
+
+// Hide install UI
+function hideInstallUI() {
+    const installButton = document.getElementById('installButton');
+    const installBanner = document.getElementById('installBanner');
+    
+    if (installButton) installButton.classList.add('hidden');
+    if (installBanner) installBanner.classList.remove('show');
+}
+
+// Setup install prompt
+function setupInstallPrompt() {
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('🎯 beforeinstallprompt event fired');
+        
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        
+        // Show install UI
+        showInstallUI();
+        
+        // Log for debugging
+        console.log('✅ Install prompt available');
+    });
+    
+    // Listen for app installed event
+    window.addEventListener('appinstalled', (evt) => {
+        console.log('🎉 AgriFarmers was installed successfully');
+        hasSeenInstallPrompt = true;
+        localStorage.setItem('hasSeenInstallPrompt', 'true');
+        hideInstallUI();
+        showToast('AgriFarmers installed successfully!', 'success');
+    });
+}
+
+// Show install UI
+function showInstallUI() {
+    // Show install button
+    const installButton = document.getElementById('installButton');
+    if (installButton) {
+        installButton.classList.remove('hidden');
+    }
+    
+    // Also check if we should show the banner
+    showInstallBannerIfEligible();
+}
+
+// Show install banner if eligible
+function showInstallBannerIfEligible() {
+    // Don't show if:
+    // 1. User has already dismissed it
+    // 2. App is already installed
+    // 3. No install prompt available
+    // 4. User has already seen it in this session
+    
+    if (hasSeenInstallPrompt || checkIfAppIsInstalled() || !deferredPrompt) {
+        return;
+    }
+    
+    // Check if user has interacted with the app (minimum 30 seconds)
+    const installBanner = document.getElementById('installBanner');
+    if (installBanner) {
+        setTimeout(() => {
+            if (!hasSeenInstallPrompt && deferredPrompt) {
+                installBanner.classList.add('show');
+            }
+        }, 30000); // Show after 30 seconds
+    }
+}
+
+// Hide install banner
+function hideInstallBanner() {
+    const installBanner = document.getElementById('installBanner');
+    if (installBanner) {
+        installBanner.classList.remove('show');
+        hasSeenInstallPrompt = true;
+        localStorage.setItem('hasSeenInstallPrompt', 'true');
+    }
+}
+
+// Install PWA
+function installPWA() {
+    if (!deferredPrompt) {
+        showToast('Installation not available in this browser', 'info');
+        return;
+    }
+    
+    // Hide the banner if shown
+    hideInstallBanner();
+    
+    // Show the install prompt
+    deferredPrompt.prompt();
+    
+    // Wait for the user to respond to the prompt
+    deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('✅ User accepted the install prompt');
+            // No need to show toast here - appinstalled event will handle it
+        } else {
+            console.log('❌ User dismissed the install prompt');
+            showToast('Installation cancelled', 'info');
+        }
+        
+        // Clear the saved prompt since it can't be used again
+        deferredPrompt = null;
+    });
 }
 
 // Simple initialization
@@ -1968,65 +2161,6 @@ function changeLanguage(lang) {
     showToast(`Language changed to ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : 'Punjabi'}`, 'success');
 }
 
-// PWA Install Functions
-// Listen for beforeinstallprompt event
-window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent the mini-infobar from appearing on mobile
-    e.preventDefault();
-    // Stash the event so it can be triggered later
-    deferredPrompt = e;
-    // Show install button
-    showInstallButton();
-});
-
-// Show install button
-function showInstallButton() {
-    const installButton = document.getElementById('installButton');
-    if (installButton && deferredPrompt) {
-        installButton.classList.remove('hidden');
-        installButton.addEventListener('click', installPWA);
-    }
-}
-
-// Install PWA
-function installPWA() {
-    if (!deferredPrompt) return;
-    
-    // Show the install prompt
-    deferredPrompt.prompt();
-    
-    // Wait for the user to respond to the prompt
-    deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-            console.log('✅ User accepted the install prompt');
-            showToast('AgriFarmers installed successfully!', 'success');
-        } else {
-            console.log('❌ User dismissed the install prompt');
-        }
-        // Clear the saved prompt since it can't be used again
-        deferredPrompt = null;
-        // Hide the install button
-        const installButton = document.getElementById('installButton');
-        if (installButton) {
-            installButton.classList.add('hidden');
-        }
-    });
-}
-
-// Check if app is already installed
-window.addEventListener('appinstalled', () => {
-    console.log('✅ AgriFarmers installed successfully');
-    // Hide install button
-    const installButton = document.getElementById('installButton');
-    if (installButton) {
-        installButton.classList.add('hidden');
-    }
-});
-
-// Online/offline event listeners
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-
 // Make functions globally available
 window.showPage = showPage;
 window.handleLogin = handleLogin;
@@ -2040,6 +2174,11 @@ window.closeModal = closeModal;
 window.handleLogout = handleLogout;
 window.changeLanguage = changeLanguage;
 window.installPWA = installPWA;
+window.hideInstallBanner = hideInstallBanner;
+
+// Online/offline event listeners
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
 
 // Close modals when clicking outside
 document.addEventListener('click', function(event) {
