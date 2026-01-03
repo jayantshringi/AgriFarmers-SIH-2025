@@ -2,13 +2,13 @@
 const CACHE_NAME = 'agrifarmers-v5.0';
 const STATIC_CACHE_NAME = 'agrifarmers-static-v5.0';
 
-// ABSOLUTE URLs for GitHub Pages
+// URLs for caching
 const STATIC_ASSETS = [
-  'https://jayantshringi.github.io/AgriFarmers-SIH-2025/',
-  'https://jayantshringi.github.io/AgriFarmers-SIH-2025/index.html',
-  'https://jayantshringi.github.io/AgriFarmers-SIH-2025/manifest.json',
-  'https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-192x192.png',
-  'https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-512x512.png',
+  './',
+  './index.html',
+  './manifest.json',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://cdn.tailwindcss.com'
 ];
@@ -87,7 +87,7 @@ self.addEventListener('fetch', (event) => {
           .catch(() => {
             // Return offline page for HTML requests
             if (event.request.headers.get('accept').includes('text/html')) {
-              return caches.match('https://jayantshringi.github.io/AgriFarmers-SIH-2025/');
+              return caches.match('./index.html');
             }
             // Return offline message for other requests
             return new Response('You are offline. Please check your connection.');
