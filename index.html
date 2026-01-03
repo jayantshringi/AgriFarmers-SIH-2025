@@ -17,7 +17,7 @@
     <meta name="application-name" content="AgriFarmers">
     
     <!-- CRITICAL: PWA Manifest with ABSOLUTE URL -->
-    <link rel="manifest" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/manifest.json?v=3.0" crossorigin="use-credentials">
+    <link rel="manifest" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/manifest.json?v=4.0" crossorigin="use-credentials">
     
     <!-- Apple Touch Icon with ABSOLUTE URL -->
     <link rel="apple-touch-icon" href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/icons/icon-192x192.png">
@@ -1038,21 +1038,15 @@ const translations = {
 // ==============================================
 
 // Initialize the application
-window.onload = function() {
+window.addEventListener('DOMContentLoaded', function() {
     console.log('🌱 AgriFarmers PWA Edition Initializing...');
     
-    // Show PWA diagnostic info
-    console.log('🔧 PWA Environment:');
-    console.log('📍 URL:', window.location.href);
-    console.log('🌐 Origin:', window.location.origin);
-    console.log('📱 Display Mode:', window.matchMedia('(display-mode: standalone)').matches ? 'Standalone PWA' : 'Browser');
-    
-    // Immediately hide loading screen and show app
-    document.getElementById('loadingScreen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    
-    // Simple initialization
-    initApp();
+    // Immediately hide loading screen and show app after short delay
+    setTimeout(() => {
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        initApp();
+    }, 500);
     
     // Load saved language preference
     const savedLang = localStorage.getItem('agrifarmers_language') || 'en';
@@ -1061,24 +1055,11 @@ window.onload = function() {
     // Check if user has already dismissed install banner
     hasSeenInstallPrompt = localStorage.getItem('hasSeenInstallPrompt') === 'true';
     
-    // Register Service Worker with ABSOLUTE URL for GitHub Pages
-    registerServiceWorker();
-    
     // Check online status
     updateOnlineStatus();
     
-    // Check if app is already installed
-    checkIfAppIsInstalled();
-    
-    // Set up beforeinstallprompt event listener
+    // Set up install prompt
     setupInstallPrompt();
-    
-    // Check if we should show install banner (after 5 seconds)
-    setTimeout(() => {
-        showInstallBannerIfEligible();
-    }, 5000);
-    
-    console.log('✅ AgriFarmers PWA Edition Loaded Successfully');
     
     // Add click event listener to install button
     const installButton = document.getElementById('installButton');
@@ -1086,9 +1067,9 @@ window.onload = function() {
         installButton.addEventListener('click', installPWA);
     }
     
-    // Force PWA detection after 2 seconds
-    setTimeout(forcePWADetection, 2000);
-};
+    // Register Service Worker
+    registerServiceWorker();
+});
 
 // Register Service Worker with ABSOLUTE URL for GitHub Pages
 function registerServiceWorker() {
@@ -1098,9 +1079,7 @@ function registerServiceWorker() {
         // Use absolute URL for GitHub Pages
         const swUrl = 'https://jayantshringi.github.io/AgriFarmers-SIH-2025/service-worker.js';
         
-        navigator.serviceWorker.register(swUrl, { 
-            scope: 'https://jayantshringi.github.io/AgriFarmers-SIH-2025/'
-        })
+        navigator.serviceWorker.register(swUrl)
             .then(registration => {
                 console.log('✅ Service Worker registered:', registration);
                 console.log('📡 Scope:', registration.scope);
@@ -1108,6 +1087,7 @@ function registerServiceWorker() {
                 // Check if service worker is controlling the page
                 if (registration.active) {
                     console.log('🎯 Service Worker is active and controlling the page');
+                    updatePWAStatus();
                 }
                 
                 // Check for updates
@@ -1122,9 +1102,6 @@ function registerServiceWorker() {
                         }
                     });
                 });
-                
-                // Force update if needed
-                registration.update();
             })
             .catch(error => {
                 console.error('❌ Service Worker registration failed:', error);
@@ -1133,41 +1110,6 @@ function registerServiceWorker() {
     } else {
         console.log('❌ Service Worker not supported in this browser');
     }
-}
-
-// Force PWA Detection
-function forcePWADetection() {
-    console.log('🔧 Forcing PWA detection...');
-    
-    // Force manifest re-load
-    const manifestLink = document.querySelector('link[rel="manifest"]');
-    if (manifestLink) {
-        const newHref = manifestLink.href.split('?')[0] + '?force=' + Date.now();
-        manifestLink.href = newHref;
-        console.log('🔄 Manifest href updated:', newHref);
-    }
-    
-    // Test manifest accessibility
-    fetch('https://jayantshringi.github.io/AgriFarmers-SIH-2025/manifest.json')
-        .then(response => {
-            console.log('📄 Manifest HTTP Status:', response.status);
-            console.log('📄 Manifest Content-Type:', response.headers.get('content-type'));
-            return response.json();
-        })
-        .then(manifest => {
-            console.log('✅ Manifest loaded successfully:', manifest.name);
-            console.log('🎨 Theme Color:', manifest.theme_color);
-            console.log('🏠 Start URL:', manifest.start_url);
-            
-            // Update theme color meta tag
-            const themeMeta = document.querySelector('meta[name="theme-color"]');
-            if (themeMeta && manifest.theme_color) {
-                themeMeta.content = manifest.theme_color;
-            }
-        })
-        .catch(error => {
-            console.error('❌ Manifest fetch failed:', error);
-        });
 }
 
 // Show update alert
@@ -1210,34 +1152,6 @@ function updateOnlineStatus() {
     isOnline = navigator.onLine;
 }
 
-// Check if app is already installed
-function checkIfAppIsInstalled() {
-    // Check if running in standalone mode (installed PWA)
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('📱 App is running in standalone mode (installed)');
-        hideInstallUI();
-        return true;
-    }
-    
-    // Check for iOS standalone mode
-    if (window.navigator.standalone === true) {
-        console.log('📱 App is running in iOS standalone mode (installed)');
-        hideInstallUI();
-        return true;
-    }
-    
-    return false;
-}
-
-// Hide install UI
-function hideInstallUI() {
-    const installButton = document.getElementById('installButton');
-    const installBanner = document.getElementById('installBanner');
-    
-    if (installButton) installButton.classList.add('hidden');
-    if (installBanner) installBanner.classList.remove('show');
-}
-
 // Setup install prompt
 function setupInstallPrompt() {
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -1263,19 +1177,60 @@ function setupInstallPrompt() {
         localStorage.setItem('hasSeenInstallPrompt', 'true');
         hideInstallUI();
         showToast('AgriFarmers installed successfully!', 'success');
+        updatePWAStatus();
     });
 }
 
 // Show install UI
 function showInstallUI() {
+    // Don't show if app is already installed
+    if (checkIfAppIsInstalled()) {
+        hideInstallUI();
+        return;
+    }
+    
     // Show install button
     const installButton = document.getElementById('installButton');
     if (installButton) {
-        installButton.classList.remove('hidden');
+        setTimeout(() => {
+            if (deferredPrompt && !checkIfAppIsInstalled()) {
+                installButton.classList.remove('hidden');
+            }
+        }, 3000);
     }
     
-    // Also check if we should show the banner
-    showInstallBannerIfEligible();
+    // Also show banner after 10 seconds if not dismissed
+    if (!hasSeenInstallPrompt) {
+        setTimeout(() => {
+            showInstallBannerIfEligible();
+        }, 10000);
+    }
+}
+
+// Check if app is already installed
+function checkIfAppIsInstalled() {
+    // Check if running in standalone mode (installed PWA)
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('📱 App is running in standalone mode (installed)');
+        return true;
+    }
+    
+    // Check for iOS standalone mode
+    if (window.navigator.standalone === true) {
+        console.log('📱 App is running in iOS standalone mode (installed)');
+        return true;
+    }
+    
+    return false;
+}
+
+// Hide install UI
+function hideInstallUI() {
+    const installButton = document.getElementById('installButton');
+    const installBanner = document.getElementById('installBanner');
+    
+    if (installButton) installButton.classList.add('hidden');
+    if (installBanner) installBanner.classList.remove('show');
 }
 
 // Show install banner if eligible
@@ -1290,14 +1245,9 @@ function showInstallBannerIfEligible() {
         return;
     }
     
-    // Check if user has interacted with the app (minimum 30 seconds)
     const installBanner = document.getElementById('installBanner');
     if (installBanner) {
-        setTimeout(() => {
-            if (!hasSeenInstallPrompt && deferredPrompt) {
-                installBanner.classList.add('show');
-            }
-        }, 30000); // Show after 30 seconds
+        installBanner.classList.add('show');
     }
 }
 
@@ -1312,7 +1262,7 @@ function hideInstallBanner() {
 }
 
 // Install PWA
-function installPWA() {
+async function installPWA() {
     if (!deferredPrompt) {
         showToast('Installation not available in this browser', 'info');
         return;
@@ -1325,18 +1275,19 @@ function installPWA() {
     deferredPrompt.prompt();
     
     // Wait for the user to respond to the prompt
-    deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-            console.log('✅ User accepted the install prompt');
-            // No need to show toast here - appinstalled event will handle it
-        } else {
-            console.log('❌ User dismissed the install prompt');
-            showToast('Installation cancelled', 'info');
-        }
-        
-        // Clear the saved prompt since it can't be used again
-        deferredPrompt = null;
-    });
+    const choiceResult = await deferredPrompt.userChoice;
+    
+    if (choiceResult.outcome === 'accepted') {
+        console.log('✅ User accepted the install prompt');
+        // No need to show toast here - appinstalled event will handle it
+    } else {
+        console.log('❌ User dismissed the install prompt');
+        showToast('Installation cancelled', 'info');
+    }
+    
+    // Clear the saved prompt since it can't be used again
+    deferredPrompt = null;
+    hideInstallUI();
 }
 
 // ==============================================
@@ -1347,16 +1298,16 @@ function forcePWAInstall() {
     console.log('🔧 Manual PWA installation triggered');
     
     // 1. Check if we can install
-    if (!window.deferredPrompt) {
+    if (!deferredPrompt) {
         showToast('Installation not available. Try using Chrome/Edge browser.', 'info');
         return;
     }
     
     // 2. Show the prompt
-    window.deferredPrompt.prompt();
+    deferredPrompt.prompt();
     
     // 3. Wait for the user's response
-    window.deferredPrompt.userChoice.then((choiceResult) => {
+    deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
             console.log('✅ User accepted PWA install');
             showToast('AgriFarmers is being installed...', 'success');
@@ -1364,7 +1315,7 @@ function forcePWAInstall() {
             console.log('❌ User dismissed PWA install');
             showToast('Installation cancelled', 'info');
         }
-        window.deferredPrompt = null;
+        deferredPrompt = null;
     });
 }
 
@@ -1400,7 +1351,7 @@ function diagnosePWA() {
     console.log('📱 Display Mode:', isStandalone ? 'Standalone' : isIOSStandalone ? 'iOS Standalone' : 'Browser');
     
     // 4. Check install capability
-    console.log('🎯 BeforeInstallPrompt:', window.deferredPrompt ? '✅ Available' : '❌ Not Available');
+    console.log('🎯 BeforeInstallPrompt:', deferredPrompt ? '✅ Available' : '❌ Not Available');
     
     // 5. Check cache
     if ('caches' in window) {
@@ -1414,10 +1365,13 @@ function diagnosePWA() {
         `✅ Manifest: ${manifestLink ? 'FOUND' : 'NOT FOUND'}`,
         `✅ Service Worker: ${'serviceWorker' in navigator ? 'SUPPORTED' : 'NOT SUPPORTED'}`,
         `✅ Display Mode: ${isStandalone ? 'PWA' : 'Browser'}`,
-        `✅ Install Prompt: ${window.deferredPrompt ? 'AVAILABLE' : 'NOT AVAILABLE'}`
+        `✅ Install Prompt: ${deferredPrompt ? 'AVAILABLE' : 'NOT AVAILABLE'}`
     ];
     
     alert('PWA Diagnostic Results:\n\n' + results.join('\n'));
+    
+    // Update PWA status
+    updatePWAStatus();
 }
 
 // Make diagnostic available
@@ -2398,7 +2352,7 @@ document.addEventListener('keydown', function(event) {
         if (window.matchMedia('(display-mode: standalone)').matches) {
             statusEl.textContent = '✅ Installed as PWA';
             statusEl.className = 'text-green-300';
-        } else if (window.deferredPrompt) {
+        } else if (deferredPrompt) {
             statusEl.textContent = '⚠️ Can be installed';
             statusEl.className = 'text-yellow-300';
         } else {
@@ -2415,7 +2369,7 @@ document.addEventListener('keydown', function(event) {
     setTimeout(() => {
         console.log('🔍 Running PWA auto-diagnostic...');
         diagnosePWA();
-    }, 5000);
+    }, 3000);
     </script>
 </body>
 </html>
