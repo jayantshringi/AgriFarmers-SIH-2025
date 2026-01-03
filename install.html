@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install AgriFarmers PWA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #138808;
+        }
+        .steps {
+            text-align: left;
+            margin: 30px 0;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #138808;
+        }
+        .btn {
+            display: inline-block;
+            background: #138808;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #0d6e02;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Install AgriFarmers PWA</h1>
+        <p>Follow these steps to install AgriFarmers as a Progressive Web App:</p>
+        
+        <div class="steps">
+            <div class="step">
+                <strong>Step 1:</strong> Open Chrome or Edge browser
+            </div>
+            <div class="step">
+                <strong>Step 2:</strong> Visit the main app: 
+                <a href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/" target="_blank">
+                    https://jayantshringi.github.io/AgriFarmers-SIH-2025/
+                </a>
+            </div>
+            <div class="step">
+                <strong>Step 3:</strong> Look for the install button (📥) in the bottom-right corner
+            </div>
+            <div class="step">
+                <strong>Step 4:</strong> Click the install button and follow the prompts
+            </div>
+            <div class="step">
+                <strong>For Mobile:</strong> Use "Add to Home Screen" option in browser menu
+            </div>
+        </div>
+        
+        <p>If installation doesn't work, try:</p>
+        <a href="https://jayantshringi.github.io/AgriFarmers-SIH-2025/" class="btn">
+            Open Main App
+        </a>
+        <button onclick="window.location.reload()" class="btn">
+            Reload Page
+        </button>
+    </div>
+    
+    <script>
+        // Auto-redirect to main app after 5 seconds
+        setTimeout(() => {
+            window.location.href = 'https://jayantshringi.github.io/AgriFarmers-SIH-2025/';
+        }, 5000);
+    </script>
+</body>
+</html>
